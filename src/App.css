@@ -1,0 +1,72 @@
+@import url('https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500&display=swap');
+
+*{
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Rubik', sans-serif !important;
+}
+
+.outer{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-bottom: 2rem;
+  height: 100vh;
+  width: 100vw;
+  background-color: lightblue;
+}
+
+
+/* width */
+::-webkit-scrollbar {
+  width: 7px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #7ea0ff; 
+  border-radius: 1rem;
+
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #a9c0ff; 
+  border-radius: 1rem;
+
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #a9c0ff; 
+  border-radius: 1rem;
+}
+
+
+
+
+ /* width */
+#textbox::-webkit-scrollbar {
+  width: 7px;
+}
+
+/* Track */
+#textbox::-webkit-scrollbar-track {
+  background: #6e6f6e; 
+  border-radius: 1rem;
+
+}
+ 
+/* Handle */
+ #textbox::-webkit-scrollbar-thumb {
+  background: #9a9b9a; 
+  border-radius: 1rem;
+
+}
+
+/* Handle on hover */
+#textbox::-webkit-scrollbar-thumb:hover {
+  background: #9a9b9a; 
+  border-radius: 1rem;
+}

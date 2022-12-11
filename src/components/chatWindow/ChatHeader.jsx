@@ -3,8 +3,10 @@ import { AnimatePresence, motion } from "framer-motion";
 import VideocamOutlinedIcon from "@mui/icons-material/VideocamOutlined";
 import CallOutlinedIcon from "@mui/icons-material/CallOutlined";
 import { Badge, Box, duration, Tooltip, Typography } from "@mui/material";
+import { useSelector } from "react-redux";
 
-const ChatHeader = ({ typing }) => {
+const ChatHeader = () => {
+  const status = useSelector((state) => state.testReducer.status);
   return (
     <Box
       sx={{
@@ -40,7 +42,7 @@ const ChatHeader = ({ typing }) => {
 
       {/* typing animation */}
       <AnimatePresence>
-        {!!typing && (
+        {!!status && (
           <motion.div
             key="modal"
             initial={{ opacity: 0, scale: 0.5 }}
@@ -49,7 +51,7 @@ const ChatHeader = ({ typing }) => {
             transition={{ duration: 0.3 }}
           >
             {" "}
-            Typing...
+            {status === "typing" ? "Typing..." : "Recording..."}
           </motion.div>
         )}
       </AnimatePresence>

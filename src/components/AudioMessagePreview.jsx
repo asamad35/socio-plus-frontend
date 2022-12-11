@@ -1,20 +1,24 @@
 import React, { useRef, useState, useEffect } from "react";
 import WaveSurfer from "wavesurfer.js";
-import testAudio from "../assets/Tumbling.mp3";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import PauseOutlinedIcon from "@mui/icons-material/PauseOutlined";
 import { motion } from "framer-motion";
 import { Box } from "@mui/material";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { secondsToMinutes } from "../helper";
+import CloseIcon from "@mui/icons-material/Close";
+import * as actions from "../redux/actions/index";
 
 const AudioMessagePreview = () => {
+  const dispatch = useDispatch();
   const audioPreviewUrl = useSelector(
     (state) => state.testReducer.audioPreviewUrl
   );
 
   const wavesurfer = useRef(null);
   const [play, setPlay] = useState(false);
-  const [audioLength, setAudioLength] = useState(0);
+
+  const [audioLength, setAudioLength] = useState("00:00");
 
   useEffect(() => {
     if (!audioPreviewUrl) return;
@@ -22,7 +26,7 @@ const AudioMessagePreview = () => {
       container: `#wavesurfer-preview`,
       waveColor: "#7EA0FF",
       progressColor: "#2962FF",
-      height: 70,
+      height: 30,
       cursorWidth: 1,
       cursorColor: "lightgray",
       barWidth: 2,
@@ -34,14 +38,11 @@ const AudioMessagePreview = () => {
     // console.log("wav", wav);
     wavesurfer.current.load(audioPreviewUrl);
     wavesurfer.current.on("ready", () => {
-      const totalSeconds = wavesurfer.current.getDuration();
-      const minutes = Math.floor(totalSeconds / 60);
-      const remainingSeconds = totalSeconds % 60;
-
-      const result = `${minutes.toString().padStart(2, "0")}:${remainingSeconds
+      const totalSeconds = +wavesurfer.current
+        .getDuration()
         .toString()
-        .slice(0, 1)
-        .padStart(2, "0")} `;
+        .split(".")[0];
+      const result = secondsToMinutes(totalSeconds);
       setAudioLength(result);
     });
 
@@ -49,8 +50,7 @@ const AudioMessagePreview = () => {
       wavesurfer.current.empty();
       wavesurfer.current.drawBuffer();
     }, 150);
-    // wavesurfer.current.on("play", () => setIsPlaying(true));
-    // wavesurfer.current.on("pause", () => setIsPlaying(false));
+    wavesurfer.current.on("finish", () => setPlay(false));
     window.addEventListener("resize", handleResize, false);
   }, [audioPreviewUrl]);
 
@@ -61,10 +61,13 @@ const AudioMessagePreview = () => {
         display: "flex",
         alignItems: "center",
         justifyContent: "start",
-        gap: "5px",
+        gap: "10px",
+        margin: "0 10px",
       }}
     >
-      {audioLength}
+      <div style={{ fontSize: "14px", marginRight: "5px", width: "40px" }}>
+        {audioLength}
+      </div>
       <Box
         onClick={() => {
           setPlay(!play);
@@ -81,7 +84,6 @@ const AudioMessagePreview = () => {
           color: "white",
           cursor: "pointer",
           position: "relative",
-          marginLeft: "20px",
         }}
       >
         <motion.div
@@ -113,13 +115,35 @@ const AudioMessagePreview = () => {
       <div
         style={{
           display: "flex",
-          width: "90%",
-          marginRight: "20px",
+          width: "60%",
+          // marginRight: "20px",
           flexDirection: "column",
         }}
       >
         <div id={`wavesurfer-preview`} />
       </div>
+      <motion.div
+        whileHover={{ scale: 1.1, backgroundColor: "red" }}
+        whileTap={{ scale: 0.9 }}
+        onClick={() => {
+          dispatch(actions.setShowKeyboard(true));
+        }}
+        style={{
+          backgroundColor: "#2962ff",
+          borderRadius: "2rem",
+          height: "28px",
+          width: "28px",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          color: "white",
+          cursor: "pointer",
+          position: "relative",
+          transition: "0.2",
+        }}
+      >
+        <CloseIcon style={{ display: "flex", fontSize: "20px" }} />
+      </motion.div>
     </div>
   );
 };

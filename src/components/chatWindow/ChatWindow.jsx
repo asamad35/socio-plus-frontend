@@ -7,8 +7,6 @@ import ChatFooter from "./ChatFooter";
 import { Box } from "@mui/material";
 
 const ChatWindow = () => {
-  const [typing, setTyping] = useState(false);
-
   return (
     <Box
       sx={{
@@ -20,11 +18,11 @@ const ChatWindow = () => {
         width: "100%",
       }}
     >
-      <ChatHeader typing={typing} />
+      <ChatHeader />
 
       <ChatBody />
 
-      <ChatFooter typing={typing} setTyping={setTyping} />
+      <ChatFooter />
     </Box>
   );
 };

@@ -6,30 +6,40 @@ import SendOutlinedIcon from "@mui/icons-material/SendOutlined";
 import AttachFileOutlinedIcon from "@mui/icons-material/AttachFileOutlined";
 import EmojiEmotionsOutlinedIcon from "@mui/icons-material/EmojiEmotionsOutlined";
 import { debounce } from "../../helper";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
 import AudioRecorder from "../AudioRecorder";
 import AudioMessagePreview from "../AudioMessagePreview";
+import { useDispatch, useSelector } from "react-redux";
+import * as actions from "../../redux/actions/index";
 
-const ChatFooter = ({ typing, setTyping }) => {
-  const [showMic, setShowMic] = useState(true);
+const ChatFooter = () => {
+  const dispatch = useDispatch();
+  const recordingState = useSelector(
+    (state) => state.testReducer.recordingState
+  );
+  const status = useSelector((state) => state.testReducer.status);
+  const showMic = useSelector((state) => state.testReducer.showMic);
+  const showKeyboard = useSelector((state) => state.testReducer.showKeyboard);
+
   const [emojiPicker, setEmojiPicker] = useState(false);
   const [text, setText] = useState("");
-  const [hover, setHover] = useState(false);
+  const [emojiButtonHover, setEmojiButtonHover] = useState(false);
 
   const emojiContainer = useRef(null);
 
   useEffect(() => {
     if (text.length > 0) {
-      setShowMic(false);
+      dispatch(actions.setShowMic(false));
     } else {
-      setShowMic(true);
+      dispatch(actions.setShowMic(true));
     }
   }, [text]);
 
   const callbackFn = useCallback((args) => {
-    setTyping(false);
+    // setTyping(false);
+    dispatch(actions.setStatus(null));
   }, []);
   const debounceClosure = useCallback(debounce(callbackFn, 1000), []);
   return (
@@ -45,28 +55,28 @@ const ChatFooter = ({ typing, setTyping }) => {
         boxShadow: " 0px 1px 7px rgb(50 50 50 / 56%);",
       }}
     >
-      {/* <textarea
-        onChange={(e) => {
-          setText(e.target.value);
-          if (typing === false) setTyping(true);
-          debounceClosure("abcd", "efgh");
-        }}
-        value={text}
-        id="textbox"
-        style={{
-          marginLeft: "1.5rem",
-          width: "70%",
-          outline: "none",
-          border: "none",
-          backgroundColor: "inherit",
-          fontSize: "1rem",
-          resize: "none",
-        }}
-        placeholder="Type your message here..."
-      /> */}
-
-      <AudioMessagePreview />
-
+      {!showKeyboard && <AudioMessagePreview />}
+      {showKeyboard && (
+        <textarea
+          onChange={(e) => {
+            setText(e.target.value);
+            if (status === null) dispatch(actions.setStatus("typing"));
+            debounceClosure("abcd", "efgh");
+          }}
+          value={text}
+          id="textbox"
+          style={{
+            marginLeft: "1.5rem",
+            width: "70%",
+            outline: "none",
+            border: "none",
+            backgroundColor: "inherit",
+            fontSize: "1rem",
+            resize: "none",
+          }}
+          placeholder="Type your message here..."
+        />
+      )}
       <Box
         sx={{
           display: "flex",
@@ -117,13 +127,14 @@ const ChatFooter = ({ typing, setTyping }) => {
                 if (emojiPicker) {
                   setEmojiPicker(false);
                   setTimeout(() => {
-                    if (!hover) emojiContainer.current.style.zIndex = -10;
+                    if (!emojiButtonHover)
+                      emojiContainer.current.style.zIndex = -10;
                   }, 100);
                 }
               }}
               onEmojiSelect={(e) => {
                 setText(text + e.native);
-                if (typing === false) setTyping(true);
+                if (status === null) dispatch(actions.setStatus("typing"));
                 debounceClosure("abcd", "efgh");
               }}
               data={data}
@@ -145,11 +156,11 @@ const ChatFooter = ({ typing, setTyping }) => {
           <Tooltip title="Add emoji">
             <Box
               onMouseEnter={() => {
-                setHover(true);
+                setEmojiButtonHover(true);
                 emojiContainer.current.style.zIndex = 10;
               }}
               onMouseLeave={() => {
-                setHover(false);
+                setEmojiButtonHover(false);
                 if (emojiPicker) return;
                 emojiContainer.current.style.zIndex = -10;
               }}
@@ -194,10 +205,19 @@ const ChatFooter = ({ typing, setTyping }) => {
         </motion.div>
 
         <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-          <Tooltip title={`Send ${showMic ? "Audio" : "Message"}`}>
+          <Tooltip
+            title={`${
+              showMic
+                ? recordingState
+                  ? "Stop Recording"
+                  : "Start Recording"
+                : "Send Message"
+            }`}
+          >
             <Box
               onDoubleClick={() => {
-                setShowMic(!showMic);
+                // if (!showMic) dispatch(actions?.setShowKeyboard(true));
+                dispatch(actions.setShowMic(!showMic));
               }}
               sx={{
                 backgroundColor: "#2962ff",
@@ -225,7 +245,7 @@ const ChatFooter = ({ typing, setTyping }) => {
                 <SendOutlinedIcon fontSize="small" />
               </motion.div>
 
-              <AudioRecorder showMic={showMic} />
+              <AudioRecorder />
             </Box>
           </Tooltip>
         </motion.div>

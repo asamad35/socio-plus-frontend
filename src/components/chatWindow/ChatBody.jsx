@@ -1,12 +1,14 @@
 import { Badge, Box, duration, Tooltip, Typography } from "@mui/material";
+import React from "react";
 import Message from "../Message";
 
 const ChatBody = () => {
   return (
-    <Box style={{ overflowY: "auto" }}>
+    <Box className="chatBody">
       <Message />
     </Box>
   );
 };
 
-export default ChatBody;
+export default React.memo(ChatBody);
+// export default ChatBody;

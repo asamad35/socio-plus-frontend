@@ -9,7 +9,6 @@ import { Box } from "@mui/material";
 const ChatWindow = () => {
   const [typing, setTyping] = useState(false);
 
-  console.log("hi");
   return (
     <Box
       sx={{

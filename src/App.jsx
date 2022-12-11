@@ -1,9 +1,9 @@
-import { useState } from "react";
 import "./App.css";
 import { Container } from "@mui/material";
 import SideSearch from "./components/SideSearch";
 import ChatWindow from "./components/chatWindow/ChatWindow";
-import AudioRecorder from "./components/AudioRecorder";
+import AudioMessagePreview from "./components/AudioMessagePreview";
+// import lamejs from "lamejs";
 
 function App() {
   return (
@@ -26,6 +26,7 @@ function App() {
       >
         <SideSearch />
         <ChatWindow />
+        {/* <AudioMessagePreview /> */}
       </Container>
     </div>
   );

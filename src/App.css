@@ -74,3 +74,40 @@
 #wavesurfer-ID > wave{
   overflow: hidden !important;
 }
+
+
+.chatBody{
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+.chatBody::-webkit-scrollbar-track {
+  background: #a9c0ff; 
+  border-radius: 1rem;
+
+}
+ 
+/* Handle */
+ .chatBody::-webkit-scrollbar-thumb {
+  background: #3e72ff; 
+  border-radius: 1rem;
+
+}
+
+/* Handle on hover */
+.chatBody::-webkit-scrollbar-thumb:hover {
+  background: #3e72ff; 
+  border-radius: 1rem;
+}
+
+#wavesurfer-ID > wave{
+  overflow: hidden !important;
+}
+#wavesurfer-preview > wave{
+  display: none !important; 
+  overflow: hidden !important;
+  height: 40px !important;
+}
+
+#wavesurfer-preview :last-child {
+  display: block !important; 
+}

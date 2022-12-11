@@ -1,22 +1,34 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 
-import { Badge, Box, duration, Tooltip, Typography } from "@mui/material";
+import { Box, Tooltip } from "@mui/material";
 
 import SendOutlinedIcon from "@mui/icons-material/SendOutlined";
 import AttachFileOutlinedIcon from "@mui/icons-material/AttachFileOutlined";
 import EmojiEmotionsOutlinedIcon from "@mui/icons-material/EmojiEmotionsOutlined";
-import MicOutlinedIcon from "@mui/icons-material/MicOutlined";
 import { debounce } from "../../helper";
 import { AnimatePresence, motion } from "framer-motion";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
+import AudioRecorder from "../AudioRecorder";
+import AudioMessagePreview from "../AudioMessagePreview";
+
 const ChatFooter = ({ typing, setTyping }) => {
-  const [micStart, setMicStart] = useState(true);
+  const [showMic, setShowMic] = useState(true);
   const [emojiPicker, setEmojiPicker] = useState(false);
   const [text, setText] = useState("");
+  const [hover, setHover] = useState(false);
+
+  const emojiContainer = useRef(null);
+
+  useEffect(() => {
+    if (text.length > 0) {
+      setShowMic(false);
+    } else {
+      setShowMic(true);
+    }
+  }, [text]);
 
   const callbackFn = useCallback((args) => {
-    console.log(args);
     setTyping(false);
   }, []);
   const debounceClosure = useCallback(debounce(callbackFn, 1000), []);
@@ -30,9 +42,10 @@ const ChatFooter = ({ typing, setTyping }) => {
         display: "flex",
         justifyContent: "flex-start",
         alignItems: "center",
+        boxShadow: " 0px 1px 7px rgb(50 50 50 / 56%);",
       }}
     >
-      <textarea
+      {/* <textarea
         onChange={(e) => {
           setText(e.target.value);
           if (typing === false) setTyping(true);
@@ -50,7 +63,9 @@ const ChatFooter = ({ typing, setTyping }) => {
           resize: "none",
         }}
         placeholder="Type your message here..."
-      />
+      /> */}
+
+      <AudioMessagePreview />
 
       <Box
         sx={{
@@ -63,6 +78,7 @@ const ChatFooter = ({ typing, setTyping }) => {
         }}
       >
         <div
+          ref={emojiContainer}
           style={{
             position: "absolute",
             bottom: "150%",
@@ -72,6 +88,7 @@ const ChatFooter = ({ typing, setTyping }) => {
               : "0 4px 8px 0 rgba(0, 0, 0, 0), 0 6px 20px 0 rgba(0, 0, 0, 0)",
             borderRadius: "1rem",
             transition: emojiPicker ? "1s all" : "0.1s all",
+            zIndex: -10,
           }}
         >
           <motion.div
@@ -96,8 +113,13 @@ const ChatFooter = ({ typing, setTyping }) => {
             transition={{ duration: 0.3 }}
           >
             <Picker
-              onClickOutside={() => {
-                if (emojiPicker) setEmojiPicker(false);
+              onClickOutside={(e) => {
+                if (emojiPicker) {
+                  setEmojiPicker(false);
+                  setTimeout(() => {
+                    if (!hover) emojiContainer.current.style.zIndex = -10;
+                  }, 100);
+                }
               }}
               onEmojiSelect={(e) => {
                 setText(text + e.native);
@@ -122,6 +144,15 @@ const ChatFooter = ({ typing, setTyping }) => {
         <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
           <Tooltip title="Add emoji">
             <Box
+              onMouseEnter={() => {
+                setHover(true);
+                emojiContainer.current.style.zIndex = 10;
+              }}
+              onMouseLeave={() => {
+                setHover(false);
+                if (emojiPicker) return;
+                emojiContainer.current.style.zIndex = -10;
+              }}
               onClick={() => {
                 setEmojiPicker(!emojiPicker);
               }}
@@ -163,10 +194,10 @@ const ChatFooter = ({ typing, setTyping }) => {
         </motion.div>
 
         <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-          <Tooltip title={`Send ${micStart ? "Audio" : "Message"}`}>
+          <Tooltip title={`Send ${showMic ? "Audio" : "Message"}`}>
             <Box
               onDoubleClick={() => {
-                setMicStart(!micStart);
+                setShowMic(!showMic);
               }}
               sx={{
                 backgroundColor: "#2962ff",
@@ -187,25 +218,14 @@ const ChatFooter = ({ typing, setTyping }) => {
                   hide: { opacity: 0, scale: 0 },
                 }}
                 initial={"hide"}
-                animate={!micStart ? "show" : "hide"}
+                animate={!showMic ? "show" : "hide"}
                 transition={{ duration: 0.3 }}
                 style={{ display: "flex", translateX: "5%" }}
               >
                 <SendOutlinedIcon fontSize="small" />
               </motion.div>
 
-              <motion.div
-                variants={{
-                  show: { opacity: 1, scale: 1 },
-                  hide: { opacity: 0, scale: 0 },
-                }}
-                initial={"show"}
-                animate={micStart ? "show" : "hide"}
-                transition={{ duration: 0.3 }}
-                style={{ display: "flex", position: "absolute" }}
-              >
-                <MicOutlinedIcon fontSize="small" />
-              </motion.div>
+              <AudioRecorder showMic={showMic} />
             </Box>
           </Tooltip>
         </motion.div>

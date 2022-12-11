@@ -1,7 +1,7 @@
 import React from "react";
 import { Avatar, Box, Typography } from "@mui/material";
 import goku from "../assets/goku-avatar.png";
-import AudioRecorder from "./AudioRecorder";
+import AudioComponent from "./AudioComponent";
 
 const Message = () => {
   function createMessage() {
@@ -17,7 +17,7 @@ const Message = () => {
           }}
         >
           <Avatar alt="Remy Sharp" src={goku} />
-          <AudioRecorder />
+          <AudioComponent />
         </Box>
 
         <Box

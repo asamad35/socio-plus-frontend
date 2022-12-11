@@ -1,104 +1,91 @@
-import React, { useRef, useState, useEffect } from "react";
-import WaveSurfer from "wavesurfer.js";
-import testAudio from "../assets/Tumbling.mp3";
-import PlayArrowIcon from "@mui/icons-material/PlayArrow";
-import PauseOutlinedIcon from "@mui/icons-material/PauseOutlined";
-import { AnimatePresence, motion } from "framer-motion";
-import { Box } from "@mui/material";
+import { useState, useCallback, useRef, useEffect, useMemo } from "react";
+import MicRecorder from "mic-recorder-to-mp3";
+import MicOutlinedIcon from "@mui/icons-material/MicOutlined";
+import { motion } from "framer-motion";
+import { useDispatch } from "react-redux";
+import * as actions from "../redux/actions/index";
 
-const AudioRecorder = () => {
-  const wavesurfer = useRef(null);
-  const [play, setPlay] = useState(false);
-  console.log(testAudio, "testAudio", new Audio(testAudio));
+const AudioRecorder = ({ showMic }) => {
+  const dispatch = useDispatch();
 
-  useEffect(() => {
-    wavesurfer.current = WaveSurfer.create({
-      container: `#wavesurfer-ID`,
-      waveColor: "#7EA0FF",
-      progressColor: "#2962FF",
-      height: 70,
-      cursorWidth: 1,
-      cursorColor: "lightgray",
-      barWidth: 2,
-      normalize: true,
-      responsive: true,
-      fillParent: true,
-    });
+  const [recordingState, setRecordingState] = useState(false);
+  const Mp3Recorder = useMemo(() => new MicRecorder({ bitRate: 128 }), []);
+  const [audioDetail, setAudioDetail] = useState({
+    isRecording: false,
+    blobURL: "",
+    isBlocked: false,
+  });
 
-    // console.log("wav", wav);
-    wavesurfer.current.load(testAudio);
-    const handleResize = wavesurfer.current.util.debounce(() => {
-      wavesurfer.current.empty();
-      wavesurfer.current.drawBuffer();
-    }, 150);
-    // wavesurfer.current.on("play", () => setIsPlaying(true));
-    // wavesurfer.current.on("pause", () => setIsPlaying(false));
-    window.addEventListener("resize", handleResize, false);
-  }, []);
+  const start = () => {
+    if (audioDetail.isBlocked) {
+      console.log("Permission Denied");
+    } else {
+      Mp3Recorder.start()
+        .then(() => {
+          setAudioDetail({ ...audioDetail, isRecording: true });
+          console.log("start");
+        })
+        .catch((e) => console.error(e));
+    }
+  };
 
+  const stop = () => {
+    Mp3Recorder.stop()
+      .getMp3()
+      .then(([buffer, blob]) => {
+        const blobURL = URL.createObjectURL(blob);
+        setAudioDetail({ ...audioDetail, blobURL, isRecording: false });
+        console.log("stop");
+        dispatch(actions.setAudioPreviewUrl(blobURL));
+      })
+      .catch((e) => console.log(e));
+  };
+
+  function getPermission() {
+    navigator.getUserMedia(
+      { audio: true },
+      () => {
+        console.log("Permission Granted");
+        setAudioDetail({ ...audioDetail, isBlocked: false });
+      },
+      () => {
+        console.log("Permission Denied");
+        setAudioDetail({ ...audioDetail, isBlocked: true });
+      }
+    );
+  }
   return (
-    <div
-      style={{
-        width: "100%",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "start",
-        gap: "8px",
+    <motion.div
+      onClick={() => {
+        console.log("wdwdwwd", recordingState);
+        if (audioDetail.isBlocked) getPermission();
+        setRecordingState(!recordingState);
+        if (recordingState) {
+          stop();
+        } else {
+          start();
+        }
       }}
+      variants={{
+        show: { opacity: 1, scale: 1 },
+        hide: { opacity: 0, scale: 0 },
+      }}
+      initial={"show"}
+      animate={showMic ? "show" : "hide"}
+      transition={{ duration: 0.3 }}
+      style={{ display: "flex", position: "absolute" }}
     >
-      <Box
-        onClick={() => {
-          setPlay(!play);
-          wavesurfer.current.playPause();
-        }}
-        sx={{
-          backgroundColor: "#2962ff",
-          borderRadius: "2rem",
-          height: "35px",
-          width: "35px",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          color: "white",
-          cursor: "pointer",
-          position: "relative",
-        }}
-      >
-        <motion.div
-          variants={{
-            show: { opacity: 1, scale: 1 },
-            hide: { opacity: 0, scale: 0 },
-          }}
-          initial={"show"}
-          animate={!play ? "show" : "hide"}
-          transition={{ duration: 0.3 }}
-        >
-          <PlayArrowIcon style={{ display: "flex", fontSize: "20px" }} />
-        </motion.div>
-
-        <motion.div
-          variants={{
-            show: { opacity: 1, scale: 1 },
-            hide: { opacity: 0, scale: 0 },
-          }}
-          initial={"show"}
-          animate={play ? "show" : "hide"}
-          transition={{ duration: 0.3 }}
-          style={{ position: "absolute" }}
-        >
-          <PauseOutlinedIcon style={{ display: "flex", fontSize: "20px" }} />
-        </motion.div>
-      </Box>
-      <div
-        style={{
-          display: "flex",
-          width: "40%",
-          flexDirection: "column",
-        }}
-      >
-        <div id="wavesurfer-ID" />
-      </div>
-    </div>
+      {/* <> */}
+      <MicOutlinedIcon fontSize="small" />
+      {/* <button onClick={() => start()} disabled={audioDetail.isRecording}>
+        Record
+      </button>
+      <button onClick={() => stop()} disabled={!audioDetail.isRecording}>
+        Stop
+      </button>
+      <audio src={audioDetail.blobURL} controls="controls" />
+    </> */}
+    </motion.div>
   );
 };
 

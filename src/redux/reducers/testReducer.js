@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import * as thunks from "../../thunks";
 const initialState = {
   count: 0,
+  audioPreviewUrl: "",
 };
 
 const testReducer = createSlice({
@@ -16,6 +17,9 @@ const testReducer = createSlice({
     },
     incrementByValue(state, action) {
       state.count = action.payload.count;
+    },
+    setAudioPreviewUrl(state, action) {
+      state.audioPreviewUrl = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -37,5 +41,6 @@ const testReducer = createSlice({
   },
 });
 
-export const { increment, decrement, incrementByValue } = testReducer.actions;
+export const { increment, decrement, incrementByValue, setAudioPreviewUrl } =
+  testReducer.actions;
 export default testReducer.reducer;

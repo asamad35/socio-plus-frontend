@@ -2,7 +2,8 @@ import { useState } from "react";
 import "./App.css";
 import { Container } from "@mui/material";
 import SideSearch from "./components/SideSearch";
-import ChatWindow from "./components/ChatWindow";
+import ChatWindow from "./components/chatWindow/ChatWindow";
+import AudioRecorder from "./components/AudioRecorder";
 
 function App() {
   return (
@@ -15,7 +16,7 @@ function App() {
           justifyContent: "flex-start",
           alignItems: "center",
           height: "90%",
-          width: "70%",
+          width: "60%",
           borderRadius: "1.5rem",
           overflow: "hidden",
           padding: { xs: "0" },

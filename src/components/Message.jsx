@@ -1,11 +1,25 @@
 import React from "react";
 import { Avatar, Box, Typography } from "@mui/material";
 import goku from "../assets/goku-avatar.png";
+import AudioRecorder from "./AudioRecorder";
 
 const Message = () => {
   function createMessage() {
     return (
       <>
+        <Box
+          sx={{
+            display: "flex",
+            gap: "1rem",
+            margin: "1.5rem",
+            justifyContent: "start",
+            alignItems: "center",
+          }}
+        >
+          <Avatar alt="Remy Sharp" src={goku} />
+          <AudioRecorder />
+        </Box>
+
         <Box
           sx={{
             display: "flex",
@@ -29,6 +43,7 @@ const Message = () => {
             widqndn iqwdnwqind{" "}
           </Typography>
         </Box>
+
         <Box
           sx={{
             display: "flex",

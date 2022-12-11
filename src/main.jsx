@@ -1,9 +1,21 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
+import { createRoot } from "react-dom/client";
 import App from "./App";
+import logger from "redux-logger";
+import { Provider } from "react-redux";
+import { configureStore } from "@reduxjs/toolkit";
+import rootReducer from "./redux/reducers";
 
-ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
+const rootElement = document.getElementById("root");
+const root = createRoot(rootElement);
+
+const store = configureStore({
+  reducer: rootReducer,
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(logger),
+  devTools: true,
+});
+
+root.render(
+  <Provider store={store}>
     <App />
-  </React.StrictMode>
+  </Provider>
 );

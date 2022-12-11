@@ -70,3 +70,7 @@
   background: #9a9b9a; 
   border-radius: 1rem;
 }
+
+#wavesurfer-ID > wave{
+  overflow: hidden !important;
+}

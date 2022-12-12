@@ -4,8 +4,23 @@ import MicOutlinedIcon from "@mui/icons-material/MicOutlined";
 import { motion } from "framer-motion";
 import { useDispatch, useSelector } from "react-redux";
 import * as actions from "../redux/actions/index";
+import { useStopwatch } from "react-use-stopwatch";
 
+// return (
+//   <div>
+//     // Stopwatch Outputs
+//     <strong>{time}</strong>
+//     <strong>{format}</strong>
+//     // Stopwatch Inputs
+//     <button onClick={() => start()}>Start</button>
+//     <button onClick={() => stop()}>Stop</button>
+//     <button onClick={() => reset()}>Reset</button>
+//   </div>
+// );
 const AudioRecorder = () => {
+  const [{ time, format }, startTimer, stopTimer, resetTimer] = useStopwatch();
+  console.log(time, "timetimetime", format);
+
   const dispatch = useDispatch();
   const recordingState = useSelector(
     (state) => state.testReducer.recordingState
@@ -26,8 +41,9 @@ const AudioRecorder = () => {
       Mp3Recorder.start()
         .then(() => {
           setAudioDetail({ ...audioDetail, isRecording: true });
-          dispatch(actions.setShowKeyboard(false));
           dispatch(actions.setStatus("recording"));
+          resetTimer();
+          startTimer();
         })
         .catch((e) => console.error(e));
     }
@@ -42,9 +58,23 @@ const AudioRecorder = () => {
         dispatch(actions.setShowMic(false));
         dispatch(actions.setAudioPreviewUrl(blobURL));
         dispatch(actions.setStatus(null));
+        dispatch(actions.setShowKeyboard(false));
+        stopTimer();
       })
       .catch((e) => console.log(e));
   };
+
+  useEffect(() => {
+    if (showMic) {
+      dispatch(actions.setRecordingState(!recordingState));
+      if (audioDetail.isBlocked) getPermission();
+      if (recordingState) {
+        stop();
+      } else {
+        start();
+      }
+    }
+  }, [showMic]);
 
   function getPermission() {
     navigator.getUserMedia(
@@ -74,7 +104,7 @@ const AudioRecorder = () => {
         show: { opacity: 1, scale: 1 },
         hide: { opacity: 0, scale: 0 },
       }}
-      initial={"show"}
+      initial={"hide"}
       animate={showMic ? "show" : "hide"}
       transition={{ duration: 0.3 }}
       style={{
@@ -85,19 +115,13 @@ const AudioRecorder = () => {
         justifyContent: "center",
         alignItems: "center",
         borderRadius: "2rem",
-        backgroundColor: recordingState ? "red" : "#2962ff",
+        backgroundColor: "red",
       }}
     >
-      {/* <> */}
       <MicOutlinedIcon fontSize="small" />
-      {/* <button onClick={() => start()} disabled={audioDetail.isRecording}>
-        Record
-      </button>
-      <button onClick={() => stop()} disabled={!audioDetail.isRecording}>
-        Stop
-      </button>
-      <audio src={audioDetail.blobURL} controls="controls" />
-    </> */}
+      <div className="timer">
+        {format.split(":")[1]}:{format.split(":")[2].slice(0, 2)}
+      </div>
     </motion.div>
   );
 };

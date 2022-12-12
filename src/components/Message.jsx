@@ -2,72 +2,17 @@ import React from "react";
 import { Avatar, Box, Typography } from "@mui/material";
 import goku from "../assets/goku-avatar.png";
 import AudioComponent from "./AudioComponent";
+import TextMessage from "./messages/TextMessage";
+import AudioMessage from "./messages/AudioMessage";
 
 const Message = () => {
   function createMessage() {
     return (
       <>
-        <Box
-          sx={{
-            display: "flex",
-            gap: "1rem",
-            margin: "1.5rem",
-            justifyContent: "start",
-            alignItems: "center",
-          }}
-        >
-          <Avatar alt="Remy Sharp" src={goku} />
-          <AudioComponent />
-        </Box>
-
-        <Box
-          sx={{
-            display: "flex",
-            gap: "1rem",
-            margin: "1.5rem",
-            justifyContent: "start",
-            alignItems: "center",
-          }}
-        >
-          <Avatar alt="Remy Sharp" src={goku} />
-          <Typography
-            sx={{
-              fontSize: "1rem",
-              backgroundColor: "#dcdddc",
-              maxWidth: "50%",
-              padding: "0.5rem",
-              borderRadius: "1rem",
-            }}
-          >
-            jdnasjdsa djqwdjk qwjdjq djqwdnjqd djqwdqd dqwd d qdidnqwd idnwqidnd
-            widqndn iqwdnwqind{" "}
-          </Typography>
-        </Box>
-
-        <Box
-          sx={{
-            display: "flex",
-            gap: "1rem",
-            margin: "1.5rem",
-            justifyContent: "end",
-            flexDirection: "row-reverse",
-            alignItems: "center",
-          }}
-        >
-          <Avatar alt="Remy Sharp" src={goku} />
-          <Typography
-            sx={{
-              fontSize: "1rem",
-              backgroundColor: "#dcdddc",
-              maxWidth: "50%",
-              padding: "0.5rem",
-              borderRadius: "1rem",
-            }}
-          >
-            jdnasjdsa djqwdjk qwjdjq djqwdnjqd djqwdqd dqwd d qdidnqwd idnwqidnd
-            widqndn iqwdnwqind{" "}
-          </Typography>
-        </Box>
+        <TextMessage sendOrReceived={"received"} />
+        <AudioMessage sendOrReceived={"send"} />
+        <TextMessage sendOrReceived={"send"} />
+        <AudioMessage sendOrReceived={"received"} />
 
         <Typography
           sx={{
@@ -83,30 +28,6 @@ const Message = () => {
           {" "}
           19 November 2022
         </Typography>
-
-        <Box
-          sx={{
-            display: "flex",
-            gap: "1rem",
-            margin: "1.5rem",
-            justifyContent: "start",
-            alignItems: "center",
-          }}
-        >
-          <Avatar alt="Remy Sharp" src={goku} />
-          <Typography
-            sx={{
-              fontSize: "1rem",
-              backgroundColor: "#dcdddc",
-              maxWidth: "50%",
-              padding: "0.5rem",
-              borderRadius: "1rem",
-            }}
-          >
-            jdnasjdsa djqwdjk qwjdjq djqwdnjqd djqwdqd dqwd d qdidnqwd idnwqidnd
-            widqndn iqwdnwqind{" "}
-          </Typography>
-        </Box>
       </>
     );
   }

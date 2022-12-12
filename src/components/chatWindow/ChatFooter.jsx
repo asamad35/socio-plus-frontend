@@ -13,6 +13,7 @@ import AudioRecorder from "../AudioRecorder";
 import AudioMessagePreview from "../AudioMessagePreview";
 import { useDispatch, useSelector } from "react-redux";
 import * as actions from "../../redux/actions/index";
+import useLongPress from "../../customHooks/useLongPress";
 
 const ChatFooter = () => {
   const dispatch = useDispatch();
@@ -29,19 +30,39 @@ const ChatFooter = () => {
 
   const emojiContainer = useRef(null);
 
-  useEffect(() => {
-    if (text.length > 0) {
-      dispatch(actions.setShowMic(false));
-    } else {
-      dispatch(actions.setShowMic(true));
-    }
-  }, [text]);
+  // useEffect(() => {
+  //   if (text.length > 0) {
+  //     dispatch(actions.setShowMic(false));
+  //   } else {
+  //     dispatch(actions.setShowMic(true));
+  //   }
+  // }, [text]);
 
   const callbackFn = useCallback((args) => {
     // setTyping(false);
     dispatch(actions.setStatus(null));
   }, []);
   const debounceClosure = useCallback(debounce(callbackFn, 1000), []);
+
+  ////////////////////////////////////////////////////// long press code starts
+  const onLongPress = () => {
+    if (!showMic) {
+      dispatch(actions?.setShowKeyboard(true));
+      dispatch(actions.setShowMic(true));
+    }
+  };
+
+  const onClick = () => {
+    console.log("click is triggered");
+  };
+
+  const defaultOptions = {
+    shouldPreventDefault: true,
+    delay: 500,
+  };
+  const longPressEvent = useLongPress(onLongPress, onClick, defaultOptions);
+  ////////////////////////////////////////////////////// long press code ends
+
   return (
     <Box
       sx={{
@@ -144,12 +165,6 @@ const ChatFooter = () => {
               perLine="7"
               previewPosition="none"
             />
-
-            {/* <EmojiPicker
-          previewConfig={{ showPreview: false }}
-          width="100%"
-          height="100%"
-        /> */}
           </motion.div>
         </div>
         <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
@@ -215,10 +230,7 @@ const ChatFooter = () => {
             }`}
           >
             <Box
-              onDoubleClick={() => {
-                // if (!showMic) dispatch(actions?.setShowKeyboard(true));
-                dispatch(actions.setShowMic(!showMic));
-              }}
+              {...longPressEvent}
               sx={{
                 backgroundColor: "#2962ff",
                 borderRadius: "2rem",
@@ -237,7 +249,7 @@ const ChatFooter = () => {
                   show: { opacity: 1, scale: 1 },
                   hide: { opacity: 0, scale: 0 },
                 }}
-                initial={"hide"}
+                initial={"show"}
                 animate={!showMic ? "show" : "hide"}
                 transition={{ duration: 0.3 }}
                 style={{ display: "flex", translateX: "5%" }}

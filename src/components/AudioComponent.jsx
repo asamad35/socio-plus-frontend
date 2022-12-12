@@ -1,22 +1,24 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useMemo } from "react";
 import WaveSurfer from "wavesurfer.js";
 import testAudio from "../assets/Tumbling.mp3";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import PauseOutlinedIcon from "@mui/icons-material/PauseOutlined";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { Box } from "@mui/material";
+import { v4 as uuidv4 } from "uuid";
 
 const AudioComponent = () => {
   const wavesurfer = useRef(null);
   const [play, setPlay] = useState(false);
   console.log(testAudio, "testAudio", new Audio(testAudio));
+  const uniqueID = useMemo(() => uuidv4(), []);
 
   useEffect(() => {
     wavesurfer.current = WaveSurfer.create({
-      container: `#wavesurfer-ID`,
+      container: `#wavesurfer-${uniqueID}`,
       waveColor: "#7EA0FF",
       progressColor: "#2962FF",
-      height: 70,
+      height: 40,
       cursorWidth: 1,
       cursorColor: "lightgray",
       barWidth: 2,
@@ -27,12 +29,12 @@ const AudioComponent = () => {
 
     // console.log("wav", wav);
     wavesurfer.current.load(testAudio);
+
     const handleResize = wavesurfer.current.util.debounce(() => {
       wavesurfer.current.empty();
       wavesurfer.current.drawBuffer();
     }, 150);
-    // wavesurfer.current.on("play", () => setIsPlaying(true));
-    // wavesurfer.current.on("pause", () => setIsPlaying(false));
+    wavesurfer.current.on("finish", () => setPlay(false));
     window.addEventListener("resize", handleResize, false);
   }, []);
 
@@ -44,6 +46,11 @@ const AudioComponent = () => {
         alignItems: "center",
         justifyContent: "start",
         gap: "8px",
+        backgroundColor: "#dcdddc",
+        padding: "0.5rem",
+        paddingTop: "0.7rem",
+        borderRadius: "1rem",
+        maxWidth: "50%",
       }}
     >
       <Box
@@ -55,7 +62,7 @@ const AudioComponent = () => {
           backgroundColor: "#2962ff",
           borderRadius: "2rem",
           height: "28px",
-          width: "28px",
+          minWidth: "28px",
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
@@ -92,11 +99,23 @@ const AudioComponent = () => {
       <div
         style={{
           display: "flex",
-          width: "50%",
+          width: "100%",
           flexDirection: "column",
         }}
       >
-        <div id="wavesurfer-ID" />
+        <div id={`wavesurfer-${uniqueID}`} />
+
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginTop: "6px",
+          }}
+        >
+          <p style={{ fontSize: "12px", color: "#585858" }}>01:58</p>
+          <p style={{ fontSize: "12px", color: "#585858" }}>10:00 pm</p>
+        </div>
       </div>
     </div>
   );

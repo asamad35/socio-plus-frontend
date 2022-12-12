@@ -52,6 +52,10 @@ const AudioMessagePreview = () => {
     }, 150);
     wavesurfer.current.on("finish", () => setPlay(false));
     window.addEventListener("resize", handleResize, false);
+
+    return () => {
+      dispatch(actions.setAudioPreviewUrl(""));
+    };
   }, [audioPreviewUrl]);
 
   return (
@@ -128,6 +132,7 @@ const AudioMessagePreview = () => {
         onClick={() => {
           dispatch(actions.setShowKeyboard(true));
         }}
+        transition={{ duration: 0.3 }}
         style={{
           backgroundColor: "#2962ff",
           borderRadius: "2rem",
@@ -139,7 +144,6 @@ const AudioMessagePreview = () => {
           color: "white",
           cursor: "pointer",
           position: "relative",
-          transition: "0.2",
         }}
       >
         <CloseIcon style={{ display: "flex", fontSize: "20px" }} />

@@ -18,7 +18,7 @@ const AudioMessage = ({ sendOrReceived }) => {
       }}
     >
       <Avatar alt="Remy Sharp" src={goku} />
-      <AudioComponent />
+      <AudioComponent sendOrReceived={sendOrReceived} />
     </Box>
   );
 };

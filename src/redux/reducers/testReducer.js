@@ -3,6 +3,10 @@ import * as thunks from "../../thunks";
 const initialState = {
   count: 0,
   audioPreviewUrl: "",
+  recordingState: false,
+  showKeyboard: true,
+  showMic: false,
+  status: null,
 };
 
 const testReducer = createSlice({
@@ -20,6 +24,18 @@ const testReducer = createSlice({
     },
     setAudioPreviewUrl(state, action) {
       state.audioPreviewUrl = action.payload;
+    },
+    setRecordingState(state, action) {
+      state.recordingState = action.payload;
+    },
+    setShowKeyboard(state, action) {
+      state.showKeyboard = action.payload;
+    },
+    setShowMic(state, action) {
+      state.showMic = action.payload;
+    },
+    setStatus(state, action) {
+      state.status = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -41,6 +57,14 @@ const testReducer = createSlice({
   },
 });
 
-export const { increment, decrement, incrementByValue, setAudioPreviewUrl } =
-  testReducer.actions;
+export const {
+  increment,
+  decrement,
+  incrementByValue,
+  setAudioPreviewUrl,
+  setRecordingState,
+  setShowKeyboard,
+  setShowMic,
+  setStatus,
+} = testReducer.actions;
 export default testReducer.reducer;

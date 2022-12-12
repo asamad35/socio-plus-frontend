@@ -99,15 +99,37 @@
   border-radius: 1rem;
 }
 
-#wavesurfer-ID > wave{
+[id^=wavesurfer] > wave{
   overflow: hidden !important;
 }
 #wavesurfer-preview > wave{
   display: none !important; 
   overflow: hidden !important;
-  height: 40px !important;
 }
 
 #wavesurfer-preview :last-child {
   display: block !important; 
+}
+
+.timer{
+  position: absolute;
+  bottom: 150%;
+  background: red;
+  font-size: 12px;
+  padding: 0.3rem 0.9rem;
+  border-radius: 10rem;
+  display: flex;
+  scale: 0.9;
+  justify-content: center;
+  align-items: center;
+}
+.timer::before{
+  content: "\A";
+  border-style: solid;
+  border-width: 10px 15px 10px 0;
+  border-color: transparent red transparent transparent;
+  position: absolute;
+  top: 88%;
+  scale: 0.9;
+  rotate: 270deg;
 }

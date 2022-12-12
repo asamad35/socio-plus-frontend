@@ -71,7 +71,7 @@ const SideSearch = () => {
       <Box
         onClick={() => {
           // dispatch(getAllTodos());
-          dispatch(getTodoById({ id: 1 }));
+          // dispatch(getTodoById({ id: 1 }));
           // console.log(actions.increment(), "pppppppp");
         }}
         sx={{ marginBottom: "1.5rem", padding: "0rem 2rem" }}

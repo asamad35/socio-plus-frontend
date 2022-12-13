@@ -14,7 +14,7 @@
   padding-bottom: 2rem;
   height: 100vh;
   width: 100vw;
-  background-color: lightblue;
+  background-color: #a9c0ff;
 }
 
 
@@ -88,14 +88,14 @@
  
 /* Handle */
  .chatBody::-webkit-scrollbar-thumb {
-  background: #3e72ff; 
+  background: #2962ff; 
   border-radius: 1rem;
 
 }
 
 /* Handle on hover */
 .chatBody::-webkit-scrollbar-thumb:hover {
-  background: #3e72ff; 
+  background: #2962ff; 
   border-radius: 1rem;
 }
 
@@ -132,4 +132,118 @@
   top: 88%;
   scale: 0.9;
   rotate: 270deg;
+}
+
+/*  authetication */
+.authentication{
+  width: 100%;
+  height: 100%;
+  display: flex;
+}
+.authentication-left{
+  width: 50%;
+  background-color: #2962ff;
+  height: 100%;
+  display: grid;
+  place-items: center;
+
+  .image{
+    background-image: url('./assets/authentication-bg.jpg');
+    background-size: cover;
+    height: 70%;
+    width: 70%;
+    border-radius: 1rem;
+
+  }
+}
+.authentication-right{
+  width: 50%;
+  background-color: white;
+  flex-direction: column;
+  gap: 10px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+ 
+  .right-inner{
+    display: flex;
+    flex-direction: column;
+    width: 300px;
+  }
+
+  .app-name{
+    font-weight: 600;
+    font-size: 1.2rem;
+    color: #2962ff;
+    margin-bottom: 20px;
+  }
+
+  .heading{
+    font-weight: 500;
+    margin-bottom: 10px;
+  }
+
+  .heading-info{
+    color:#9b9b9b;
+    font-weight: 500;
+    font-size: 12px;
+    margin-bottom: 30px;
+  }
+  
+  .authentication-label{
+    font-weight: 500;
+    font-size: 14px;
+    margin-bottom: 8px;
+    color:#4f4f4f;
+  }
+  
+  .authentication-input{
+    padding: 0.6rem;
+    outline: none;
+    border: 2px solid #cdcdcd;
+    font-size: 13px;
+    border-radius: 0.6rem;
+    margin-bottom: 14px;
+    color: #4f4f4f;
+    font-weight: 400;
+  }
+  .remember-me{
+    display: flex;
+    align-items: center;
+    margin-bottom: 16px;
+  .remember-me-text, .forgot-password-text{
+    margin-left: 6px;
+    color: #4f4f4f;
+    font-size: 12px;
+    margin-right: auto;
+    font-weight: 500;
+  }
+  .forgot-password-text{
+    margin: 0;
+    color:#2962ff;
+    cursor: pointer
+  }
+}
+.signin-button{
+  background-color:#2962ff;
+  border-radius: 0.6rem;
+  margin-bottom: 10px;
+  text-transform: none;
+
+  &:hover{
+    background-color:#2962ff;
+  }
+}
+.google-signin-button{
+  background-color:#fff;
+  border-radius: 0.6rem;
+  color: #4f4f4f;
+  border: 2px solid #cdcdcd;
+  text-transform: none;
+
+  &:hover{
+    background-color:#fff;
+  }
+}
 }

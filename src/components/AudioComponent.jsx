@@ -18,7 +18,7 @@ const AudioComponent = ({ sendOrReceived }) => {
     wavesurfer.current = WaveSurfer.create({
       container: `#wavesurfer-${uniqueID}`,
       waveColor: "#7EA0FF",
-      progressColor: "#2962FF",
+      progressColor: "#2962ff",
       height: 40,
       cursorWidth: 1,
       cursorColor: "lightgray",

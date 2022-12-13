@@ -1,9 +1,8 @@
-import "./App.css";
+import "./App.scss";
 import { Container } from "@mui/material";
 import SideSearch from "./components/SideSearch";
 import ChatWindow from "./components/chatWindow/ChatWindow";
-import AudioMessagePreview from "./components/AudioMessagePreview";
-// import lamejs from "lamejs";
+import Login from "./components/Authentication/Login";
 
 function App() {
   return (
@@ -24,9 +23,12 @@ function App() {
             "0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)",
         }}
       >
-        <SideSearch />
-        <ChatWindow />
-        {/* <AudioMessagePreview /> */}
+        <>
+          <SideSearch />
+          <ChatWindow />
+        </>
+
+        {/* <Login /> */}
       </Container>
     </div>
   );

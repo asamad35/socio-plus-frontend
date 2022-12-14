@@ -3,6 +3,7 @@ import { Container } from "@mui/material";
 import SideSearch from "./components/SideSearch";
 import ChatWindow from "./components/chatWindow/ChatWindow";
 import Login from "./components/Authentication/Login";
+import Signup from "./components/Authentication/Signup";
 
 function App() {
   return (
@@ -23,12 +24,13 @@ function App() {
             "0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)",
         }}
       >
-        <>
+        {/* <>
           <SideSearch />
           <ChatWindow />
-        </>
+        </> */}
 
         {/* <Login /> */}
+        <Signup />
       </Container>
     </div>
   );

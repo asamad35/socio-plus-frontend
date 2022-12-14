@@ -141,7 +141,7 @@
   display: flex;
 }
 .authentication-left{
-  width: 50%;
+  width: 40%;
   background-color: #2962ff;
   height: 100%;
   display: grid;
@@ -157,7 +157,7 @@
   }
 }
 .authentication-right{
-  width: 50%;
+  width: 60%;
   background-color: white;
   flex-direction: column;
   gap: 10px;
@@ -169,7 +169,7 @@
   .right-inner{
     display: flex;
     flex-direction: column;
-    width: 300px;
+    min-width: 300px;
   }
 
   .app-name{
@@ -207,6 +207,7 @@
     margin-bottom: 14px;
     color: #4f4f4f;
     font-weight: 400;
+    background-color: #E8F0FE;
   }
   .remember-me{
     display: flex;
@@ -246,4 +247,39 @@
     background-color:#fff;
   }
 }
+.google-icon{
+  width: 1.275rem;
+  margin-right: 0.25rem;
+}
+
+.user-name{
+  display: flex;
+  gap: 1rem;
+.first-name, .last-name {
+  display: flex;
+  flex-direction: column;
+}
+}
+}
+
+.password-box{
+  // background-color: #E8F0FE;
+  display: flex;
+  border: 2px solid #cdcdcd;
+  align-items: center;
+  border-radius: 0.6rem;
+  margin-bottom: 14px;
+  background-color: #E8F0FE;
+}
+
+.password-input{
+  padding: 0.6rem;
+  outline: none;
+  border: none;
+  font-size: 13px;
+  border-radius: 0.6rem;
+  flex-basis: 100%;
+  background-color: #E8F0FE;
+  color: #4f4f4f !important;
+  font-weight: 400;
 }

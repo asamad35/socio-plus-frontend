@@ -6,6 +6,7 @@ import * as yup from "yup";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { AnimatePresence, motion } from "framer-motion";
+import AuthError from "./AuthError";
 
 const Signup = () => {
   const [isPassVisible, setIsPassVisible] = useState(false);
@@ -54,32 +55,7 @@ const Signup = () => {
                   id="first-name"
                   placeholder="First Name"
                 />
-                <AnimatePresence>
-                  {errors.firstName && (
-                    <motion.div
-                      className="errorPara"
-                      key="errorDiv"
-                      initial={{
-                        opacity: 0,
-                        transform: "translateX(-100%)",
-                        height: 0,
-                      }}
-                      animate={{
-                        opacity: 1,
-                        transform: "translateX(0%)",
-                        height: "auto",
-                      }}
-                      exit={{
-                        opacity: 0,
-                        height: 0,
-                        transform: "translateX(-100%)",
-                      }}
-                      transition={{ duration: 0.5 }}
-                    >
-                      {errors.firstName?.message}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                {<AuthError errors={errors} field="firstName" />}
               </div>
               <div className="last-name">
                 <label htmlFor="last-name" className="authentication-label">
@@ -92,32 +68,7 @@ const Signup = () => {
                   id="last-name"
                   placeholder="Last Name"
                 />
-                <AnimatePresence>
-                  {errors.lastName && (
-                    <motion.div
-                      className="errorPara"
-                      key="errorDiv"
-                      initial={{
-                        opacity: 0,
-                        transform: "translateX(-100%)",
-                        height: 0,
-                      }}
-                      animate={{
-                        opacity: 1,
-                        transform: "translateX(0%)",
-                        height: "auto",
-                      }}
-                      exit={{
-                        opacity: 0,
-                        height: 0,
-                        transform: "translateX(-100%)",
-                      }}
-                      transition={{ duration: 0.5 }}
-                    >
-                      {errors.lastName?.message}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                {<AuthError errors={errors} field="lastName" />}
               </div>
             </div>
             <label htmlFor="email" className="authentication-label">
@@ -130,32 +81,8 @@ const Signup = () => {
               id="email"
               placeholder="Enter your email"
             />
-            <AnimatePresence>
-              {errors.email && (
-                <motion.div
-                  className="errorPara"
-                  key="errorDiv"
-                  initial={{
-                    opacity: 0,
-                    transform: "translateX(-100%)",
-                    height: 0,
-                  }}
-                  animate={{
-                    opacity: 1,
-                    transform: "translateX(0%)",
-                    height: "auto",
-                  }}
-                  exit={{
-                    opacity: 0,
-                    height: 0,
-                    transform: "translateX(-100%)",
-                  }}
-                  transition={{ duration: 0.5 }}
-                >
-                  {errors.email?.message}
-                </motion.div>
-              )}
-            </AnimatePresence>
+            {<AuthError errors={errors} field="email" />}
+
             <label htmlFor="password" className="authentication-label">
               Password
             </label>
@@ -193,32 +120,8 @@ const Signup = () => {
                 />
               )}
             </div>
-            <AnimatePresence>
-              {errors.password && (
-                <motion.div
-                  className="errorPara"
-                  key="errorDiv"
-                  initial={{
-                    opacity: 0,
-                    transform: "translateX(-100%)",
-                    height: 0,
-                  }}
-                  animate={{
-                    opacity: 1,
-                    transform: "translateX(0%)",
-                    height: "auto",
-                  }}
-                  exit={{
-                    opacity: 0,
-                    height: 0,
-                    transform: "translateX(-100%)",
-                  }}
-                  transition={{ duration: 0.5 }}
-                >
-                  {errors.password?.message}
-                </motion.div>
-              )}
-            </AnimatePresence>
+            {<AuthError errors={errors} field="password" />}
+
             <label htmlFor="password" className="authentication-label">
               Confirm Password
             </label>
@@ -255,32 +158,8 @@ const Signup = () => {
                 />
               )}
             </div>
-            <AnimatePresence>
-              {errors.confirmPassword && (
-                <motion.div
-                  className="errorPara"
-                  key="errorDiv"
-                  initial={{
-                    opacity: 0,
-                    transform: "translateX(-100%)",
-                    height: 0,
-                  }}
-                  animate={{
-                    opacity: 1,
-                    transform: "translateX(0%)",
-                    height: "auto",
-                  }}
-                  exit={{
-                    opacity: 0,
-                    height: 0,
-                    transform: "translateX(-100%)",
-                  }}
-                  transition={{ duration: 0.5 }}
-                >
-                  {errors.confirmPassword?.message}
-                </motion.div>
-              )}
-            </AnimatePresence>
+            {<AuthError errors={errors} field="confirmPassword" />}
+
             <div className="remember-me">
               <input {...register("rememberMe")} type="checkbox" />{" "}
               <span className="remember-me-text">Remember me for 30 days</span>

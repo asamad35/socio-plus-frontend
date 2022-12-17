@@ -4,8 +4,31 @@ import SideSearch from "./components/SideSearch";
 import ChatWindow from "./components/chatWindow/ChatWindow";
 import Login from "./components/Authentication/Login";
 import Signup from "./components/Authentication/Signup";
+import {
+  createBrowserRouter,
+  createRoutesFromElements,
+  Route,
+  RouterProvider,
+  Routes,
+} from "react-router-dom";
 
 function App() {
+  const router = createBrowserRouter(
+    createRoutesFromElements(
+      <Route path="/">
+        <Route
+          index="true"
+          element={<Login />}
+          // errorElement={<ErrorBoundary />}
+        />
+        <Route
+          element={<Signup />}
+          path="signup"
+          // errorElement={<ErrorBoundary />}
+        />
+      </Route>
+    )
+  );
   return (
     <div className="outer">
       <Container
@@ -30,7 +53,9 @@ function App() {
         </> */}
 
         {/* <Login /> */}
-        <Signup />
+        {/* <Signup /> */}
+
+        <RouterProvider router={router} />
       </Container>
     </div>
   );

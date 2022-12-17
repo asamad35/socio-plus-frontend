@@ -195,6 +195,7 @@
     font-weight: 500;
     font-size: 14px;
     margin-bottom: 8px;
+    display: block;
     color:#4f4f4f;
   }
   
@@ -231,6 +232,7 @@
   border-radius: 0.6rem;
   margin-bottom: 10px;
   text-transform: none;
+  width: 100%;
 
   &:hover{
     background-color:#2962ff;
@@ -282,4 +284,17 @@
   background-color: #E8F0FE;
   color: #4f4f4f !important;
   font-weight: 400;
+}
+
+.validation-form{
+  .errorPara{
+  margin-bottom: 10px;
+    font-size: 12px;
+    margin-top: -8px;
+    color: red;
+}
+.errorPara::before {
+  display: inline;
+  content: "⚠ ";
+}
 }

@@ -7,8 +7,9 @@ const initialState = {
   showKeyboard: true,
   showMic: false,
   status: null,
+  prevPage: "login",
+  nextPage: "signup",
 };
-
 const testReducer = createSlice({
   name: "testReducer",
   initialState,
@@ -37,6 +38,12 @@ const testReducer = createSlice({
     setStatus(state, action) {
       state.status = action.payload;
     },
+    setPrevPage(state, action) {
+      state.prevPage = action.payload;
+    },
+    setNextPage(state, action) {
+      state.nextPage = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -63,6 +70,8 @@ export const {
   incrementByValue,
   setAudioPreviewUrl,
   setRecordingState,
+  setPrevPage,
+  setNextPage,
   setShowKeyboard,
   setShowMic,
   setStatus,

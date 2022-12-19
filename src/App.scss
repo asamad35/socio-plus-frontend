@@ -139,6 +139,7 @@
   width: 100%;
   height: 100%;
   display: flex;
+  position: absolute;
 }
 .authentication-left{
   width: 40%;
@@ -165,6 +166,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
+
  
   .right-inner{
     display: flex;
@@ -299,4 +302,24 @@
   display: inline;
   content: "⚠ ";
 }
+}
+.go-to-signup{
+  font-size: 13px;
+  position: absolute;
+  bottom: 3%;
+  transform: translateX(50%);
+  right: 50%;
+  width: max-content;
+
+  span{
+    color: #2962ff ;
+    font-weight: 500;
+    margin-left: 0.3rem;
+    cursor: pointer;
+  }
+}
+.slide-routes{
+  position: absolute;
+    width: 100%;
+    height: 100%;
 }

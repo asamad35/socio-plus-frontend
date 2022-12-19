@@ -1,5 +1,5 @@
 import { Button } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 // import GoogleIcon from "@mui/icons-material/Google";
 import GoogleIcon from "../../assets/google-icon.svg";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
@@ -9,8 +9,15 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { AnimatePresence, motion } from "framer-motion";
 import AuthError from "./AuthError";
+import { useNavigate } from "react-router-dom";
+import * as actions from "../../redux/actions";
+import { useDispatch, useSelector } from "react-redux";
 
 const Login = () => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const prevPage = useSelector((state) => state?.testReducer?.prevPage);
+  const nextPage = useSelector((state) => state?.testReducer?.nextPage);
   const [isPassVisible, setisPassVisible] = useState(false);
 
   // yup validation
@@ -19,6 +26,8 @@ const Login = () => {
     password: yup.string().min(5).max(10).required(),
     rememberMe: yup.string(),
   });
+  console.log(prevPage, nextPage, "in login page");
+
   const onSubmit = (data) => console.log(data);
   const {
     register,
@@ -28,12 +37,68 @@ const Login = () => {
     resolver: yupResolver(validationSchema),
   });
 
+  useEffect(() => {
+    console.log("mountinggggggggg");
+
+    return () => {
+      dispatch(actions.setPrevPage("login"));
+    };
+  }, []);
+  function getInitialAnimation(prevPage, nextPage) {
+    // if (prevPage === null) return 0;
+    if (prevPage === nextPage) {
+      return "100%";
+    } else {
+      return "-100%";
+    }
+  }
+  function getInAnimation(prevPage, nextPage) {
+    return 0;
+  }
+  function getOutAnimation(prevPage, nextPage) {
+    if (prevPage === nextPage) {
+      return "100%";
+    } else {
+      return "-100%";
+    }
+  }
+
+  const pageVariants = {
+    initial: {
+      // opacity: 0,
+      x: getInitialAnimation(prevPage, nextPage),
+      // scale: 0.8,
+    },
+    in: {
+      // opacity: 1,
+      x: getInAnimation(prevPage, nextPage),
+      // scale: 1,
+    },
+    out: {
+      // opacity: 0,
+      x: getOutAnimation(prevPage, nextPage),
+      // scale: 1.2,
+    },
+  };
+  const pageTransition = {
+    // type: "tween",
+    // ease: "anticipate",
+    duration: 0.5,
+  };
+
   return (
-    <div className="authentication">
+    <motion.div
+      // initial="initial"
+      // animate="in"
+      // exit="out"
+      // variants={pageVariants}
+      // transition={pageTransition}
+      className="authentication"
+    >
+      {/* // <div className="authentication"> */}
       <div className="authentication-left">
         <div className="image"></div>
       </div>
-      {console.log(errors)}
       <div className="authentication-right">
         <div className="right-inner">
           <h1 className="app-name">SocioPlus</h1>
@@ -117,9 +182,21 @@ const Login = () => {
               Sign in with Google
             </Button>
           </form>
+
+          <p
+            className="go-to-signup"
+            onClick={() => {
+              dispatch(actions.setNextPage("signup"));
+              // dispatch(actions.setPrevPage("login"));
+              navigate("/");
+            }}
+          >
+            Don't have an account yet? <span> Sign Up </span>
+          </p>
         </div>
       </div>
-    </div>
+      {/* </div> */}
+    </motion.div>
   );
 };
 

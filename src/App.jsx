@@ -10,25 +10,13 @@ import {
   Route,
   RouterProvider,
   Routes,
+  useLocation,
 } from "react-router-dom";
+import { AnimatePresence } from "framer-motion";
+import ReactSlideRoutes from "react-slide-routes";
 
 function App() {
-  const router = createBrowserRouter(
-    createRoutesFromElements(
-      <Route path="/">
-        <Route
-          index="true"
-          element={<Login />}
-          // errorElement={<ErrorBoundary />}
-        />
-        <Route
-          element={<Signup />}
-          path="signup"
-          // errorElement={<ErrorBoundary />}
-        />
-      </Route>
-    )
-  );
+  const location = useLocation();
   return (
     <div className="outer">
       <Container
@@ -43,6 +31,7 @@ function App() {
           borderRadius: "1.5rem",
           overflow: "hidden",
           padding: { xs: "0" },
+          position: "relative",
           boxShadow:
             "0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)",
         }}
@@ -52,10 +41,14 @@ function App() {
           <ChatWindow />
         </> */}
 
-        {/* <Login /> */}
-        {/* <Signup /> */}
-
-        <RouterProvider router={router} />
+        {/* <AnimatePresence>
+          <Routes location={location} key={location.pathname}> */}
+        <ReactSlideRoutes duration={500} timing={"ease-in-out"}>
+          <Route path="/" element={<Signup />} />
+          <Route path="/login" element={<Login />} />
+        </ReactSlideRoutes>
+        {/* </Routes>
+        </AnimatePresence> */}
       </Container>
     </div>
   );

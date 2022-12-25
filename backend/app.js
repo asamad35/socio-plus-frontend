@@ -6,7 +6,7 @@ const morgan = require("morgan");
 
 // middlewares
 app.use(express.json());
-// app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true }));
 // app.use(
 //   fileUpload({
 //     useTempFiles: true,
@@ -15,7 +15,18 @@ app.use(express.json());
 // );
 app.use(morgan("tiny"));
 
-// route
-// const signupRoute = require("./routes/signupRoute");
+// import routes here
+const signupRoute = require("./routes/signupRoute");
+// route middleware
+app.use("/api/v1", signupRoute);
+app.use((err, req, res, next) => {
+  //   console.error(err.stack);
+  res
+    .status(500)
+    .json({ message: err.message, name: err.name, stack: err.stack });
+});
+// app.post("/api/v1/signup", (req, res) => {
+//   res.send("success");
+// });
 
 module.exports = app;

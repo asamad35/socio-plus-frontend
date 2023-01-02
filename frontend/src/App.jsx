@@ -4,6 +4,8 @@ import SideSearch from "./components/SideSearch";
 import ChatWindow from "./components/chatWindow/ChatWindow";
 import Login from "./components/Authentication/Login";
 import Signup from "./components/Authentication/Signup";
+import InfoDrawer from "./components/InfoDrawer";
+
 import {
   createBrowserRouter,
   createRoutesFromElements,
@@ -41,14 +43,22 @@ function App() {
           <ChatWindow />
         </> */}
 
-        {/* <AnimatePresence>
-          <Routes location={location} key={location.pathname}> */}
         <ReactSlideRoutes duration={500} timing={"ease-in-out"}>
           <Route path="/" element={<Signup />} />
           <Route path="/login" element={<Login />} />
+          <Route
+            path="/chatUI"
+            element={
+              <>
+                <div style={{ display: "flex", height: "100%" }}>
+                  <InfoDrawer />
+                  <SideSearch />
+                  <ChatWindow />
+                </div>
+              </>
+            }
+          />
         </ReactSlideRoutes>
-        {/* </Routes>
-        </AnimatePresence> */}
       </Container>
     </div>
   );

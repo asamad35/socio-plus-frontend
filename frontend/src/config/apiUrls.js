@@ -1,8 +1,6 @@
-export const BASE_URL = "https://jsonplaceholder.typicode.com/";
+export const BASE_URL = "http://localhost:5000/api/v1/";
 
 export const API_URLS = {
-  getAllTodos: "todos",
-  getTodoById: "todos/",
-  getAllPosts: "posts",
-  getPostById: "posts/",
+  postSignup: "signup",
+  postLogin: "login",
 };

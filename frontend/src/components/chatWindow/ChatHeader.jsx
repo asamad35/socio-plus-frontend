@@ -1,12 +1,14 @@
-import { useState, useCallback } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import VideocamOutlinedIcon from "@mui/icons-material/VideocamOutlined";
 import CallOutlinedIcon from "@mui/icons-material/CallOutlined";
-import { Badge, Box, duration, Tooltip, Typography } from "@mui/material";
-import { useSelector } from "react-redux";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import { Badge, Box, Tooltip, Typography } from "@mui/material";
+import { useDispatch, useSelector } from "react-redux";
+import * as actions from "../../redux/actions";
 
 const ChatHeader = () => {
-  const status = useSelector((state) => state.testReducer.status);
+  const dispatch = useDispatch();
+  const status = useSelector((state) => state.chatReducer.status);
   return (
     <Box
       sx={{
@@ -19,7 +21,7 @@ const ChatHeader = () => {
           "0 4px 8px 0 rgba(0, 0, 0, 0.1), 0 6px 20px 0 rgba(0, 0, 0, 0.1)",
       }}
       onClick={() => {
-        // setInfoDrawer(true);
+        dispatch(actions.setInfoDrawer(true));
       }}
     >
       <Badge
@@ -101,6 +103,25 @@ const ChatHeader = () => {
               }}
             >
               <VideocamOutlinedIcon fontSize="small" />
+            </Box>
+          </Tooltip>
+        </motion.div>
+        <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+          <Tooltip title="Info">
+            <Box
+              sx={{
+                backgroundColor: "#2962ff",
+                borderRadius: "2rem",
+                height: "30px",
+                width: "30px",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                color: "white",
+                cursor: "pointer",
+              }}
+            >
+              <InfoOutlinedIcon fontSize="small" />
             </Box>
           </Tooltip>
         </motion.div>

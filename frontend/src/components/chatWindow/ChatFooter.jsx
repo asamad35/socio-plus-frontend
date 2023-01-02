@@ -18,11 +18,11 @@ import useLongPress from "../../customHooks/useLongPress";
 const ChatFooter = () => {
   const dispatch = useDispatch();
   const recordingState = useSelector(
-    (state) => state.testReducer.recordingState
+    (state) => state.chatReducer.recordingState
   );
-  const status = useSelector((state) => state.testReducer.status);
-  const showMic = useSelector((state) => state.testReducer.showMic);
-  const showKeyboard = useSelector((state) => state.testReducer.showKeyboard);
+  const status = useSelector((state) => state.chatReducer.status);
+  const showMic = useSelector((state) => state.chatReducer.showMic);
+  const showKeyboard = useSelector((state) => state.chatReducer.showKeyboard);
 
   const [emojiPicker, setEmojiPicker] = useState(false);
   const [text, setText] = useState("");

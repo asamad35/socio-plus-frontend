@@ -23,9 +23,9 @@ const AudioRecorder = () => {
 
   const dispatch = useDispatch();
   const recordingState = useSelector(
-    (state) => state.testReducer.recordingState
+    (state) => state.chatReducer.recordingState
   );
-  const showMic = useSelector((state) => state.testReducer.showMic);
+  const showMic = useSelector((state) => state.chatReducer.showMic);
 
   const Mp3Recorder = useMemo(() => new MicRecorder({ bitRate: 128 }), []);
   const [audioDetail, setAudioDetail] = useState({

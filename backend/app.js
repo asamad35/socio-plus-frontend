@@ -23,7 +23,7 @@ const signupRoute = require("./routes/signupRoute");
 app.use("/api/v1", signupRoute);
 app.use((err, req, res, next) => {
   //   console.error(err.stack);
-  res.status(500).json({
+  res.status(200).json({
     message: err.message,
     code: err.code,
     name: err.name,

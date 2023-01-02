@@ -12,7 +12,7 @@ import * as actions from "../redux/actions/index";
 const AudioMessagePreview = () => {
   const dispatch = useDispatch();
   const audioPreviewUrl = useSelector(
-    (state) => state.testReducer.audioPreviewUrl
+    (state) => state.chatReducer.audioPreviewUrl
   );
 
   const wavesurfer = useRef(null);

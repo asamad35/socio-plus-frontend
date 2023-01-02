@@ -231,6 +231,12 @@
     cursor: pointer
   }
 }
+
+.loading-button{
+  background-color:#2962ff;
+  opacity: 0.6;
+}
+
 .signin-button{
   background-color:#2962ff;
   border-radius: 0.6rem;
@@ -238,6 +244,10 @@
   text-transform: none;
   width: 100%;
 
+  .button-loader{
+    color: white;
+  }
+  
   &:hover{
     background-color:#2962ff;
   }
@@ -335,4 +345,41 @@
     // z-index: 10;
     
     // }
+}
+
+.slide-routes > .item {
+position: absolute;
+height: 100%;
+width: 100%;
+}
+
+.info-drawer{
+  position: absolute;
+  height: 100%;
+  right: 0;
+  z-index: 10;
+  background: #fff~;
+  width: 40%;
+  transition: 0.3s ease-in-out;
+  transform: translateX(100%);
+}
+.info-drawer.active{
+  transform: translateX(0%);
+}
+.back-drop{
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  z-index: 5;
+  pointer-events: none;
+  background-color: rgba(0,0,0,0);
+  transition: 0.3s ease-in-out;
+}
+.back-drop.active{
+  background-color: rgba(0,0,0,0.4);
+  pointer-events: all;
+
+
+
+ 
 }

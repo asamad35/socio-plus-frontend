@@ -1,4 +1,4 @@
-import { Button } from "@mui/material";
+import { Button, CircularProgress } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -10,33 +10,32 @@ import AuthError from "./AuthError";
 import { useNavigate } from "react-router-dom";
 import * as actions from "../../redux/actions/index";
 import { useDispatch, useSelector } from "react-redux";
+import { postSignup } from "../../thunks";
 
 const Signup = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const prevPage = useSelector((state) => state?.testReducer?.prevPage);
-  const nextPage = useSelector((state) => state?.testReducer?.nextPage);
   const [isPassVisible, setIsPassVisible] = useState(false);
   const [isConfirmPassVisible, setIsConfirmPassVisible] = useState(false);
+  const authButton = useSelector((state) => state.authReducer.authButton);
 
-  useEffect(() => {
-    return () => {
-      dispatch(actions.setPrevPage("signup"));
-      console.log("unnnnnnnnnnnnnnnnmounting");
-    };
-  }, []);
+  const token = useSelector((state) => state.authReducer.token);
 
-  console.log(prevPage, nextPage, "in signup page");
   // yup validation
   const validationSchema = yup.object().shape({
     firstName: yup.string().required(),
     lastName: yup.string().required(),
     email: yup.string().email().required(),
     password: yup.string().min(5).max(10).required(),
-    confirmPassword: yup.string().required(),
+    confirmPassword: yup
+      .string()
+      .oneOf([yup.ref("password")], "Passwords must match")
+      .required(),
     rememberMe: yup.string(),
   });
-  const onSubmit = (data) => console.log(data);
+  const onSubmit = (data) => {
+    dispatch(postSignup(data));
+  };
   const {
     register,
     handleSubmit,
@@ -45,56 +44,12 @@ const Signup = () => {
     resolver: yupResolver(validationSchema),
   });
 
-  function getInitialAnimation(prevPage, nextPage) {
-    if (prevPage === nextPage) {
-      return "-100%";
-    } else {
-      return "100%";
-    }
-  }
-  function getInAnimation(prevPage, nextPage) {
-    return 0;
-  }
-  function getOutAnimation(prevPage, nextPage) {
-    if (prevPage === nextPage) {
-      return "-100%";
-    } else {
-      return "100%";
-    }
-  }
-
-  const pageVariants = {
-    initial: {
-      // opacity: 0,
-      x: getInitialAnimation(prevPage, nextPage),
-      // scale: 0.8,
-    },
-    in: {
-      // opacity: 1,
-      x: getInAnimation(prevPage, nextPage),
-      // scale: 1,
-    },
-    out: {
-      // opacity: 0,
-      x: getOutAnimation(prevPage, nextPage),
-      // scale: 1.2,
-    },
-  };
-  const pageTransition = {
-    // type: "tween",
-    // ease: "anticipate",
-    duration: 0.5,
-  };
+  useEffect(() => {
+    if (token) navigate("/chatUI");
+  }, [token]);
 
   return (
-    <motion.div
-      // initial="initial"
-      // animate="in"
-      // exit="out"
-      // variants={pageVariants}
-      // transition={pageTransition}
-      className="authentication signup"
-    >
+    <div className="authentication signup">
       {/* <div className="authentication signup"> */}
       <div className="authentication-left">
         <div className="image"></div>
@@ -230,18 +185,26 @@ const Signup = () => {
               <span className="forgot-password-text"> Forgot password</span>
             </div>
             <Button
-              className="signin-button"
+              type="submit"
+              className={`auth-button signin-button ${
+                authButton === "loading" ? "loading-button" : ""
+              } `}
               variant="contained"
               disableElevation
-              type="submit"
             >
-              Sign up
+              {
+                authButton === "loading" ? (
+                  <CircularProgress size={"25px"} className="button-loader" />
+                ) : (
+                  "Sign up"
+                )
+                // "Log in"
+              }
             </Button>
           </form>
           <p
             className="go-to-signup"
             onClick={() => {
-              dispatch(actions.setNextPage("login"));
               navigate("/login");
             }}
           >
@@ -250,7 +213,7 @@ const Signup = () => {
         </div>
       </div>
       {/* </div> */}
-    </motion.div>
+    </div>
   );
 };
 

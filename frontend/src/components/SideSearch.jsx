@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Container,
@@ -17,13 +17,22 @@ import {
 import { styled } from "@mui/material/styles";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import goku from "../assets/goku-avatar.png";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import * as actions from "../redux/actions/index";
-import { getAllTodos, getTodoById } from "../thunks";
+// import { postSignup } from "../thunks";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 const SideSearch = () => {
+  const navigate = useNavigate();
+  const token = useSelector((state) => state.authReducer.token);
+
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (!token) navigate("/login");
+  }, [token]);
+
   const StyledBadge = styled(Badge)(({ theme }) => ({
     "& .MuiBadge-badge": {
       backgroundColor: "#44b700",
@@ -70,9 +79,7 @@ const SideSearch = () => {
       {/* title  */}
       <Box
         onClick={() => {
-          // dispatch(getAllTodos());
-          // dispatch(getTodoById({ id: 1 }));
-          // console.log(actions.increment(), "pppppppp");
+          dispatch(actions.logout());
         }}
         sx={{ marginBottom: "1.5rem", padding: "0rem 2rem" }}
       >
@@ -209,6 +216,251 @@ const SideSearch = () => {
                 fontSize: "0.8rem",
                 fontWeight: "400",
                 marginLeft: "auto",
+              }}
+            >
+              1
+            </Avatar>
+          </Box>
+        </motion.div>
+
+        <motion.div
+          style={{ cursor: "pointer" }}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+        >
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "start",
+              padding: "0.5rem 2rem",
+              transition: "0.2s ease-in",
+              marginBottom: "0.5rem",
+
+              "&:hover": {
+                backgroundColor: "#7ea0ff",
+              },
+            }}
+          >
+            <Avatar alt="Remy Sharp" src={goku} />
+            {/* < alt="Son Goku" src={goku}/> */}
+            <Stack sx={{ marginLeft: "10px" }}>
+              <Typography
+                sx={{ color: "white", fontSize: "0.9rem", fontWeight: "500" }}
+              >
+                Son Goku
+              </Typography>
+              <Typography
+                sx={{ color: "white", fontSize: "0.8rem", fontWeight: "400" }}
+              >
+                I will never giveup
+              </Typography>
+            </Stack>
+            <Avatar
+              sx={{
+                backgroundColor: "white",
+                marginLeft: "auto",
+                color: "#2962ff",
+                width: "1.1rem",
+                height: "1.1rem",
+                fontSize: "0.8rem",
+                fontWeight: "400",
+              }}
+            >
+              1
+            </Avatar>
+          </Box>
+        </motion.div>
+
+        <motion.div
+          style={{ cursor: "pointer" }}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+        >
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "start",
+              padding: "0.5rem 2rem",
+              transition: "0.2s ease-in",
+              marginBottom: "0.5rem",
+
+              "&:hover": {
+                backgroundColor: "#7ea0ff",
+              },
+            }}
+          >
+            <Avatar alt="Remy Sharp" src={goku} />
+            {/* < alt="Son Goku" src={goku}/> */}
+            <Stack sx={{ marginLeft: "10px" }}>
+              <Typography
+                sx={{ color: "white", fontSize: "0.9rem", fontWeight: "500" }}
+              >
+                Son Goku
+              </Typography>
+              <Typography
+                sx={{ color: "white", fontSize: "0.8rem", fontWeight: "400" }}
+              >
+                I will never giveup
+              </Typography>
+            </Stack>
+            <Avatar
+              sx={{
+                backgroundColor: "white",
+                marginLeft: "auto",
+                color: "#2962ff",
+                width: "1.1rem",
+                height: "1.1rem",
+                fontSize: "0.8rem",
+                fontWeight: "400",
+              }}
+            >
+              1
+            </Avatar>
+          </Box>
+        </motion.div>
+
+        <motion.div
+          style={{ cursor: "pointer" }}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+        >
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "start",
+              padding: "0.5rem 2rem",
+              transition: "0.2s ease-in",
+              marginBottom: "0.5rem",
+
+              "&:hover": {
+                backgroundColor: "#7ea0ff",
+              },
+            }}
+          >
+            <Avatar alt="Remy Sharp" src={goku} />
+            {/* < alt="Son Goku" src={goku}/> */}
+            <Stack sx={{ marginLeft: "10px" }}>
+              <Typography
+                sx={{ color: "white", fontSize: "0.9rem", fontWeight: "500" }}
+              >
+                Son Goku
+              </Typography>
+              <Typography
+                sx={{ color: "white", fontSize: "0.8rem", fontWeight: "400" }}
+              >
+                I will never giveup
+              </Typography>
+            </Stack>
+            <Avatar
+              sx={{
+                backgroundColor: "white",
+                marginLeft: "auto",
+                color: "#2962ff",
+                width: "1.1rem",
+                height: "1.1rem",
+                fontSize: "0.8rem",
+                fontWeight: "400",
+              }}
+            >
+              1
+            </Avatar>
+          </Box>
+        </motion.div>
+
+        <motion.div
+          style={{ cursor: "pointer" }}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+        >
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "start",
+              padding: "0.5rem 2rem",
+              transition: "0.2s ease-in",
+              marginBottom: "0.5rem",
+
+              "&:hover": {
+                backgroundColor: "#7ea0ff",
+              },
+            }}
+          >
+            <Avatar alt="Remy Sharp" src={goku} />
+            {/* < alt="Son Goku" src={goku}/> */}
+            <Stack sx={{ marginLeft: "10px" }}>
+              <Typography
+                sx={{ color: "white", fontSize: "0.9rem", fontWeight: "500" }}
+              >
+                Son Goku
+              </Typography>
+              <Typography
+                sx={{ color: "white", fontSize: "0.8rem", fontWeight: "400" }}
+              >
+                I will never giveup
+              </Typography>
+            </Stack>
+            <Avatar
+              sx={{
+                backgroundColor: "white",
+                marginLeft: "auto",
+                color: "#2962ff",
+                width: "1.1rem",
+                height: "1.1rem",
+                fontSize: "0.8rem",
+                fontWeight: "400",
+              }}
+            >
+              1
+            </Avatar>
+          </Box>
+        </motion.div>
+
+        <motion.div
+          style={{ cursor: "pointer" }}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+        >
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "start",
+              padding: "0.5rem 2rem",
+              transition: "0.2s ease-in",
+              marginBottom: "0.5rem",
+
+              "&:hover": {
+                backgroundColor: "#7ea0ff",
+              },
+            }}
+          >
+            <Avatar alt="Remy Sharp" src={goku} />
+            {/* < alt="Son Goku" src={goku}/> */}
+            <Stack sx={{ marginLeft: "10px" }}>
+              <Typography
+                sx={{ color: "white", fontSize: "0.9rem", fontWeight: "500" }}
+              >
+                Son Goku
+              </Typography>
+              <Typography
+                sx={{ color: "white", fontSize: "0.8rem", fontWeight: "400" }}
+              >
+                I will never giveup
+              </Typography>
+            </Stack>
+            <Avatar
+              sx={{
+                backgroundColor: "white",
+                marginLeft: "auto",
+                color: "#2962ff",
+                width: "1.1rem",
+                height: "1.1rem",
+                fontSize: "0.8rem",
+                fontWeight: "400",
               }}
             >
               1

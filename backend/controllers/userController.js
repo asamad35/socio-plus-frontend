@@ -25,6 +25,12 @@ exports.login = bigPromise(async (req, res, next) => {
 
   const user = await UserSchema.findOne({ email }).select("+password");
 
+  // check if user exist
+  if (!user)
+    res
+      .status(200)
+      .json({ message: "email is not registered", error: "error" });
+
   const isPasswordValid = await user.isPasswordValid(password);
 
   if (!isPasswordValid) throw Error("Password does not match.");

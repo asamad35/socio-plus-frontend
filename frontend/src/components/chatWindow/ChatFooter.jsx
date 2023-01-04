@@ -30,16 +30,7 @@ const ChatFooter = () => {
 
   const emojiContainer = useRef(null);
 
-  // useEffect(() => {
-  //   if (text.length > 0) {
-  //     dispatch(actions.setShowMic(false));
-  //   } else {
-  //     dispatch(actions.setShowMic(true));
-  //   }
-  // }, [text]);
-
   const callbackFn = useCallback((args) => {
-    // setTyping(false);
     dispatch(actions.setStatus(null));
   }, []);
   const debounceClosure = useCallback(debounce(callbackFn, 1000), []);
@@ -129,11 +120,13 @@ const ChatFooter = () => {
                 opacity: 1,
                 scale: 1,
                 clipPath: "inset(0% 0% 0% 0% round 10px)",
+                pointerEvents: "all",
                 transition: {
                   delay: 0.2,
                 },
               },
               closed: {
+                pointerEvents: "none",
                 opacity: 0.7,
                 scale: 1,
                 clipPath: "inset(100% 0% 0% 100% round 10px)",
@@ -147,10 +140,10 @@ const ChatFooter = () => {
               onClickOutside={(e) => {
                 if (emojiPicker) {
                   setEmojiPicker(false);
-                  setTimeout(() => {
-                    if (!emojiButtonHover)
-                      emojiContainer.current.style.zIndex = -10;
-                  }, 100);
+                  // setTimeout(() => {
+                  //   if (!emojiButtonHover)
+                  //     emojiContainer.current.style.zIndex = -10;
+                  // }, 100);
                 }
               }}
               onEmojiSelect={(e) => {

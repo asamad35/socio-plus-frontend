@@ -1,14 +1,16 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import * as actions from "../redux/actions";
 import ModeEditOutlineOutlinedIcon from "@mui/icons-material/ModeEditOutlineOutlined";
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import { motion } from "framer-motion";
+import ClickAnimation from "./ClickAnimation";
 
 const InfoDrawer = () => {
   const dispatch = useDispatch();
   const infoDrawer = useSelector((state) => state.chatReducer.infoDrawer);
+
   return (
     <>
       <div
@@ -22,13 +24,9 @@ const InfoDrawer = () => {
             }
             alt="profile-img"
           />
-          <motion.div
-            className="edit-pic"
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-          >
+          <ClickAnimation className="edit-pic">
             <ModeEditOutlineOutlinedIcon className="edit-icon" />
-          </motion.div>
+          </ClickAnimation>
         </div>
         <div className="profile-detail">
           <div className="name-box">
@@ -39,13 +37,9 @@ const InfoDrawer = () => {
               <h4>Name</h4>
               <p>Abdus Samad</p>
             </div>
-            <motion.div
-              className="edit-pic"
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-            >
+            <ClickAnimation className="edit-pic">
               <ModeEditOutlineOutlinedIcon className="edit-profile-detail" />
-            </motion.div>
+            </ClickAnimation>
           </div>
           <div className="status-box">
             <div className="icon">
@@ -55,20 +49,15 @@ const InfoDrawer = () => {
               <h4>Status</h4>
               <p>No limits, till i collapse knn ojoj okoko okk</p>
             </div>
-            <motion.div
-              className="edit-pic"
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-            >
+            <ClickAnimation className="edit-pic">
               <ModeEditOutlineOutlinedIcon className="edit-profile-detail" />
-            </motion.div>
+            </ClickAnimation>
           </div>
         </div>
       </div>
 
       <div
         onClick={(e) => {
-          console.log(e.target);
           dispatch(actions.setInfoDrawer(false));
         }}
         className={`back-drop ${infoDrawer === true ? "active" : ""} `}

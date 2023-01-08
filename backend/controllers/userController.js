@@ -37,3 +37,15 @@ exports.login = bigPromise(async (req, res, next) => {
 
   res.status(200).json({ data: user, token: user.getJwtToken() });
 });
+
+exports.changeStatus = bigPromise(async (req, res, next) => {
+  const { email, status } = req.body;
+
+  const user = await UserSchema.findOne({ email });
+
+  user.status = status;
+
+  await user.save()
+
+  res.status(200).json({ data: user });
+});

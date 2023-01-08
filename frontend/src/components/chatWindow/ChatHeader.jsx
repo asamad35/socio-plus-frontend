@@ -121,6 +121,7 @@ const ChatHeader = () => {
 
         <ClickAnimation
           onClick={() => {
+            dispatch(actions.setIsUserProfile(false));
             dispatch(actions.setInfoDrawer(true));
           }}
         >
@@ -171,6 +172,7 @@ const ChatHeader = () => {
           <div className={`menu ${menuOpen ? "active" : ""}`}>
             <p
               onClick={() => {
+                dispatch(actions.setIsUserProfile(true));
                 dispatch(actions.setInfoDrawer(true));
                 setMenuOpen(false);
               }}

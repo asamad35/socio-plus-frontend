@@ -1,7 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import * as thunks from "../../thunks";
 const initialState = {
-  count: 0,
   audioPreviewUrl: "",
   recordingState: false,
   showKeyboard: true,
@@ -10,6 +9,7 @@ const initialState = {
   prevPage: "login",
   nextPage: "signup",
   infoDrawer: false,
+  isUserProfile: false,
 };
 const chatReducer = createSlice({
   name: "chatReducer",
@@ -33,24 +33,15 @@ const chatReducer = createSlice({
     setInfoDrawer(state, action) {
       state.infoDrawer = action.payload;
     },
+    setIsUserProfile(state, action) {
+      state.isUserProfile = action.payload;
+    },
   },
-  // extraReducers: (builder) => {
-  //   builder
-  //     .addCase(thunks.getAllTodos.pending, (state, action) => {
-  //       state.status = "loading";
-  //     })
-  //     .addCase(thunks.getAllTodos.fulfilled, (state, action) => {
-  //       state.status = "idle";
-  //       state.todos = action.payload;
-  //     })
-  //     .addCase(thunks.getTodoById.pending, (state, action) => {
-  //       state.status = "loading";
-  //     })
-  //     .addCase(thunks.getTodoById.fulfilled, (state, action) => {
-  //       state.status = "idle";
-  //       state.todos = action.payload;
-  //     });
-  // },
+  extraReducers: (builder) => {
+    // builder.addCase(thunks.postChangeStatus.fulfilled, (state, action) => {
+    //   state.todos = action.payload;
+    // });
+  },
 });
 
 export const {
@@ -60,5 +51,7 @@ export const {
   setShowMic,
   setStatus,
   setInfoDrawer,
+  setIsUserProfile,
+  postChangeStatus,
 } = chatReducer.actions;
 export default chatReducer.reducer;

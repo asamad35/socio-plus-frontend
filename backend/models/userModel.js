@@ -32,6 +32,10 @@ const userSchema = new mongoose.Schema({
     minlength: [6, "Password should be atleast 6 characters long"],
     select: false,
   },
+  status: {
+    type: String,
+    default: "Hi! I am using SocioPlus",
+  },
 });
 
 // hash pass before save

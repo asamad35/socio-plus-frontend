@@ -14,6 +14,7 @@ import AudioMessagePreview from "../AudioMessagePreview";
 import { useDispatch, useSelector } from "react-redux";
 import * as actions from "../../redux/actions/index";
 import useLongPress from "../../customHooks/useLongPress";
+import ClickAnimation from "../ClickAnimation";
 
 const ChatFooter = () => {
   const dispatch = useDispatch();
@@ -160,7 +161,7 @@ const ChatFooter = () => {
             />
           </motion.div>
         </div>
-        <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+        <ClickAnimation>
           <Tooltip title="Add emoji">
             <Box
               onMouseEnter={() => {
@@ -190,9 +191,9 @@ const ChatFooter = () => {
               <EmojiEmotionsOutlinedIcon fontSize="small" />
             </Box>
           </Tooltip>
-        </motion.div>
+        </ClickAnimation>
 
-        <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+        <ClickAnimation>
           <Tooltip title="Add attachment">
             <Box
               sx={{
@@ -210,9 +211,9 @@ const ChatFooter = () => {
               <AttachFileOutlinedIcon fontSize="small" />
             </Box>
           </Tooltip>
-        </motion.div>
+        </ClickAnimation>
 
-        <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+        <ClickAnimation>
           <Tooltip
             title={`${
               showMic
@@ -253,7 +254,7 @@ const ChatFooter = () => {
               <AudioRecorder />
             </Box>
           </Tooltip>
-        </motion.div>
+        </ClickAnimation>
       </Box>
     </Box>
   );

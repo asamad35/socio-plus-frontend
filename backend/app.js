@@ -19,8 +19,10 @@ app.use(morgan("tiny"));
 
 // import routes here
 const signupRoute = require("./routes/signupRoute");
+const editProfileRoute = require("./routes/editProfileRoute");
 // route middleware
 app.use("/api/v1", signupRoute);
+app.use("/api/v1", editProfileRoute);
 app.use((err, req, res, next) => {
   //   console.error(err.stack);
   res.status(200).json({

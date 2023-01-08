@@ -11,3 +11,13 @@ export const postLogin = createAsyncThunk("postLogin", async (payload) => {
   const data = await services.postLogin(payload);
   return data;
 });
+
+export const postChangeStatus = createAsyncThunk(
+  "postChangeStatus",
+  async (payload, { getState }) => {
+    console.log(getState(), "abcdef", payload);
+    const { data } = await services.postChangeStatus(payload);
+    console.log(payload, "oooooooooooooooooooo", data);
+    return data;
+  }
+);

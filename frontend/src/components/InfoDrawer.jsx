@@ -1,15 +1,23 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import * as actions from "../redux/actions";
 import ModeEditOutlineOutlinedIcon from "@mui/icons-material/ModeEditOutlineOutlined";
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
-import { motion } from "framer-motion";
+import CheckOutlinedIcon from "@mui/icons-material/CheckOutlined";
+import ClearOutlinedIcon from "@mui/icons-material/ClearOutlined";
 import ClickAnimation from "./ClickAnimation";
+import ScaleDivsAnimation from "./ScaleDivsAnimation";
+import { postChangeStatus } from "../thunks";
 
 const InfoDrawer = () => {
   const dispatch = useDispatch();
+  const [nameInput, setNameInput] = useState({ value: "", open: false });
+  const [statusInput, setStatusInput] = useState({ value: "", open: false });
   const infoDrawer = useSelector((state) => state.chatReducer.infoDrawer);
+  const isUserProfile = useSelector((state) => state.chatReducer.isUserProfile);
+  const loggedUser = useSelector((state) => state.authReducer.user);
+  const selectedUser = useSelector((state) => state.chatReducer.selectedUser);
 
   return (
     <>
@@ -24,34 +32,122 @@ const InfoDrawer = () => {
             }
             alt="profile-img"
           />
-          <ClickAnimation className="edit-pic">
-            <ModeEditOutlineOutlinedIcon className="edit-icon" />
-          </ClickAnimation>
+          {isUserProfile && (
+            <ClickAnimation className="edit-pic">
+              <ModeEditOutlineOutlinedIcon className="edit-icon" />
+            </ClickAnimation>
+          )}
         </div>
         <div className="profile-detail">
+          {/* name */}
           <div className="name-box">
             <div className="icon">
               <AccountCircleOutlinedIcon />
             </div>
             <div className="name">
               <h4>Name</h4>
-              <p>Abdus Samad</p>
+              <div className="name-or-input-parent">
+                <ScaleDivsAnimation openState={nameInput.open}>
+                  <p>Abdus Samad</p>
+                  <input className="profile-detail-input" />
+                </ScaleDivsAnimation>
+              </div>
             </div>
-            <ClickAnimation className="edit-pic">
-              <ModeEditOutlineOutlinedIcon className="edit-profile-detail" />
-            </ClickAnimation>
+            {isUserProfile && (
+              <div className="accept-reject-icon">
+                {nameInput.open && (
+                  <ClickAnimation
+                    onClick={() =>
+                      setNameInput({
+                        ...nameInput,
+                        open: !nameInput.open,
+                      })
+                    }
+                    className="edit-name-container"
+                  >
+                    <ClearOutlinedIcon className="icon" />
+                  </ClickAnimation>
+                )}
+                <ClickAnimation
+                  onClick={() =>
+                    setNameInput({ ...nameInput, open: !nameInput.open })
+                  }
+                  className="edit-name-container"
+                >
+                  <ScaleDivsAnimation openState={nameInput.open}>
+                    <ModeEditOutlineOutlinedIcon className="icon" />
+                    <CheckOutlinedIcon className="icon" />{" "}
+                  </ScaleDivsAnimation>
+                </ClickAnimation>
+              </div>
+            )}
           </div>
+
+          {/* Status */}
           <div className="status-box">
             <div className="icon">
               <InfoOutlinedIcon />
             </div>
             <div className="name">
               <h4>Status</h4>
-              <p>No limits, till i collapse knn ojoj okoko okk</p>
+              <ScaleDivsAnimation openState={statusInput.open}>
+                {isUserProfile
+                  ? loggedUser.status
+                  : selectedUser?.status || "selected user status"}
+                <textarea
+                  onChange={(e) => {
+                    setStatusInput({
+                      ...statusInput,
+                      value: e.target.value,
+                    });
+                  }}
+                  cols={"30"}
+                  className="profile-detail-input"
+                />
+              </ScaleDivsAnimation>
             </div>
-            <ClickAnimation className="edit-pic">
-              <ModeEditOutlineOutlinedIcon className="edit-profile-detail" />
-            </ClickAnimation>
+            {isUserProfile && (
+              <>
+                <div className="accept-reject-icon">
+                  {statusInput.open && (
+                    <ClickAnimation
+                      onClick={() =>
+                        setStatusInput({
+                          ...statusInput,
+                          open: !statusInput.open,
+                        })
+                      }
+                      className="edit-name-container"
+                    >
+                      <ClearOutlinedIcon className="icon" />
+                    </ClickAnimation>
+                  )}
+                  <ClickAnimation
+                    onClick={() => {
+                      if (statusInput.open) {
+                        console.log("llllllla", statusInput, loggedUser);
+                        dispatch(
+                          postChangeStatus({
+                            email: loggedUser.email,
+                            status: statusInput.value,
+                          })
+                        );
+                      }
+                      setStatusInput({
+                        ...statusInput,
+                        open: !statusInput.open,
+                      });
+                    }}
+                    className="edit-name-container"
+                  >
+                    <ScaleDivsAnimation openState={statusInput.open}>
+                      <ModeEditOutlineOutlinedIcon className="icon" />
+                      <CheckOutlinedIcon className="icon" />{" "}
+                    </ScaleDivsAnimation>
+                  </ClickAnimation>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>

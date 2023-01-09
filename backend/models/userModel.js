@@ -44,6 +44,17 @@ userSchema.pre("save", async function (next) {
   this.password = await bcrypt.hash(this.password, 10);
 });
 
+// capialize first and last name before saving to db
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("firstName") && !this.isModified("lastName")) {
+    return next();
+  }
+  this.firstName =
+    this.firstName.slice(0, 1).toUpperCase() + this.firstName.slice(1);
+  this.lastName =
+    this.lastName.slice(0, 1).toUpperCase() + this.lastName.slice(1);
+});
+
 // comapre user pass with hashed password
 userSchema.methods.isPasswordValid = async function (userEnteredPassword) {
   return await bcrypt.compare(userEnteredPassword, this.password);

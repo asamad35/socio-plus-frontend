@@ -1,38 +1,14 @@
-import React, { useEffect, useState } from "react";
-import {
-  Box,
-  Container,
-  FormControl,
-  InputAdornment,
-  TextField,
-  Typography,
-  InputBase,
-  Card,
-  CardMedia,
-  CardContent,
-  Avatar,
-  Badge,
-  Stack,
-} from "@mui/material";
-import { styled } from "@mui/material/styles";
-import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
-import goku from "../assets/goku-avatar.png";
-import { useDispatch, useSelector } from "react-redux";
-import * as actions from "../redux/actions/index";
-// import { postSignup } from "../thunks";
+import { Avatar, Typography, Box, Stack, Badge } from "@mui/material";
+
+import React from "react";
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { styled } from "@mui/material/styles";
+import goku from "../../assets/goku-avatar.png";
 
-const SideSearch = () => {
-  const navigate = useNavigate();
-  const token = useSelector((state) => state.authReducer.token);
-
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    if (!token) navigate("/login");
-  }, [token]);
-
+const ChatList = () => {
+  function textOverflow(text) {
+    return text.slice(0, 43) + "...";
+  }
   const StyledBadge = styled(Badge)(({ theme }) => ({
     "& .MuiBadge-badge": {
       backgroundColor: "#44b700",
@@ -62,56 +38,9 @@ const SideSearch = () => {
     },
   }));
 
-  function textOverflow(text) {
-    return text.slice(0, 43) + "...";
-  }
-
   return (
-    <Box
-      sx={{
-        backgroundColor: "#2962ff",
-        // backgroundColor: "#fff",
-        height: "100%",
-        width: "40%",
-        padding: "2rem 0rem",
-      }}
-    >
-      {/* title  */}
-      <Box
-        onClick={() => {
-          dispatch(actions.logout());
-        }}
-        sx={{ marginBottom: "1.5rem", padding: "0rem 2rem" }}
-      >
-        <Typography
-          variant="h1"
-          sx={{ fontSize: "22px", color: "white", fontWeight: "500" }}
-        >
-          Socio Plus
-        </Typography>
-      </Box>
-
-      {/* search bar */}
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          gap: "10px",
-          borderRadius: "0.5rem",
-          backgroundColor: "#7ea0ff",
-          padding: "0.2rem",
-          paddingLeft: "10px",
-          margin: "0rem 2rem 2rem 2rem",
-        }}
-      >
-        <SearchOutlinedIcon sx={{ color: "white" }} />
-        <InputBase
-          sx={{ color: "white", fontSize: "0.9rem" }}
-          placeholder="Search…"
-        ></InputBase>
-      </Box>
-
-      {/* chats list */}
+    <>
+      <h2 className="my-chats-heading">My Chats</h2>
       <Box sx={{ overflowY: "scroll", overflowX: "hidden", maxHeight: "85%" }}>
         <motion.div
           style={{ cursor: "pointer" }}
@@ -517,8 +446,8 @@ const SideSearch = () => {
           </Box>
         </motion.div>
       </Box>
-    </Box>
+    </>
   );
 };
 
-export default SideSearch;
+export default ChatList;

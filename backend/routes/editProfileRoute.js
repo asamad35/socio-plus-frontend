@@ -1,8 +1,9 @@
 const express = require("express");
 const router = express.Router();
 
-const { changeStatus } = require("../controllers/userController");
+const { updateStatus, updateName } = require("../controllers/userController");
 
-router.route("/change-status").post(changeStatus);
+router.route("/update-status").post(updateStatus);
+router.route("/update-name").post(updateName);
 
 module.exports = router;

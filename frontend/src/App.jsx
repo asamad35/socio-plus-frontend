@@ -1,24 +1,16 @@
 import "./App.scss";
 import { Container } from "@mui/material";
-import SideSearch from "./components/SideSearch";
+import SideSearch from "./components/sideSearch/SideSearch";
 import ChatWindow from "./components/chatWindow/ChatWindow";
 import Login from "./components/Authentication/Login";
 import Signup from "./components/Authentication/Signup";
 import InfoDrawer from "./components/InfoDrawer";
 
-import {
-  createBrowserRouter,
-  createRoutesFromElements,
-  Route,
-  RouterProvider,
-  Routes,
-  useLocation,
-} from "react-router-dom";
-import { AnimatePresence } from "framer-motion";
+import { Route } from "react-router-dom";
 import ReactSlideRoutes from "react-slide-routes";
+import ToastMessage from "./components/ToastMessage";
 
 function App() {
-  const location = useLocation();
   return (
     <div className="outer">
       <Container
@@ -38,10 +30,7 @@ function App() {
             "0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)",
         }}
       >
-        {/* <>
-          <SideSearch />
-          <ChatWindow />
-        </> */}
+        <ToastMessage />
 
         <ReactSlideRoutes duration={500} timing={"ease-in-out"}>
           <Route path="/" element={<Signup />} />

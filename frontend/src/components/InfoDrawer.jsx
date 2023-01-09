@@ -122,7 +122,7 @@ const InfoDrawer = () => {
                       value: e.target.value,
                     });
                   }}
-                  cols={"30"}
+                  cols={"26"}
                   className="profile-detail-input"
                 />
               </ScaleDivsAnimation>

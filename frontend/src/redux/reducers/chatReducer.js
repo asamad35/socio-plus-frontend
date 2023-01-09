@@ -52,6 +52,5 @@ export const {
   setStatus,
   setInfoDrawer,
   setIsUserProfile,
-  postChangeStatus,
 } = chatReducer.actions;
 export default chatReducer.reducer;

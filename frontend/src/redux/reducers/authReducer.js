@@ -41,7 +41,10 @@ const authReducer = createSlice({
       .addCase(thunks.postLogin.rejected, (state, action) => {
         state.authButton = "idle";
       })
-      .addCase(thunks.postChangeStatus.fulfilled, (state, action) => {
+      .addCase(thunks.postUpdateStatus.fulfilled, (state, action) => {
+        state.user = action.payload;
+      })
+      .addCase(thunks.postUpdateName.fulfilled, (state, action) => {
         state.user = action.payload;
       });
   },

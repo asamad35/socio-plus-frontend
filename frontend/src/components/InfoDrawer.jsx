@@ -8,7 +8,7 @@ import CheckOutlinedIcon from "@mui/icons-material/CheckOutlined";
 import ClearOutlinedIcon from "@mui/icons-material/ClearOutlined";
 import ClickAnimation from "./ClickAnimation";
 import ScaleDivsAnimation from "./ScaleDivsAnimation";
-import { postChangeStatus } from "../thunks";
+import { postUpdateName, postUpdateStatus } from "../thunks";
 
 const InfoDrawer = () => {
   const dispatch = useDispatch();
@@ -18,6 +18,15 @@ const InfoDrawer = () => {
   const isUserProfile = useSelector((state) => state.chatReducer.isUserProfile);
   const loggedUser = useSelector((state) => state.authReducer.user);
   const selectedUser = useSelector((state) => state.chatReducer.selectedUser);
+
+  console.log({ loggedUser });
+  useEffect(() => {
+    setStatusInput({ ...statusInput, value: loggedUser.status });
+    setNameInput({
+      ...nameInput,
+      value: loggedUser.firstName + " " + loggedUser.lastName,
+    });
+  }, [loggedUser]);
 
   return (
     <>
@@ -41,17 +50,22 @@ const InfoDrawer = () => {
         <div className="profile-detail">
           {/* name */}
           <div className="name-box">
-            <div className="icon">
-              <AccountCircleOutlinedIcon />
-            </div>
+            <AccountCircleOutlinedIcon className="icon" />
             <div className="name">
               <h4>Name</h4>
-              <div className="name-or-input-parent">
-                <ScaleDivsAnimation openState={nameInput.open}>
-                  <p>Abdus Samad</p>
-                  <input className="profile-detail-input" />
-                </ScaleDivsAnimation>
-              </div>
+              <ScaleDivsAnimation openState={nameInput.open}>
+                <p>{loggedUser.firstName + " " + loggedUser.lastName}</p>
+                <input
+                  onChange={(e) => {
+                    setNameInput({
+                      ...nameInput,
+                      value: e.target.value,
+                    });
+                  }}
+                  value={nameInput.value}
+                  className="profile-detail-input"
+                />
+              </ScaleDivsAnimation>
             </div>
             {isUserProfile && (
               <div className="accept-reject-icon">
@@ -69,9 +83,17 @@ const InfoDrawer = () => {
                   </ClickAnimation>
                 )}
                 <ClickAnimation
-                  onClick={() =>
-                    setNameInput({ ...nameInput, open: !nameInput.open })
-                  }
+                  onClick={() => {
+                    if (nameInput.open) {
+                      dispatch(
+                        postUpdateName({
+                          email: loggedUser.email,
+                          name: nameInput.value,
+                        })
+                      );
+                    }
+                    setNameInput({ ...nameInput, open: !nameInput.open });
+                  }}
                   className="edit-name-container"
                 >
                   <ScaleDivsAnimation openState={nameInput.open}>
@@ -85,9 +107,7 @@ const InfoDrawer = () => {
 
           {/* Status */}
           <div className="status-box">
-            <div className="icon">
-              <InfoOutlinedIcon />
-            </div>
+            <InfoOutlinedIcon className="icon" />
             <div className="name">
               <h4>Status</h4>
               <ScaleDivsAnimation openState={statusInput.open}>
@@ -95,6 +115,7 @@ const InfoDrawer = () => {
                   ? loggedUser.status
                   : selectedUser?.status || "selected user status"}
                 <textarea
+                  value={statusInput.value}
                   onChange={(e) => {
                     setStatusInput({
                       ...statusInput,
@@ -125,9 +146,8 @@ const InfoDrawer = () => {
                   <ClickAnimation
                     onClick={() => {
                       if (statusInput.open) {
-                        console.log("llllllla", statusInput, loggedUser);
                         dispatch(
-                          postChangeStatus({
+                          postUpdateStatus({
                             email: loggedUser.email,
                             status: statusInput.value,
                           })

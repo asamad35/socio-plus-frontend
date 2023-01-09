@@ -9,6 +9,7 @@ import * as actions from "../../redux/actions";
 import { useState } from "react";
 import { useEffect } from "react";
 import ClickAnimation from "../ClickAnimation";
+import { toast } from "react-toastify";
 
 const ChatHeader = () => {
   const dispatch = useDispatch();
@@ -42,6 +43,7 @@ const ChatHeader = () => {
         variant={"dot"}
         color="success"
       ></Badge>
+
       <Typography
         variant="h1"
         sx={{

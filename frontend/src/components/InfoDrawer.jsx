@@ -9,6 +9,7 @@ import ClearOutlinedIcon from "@mui/icons-material/ClearOutlined";
 import ClickAnimation from "./ClickAnimation";
 import ScaleDivsAnimation from "./ScaleDivsAnimation";
 import { postUpdateName, postUpdateStatus } from "../thunks";
+import store from "../redux/store";
 
 const InfoDrawer = () => {
   const dispatch = useDispatch();

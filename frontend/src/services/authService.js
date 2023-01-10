@@ -1,4 +1,3 @@
-import { toast } from "react-toastify";
 import { API_URLS } from "../config/apiUrls";
 import { customAxios } from "../config/customAxios";
 

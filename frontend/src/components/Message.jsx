@@ -4,7 +4,9 @@ import goku from "../assets/goku-avatar.png";
 import AudioComponent from "./AudioComponent";
 import TextMessage from "./messages/TextMessage";
 import AudioMessage from "./messages/AudioMessage";
+import store from "../redux/store";
 
+console.log(store.getState(), "hhhhhhhhhhhhh");
 const Message = () => {
   function createMessage() {
     return (

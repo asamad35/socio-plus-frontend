@@ -25,8 +25,11 @@ export const postLogin = createAsyncThunk("postLogin", async (payload) => {
 
 export const postUpdateStatus = createAsyncThunk(
   "postUpdateStatus",
-  async (payload) => {
-    const data = await services.postUpdateStatus(payload);
+  async (payload, { getState }) => {
+    const data = await services.postUpdateStatus({
+      ...payload,
+      token: getState().authReducer.token,
+    });
     if (data.data) {
       toast.success(data.message);
       return data.data;
@@ -39,8 +42,26 @@ export const postUpdateStatus = createAsyncThunk(
 
 export const postUpdateName = createAsyncThunk(
   "postUpdateName",
-  async (payload) => {
-    const data = await services.postUpdateName(payload);
+  async (payload, { getState }) => {
+    const data = await services.postUpdateName({
+      ...payload,
+      token: getState().authReducer.token,
+    });
+    if (data.data) {
+      toast.success(data.message);
+      return data.data;
+    } else {
+      toast.error(data.message);
+      throw new Error();
+    }
+  }
+);
+
+export const postUpdatePhoto = createAsyncThunk(
+  "postUpdatePhoto",
+  async (payload, { getState }) => {
+    payload.append("token", getState().authReducer.token);
+    const data = await services.postUpdatePhoto(payload);
     if (data.data) {
       toast.success(data.message);
       return data.data;

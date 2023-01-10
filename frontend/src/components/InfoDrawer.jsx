@@ -8,8 +8,8 @@ import CheckOutlinedIcon from "@mui/icons-material/CheckOutlined";
 import ClearOutlinedIcon from "@mui/icons-material/ClearOutlined";
 import ClickAnimation from "./ClickAnimation";
 import ScaleDivsAnimation from "./ScaleDivsAnimation";
-import { postUpdateName, postUpdateStatus } from "../thunks";
-import store from "../redux/store";
+import { postUpdateName, postUpdatePhoto, postUpdateStatus } from "../thunks";
+import { getFormData } from "../helper";
 
 const InfoDrawer = () => {
   const dispatch = useDispatch();
@@ -44,6 +44,27 @@ const InfoDrawer = () => {
           />
           {isUserProfile && (
             <ClickAnimation className="edit-pic">
+              <input
+                type="file"
+                name="profile-pic"
+                id="profile-pic-input"
+                className="profile-pic-input"
+                onChange={(e) => {
+                  console.log(
+                    getFormData({ fileName: e.target.files[0] }),
+                    "ddddddddddddddddddddddddddddd"
+                  );
+
+                  dispatch(
+                    postUpdatePhoto(
+                      getFormData({ fileName: e.target.files[0] })
+                    )
+                  );
+                }}
+              />
+              <label htmlFor="profile-pic-input" className="profile-pic-label">
+                dwd
+              </label>
               <ModeEditOutlineOutlinedIcon className="edit-icon" />
             </ClickAnimation>
           )}

@@ -1,12 +1,21 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 
 import { AnimatePresence, motion } from "framer-motion";
 import ChatHeader from "./ChatHeader";
 import ChatBody from "./ChatBody";
 import ChatFooter from "./ChatFooter";
 import { Box } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const ChatWindow = () => {
+  const navigate = useNavigate();
+  const token = useSelector((state) => state.authReducer.token);
+
+  useEffect(() => {
+    if (!token) navigate("/login");
+  }, [token]);
+
   return (
     <Box
       sx={{

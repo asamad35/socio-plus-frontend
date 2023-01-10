@@ -1,22 +1,15 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Box, Typography, InputBase } from "@mui/material";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import { useDispatch, useSelector } from "react-redux";
 import * as actions from "../../redux/actions/index";
 import { AnimatePresence, motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
 import ChatList from "./ChatList";
 import SearchList from "./SearchList";
 
 const SideSearch = () => {
-  const navigate = useNavigate();
-  const token = useSelector((state) => state.authReducer.token);
   const [searchList, setSearchList] = useState(false);
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    if (!token) navigate("/login");
-  }, [token]);
 
   return (
     <Box

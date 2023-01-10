@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import * as thunks from "../../thunks";
 
 const initialState = {
-  token: "null",
+  token: "dwdw",
   // user: null,
   user: {
     _id: "63badbc39cb3880c19453d2e",

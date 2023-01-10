@@ -17,3 +17,12 @@ export function secondsToMinutes(totalSeconds) {
     .padStart(2, "0")} `;
   return result;
 }
+
+export function getFormData(obj = {}) {
+  const result = new FormData();
+
+  for (const property in obj) {
+    result.append(property, obj[property]);
+  }
+  return result;
+}

@@ -35,3 +35,12 @@ export const postUpdateName = async (payload) => {
     console.log("Some error occured:", error);
   }
 };
+
+export const postUpdatePhoto = async (payload) => {
+  try {
+    const res = await customAxios.post(API_URLS.postUpdatePhoto, payload);
+    return res.data;
+  } catch (error) {
+    console.log("Some error occured:", error);
+  }
+};

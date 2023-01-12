@@ -1,5 +1,6 @@
 const bigPromise = require("../middlewares/bigPromise");
 const UserSchema = require("../models/userModel");
+const cloudinary = require("cloudinary").v2;
 
 exports.signup = bigPromise(async (req, res, next) => {
   const { firstName, lastName, email, password, confirmPassword } = req.body;
@@ -69,22 +70,44 @@ exports.updateName = bigPromise(async (req, res, next) => {
 });
 
 exports.allUsers = bigPromise(async (req, res, next) => {
+  const dynamicRegex = new RegExp("^" + req.query.search);
+  console.log({ dynamicRegex }, req.query);
   const keyword = req.query.search
     ? {
         $and: [
           {
             $or: [
-              { firstName: { $regex: req.query.search, $options: "i" } },
-              { lastName: { $regex: req.query.search, $options: "i" } },
-              { email: { $regex: req.query.search, $options: "i" } },
+              { firstName: { $regex: dynamicRegex, $options: "i" } },
+              { email: { $regex: dynamicRegex, $options: "i" } },
             ],
           },
-          { email: { $not: { $regex: "abdus@gmail.com", $options: "i" } } },
+          { email: { $not: { $regex: req.user.email, $options: "i" } } },
         ],
       }
     : {};
-  console.log({ keyword });
 
   const users = await UserSchema.find(keyword);
   res.json({ data: users, message: "list of users" });
+});
+
+exports.updatePhoto = bigPromise(async (req, res, next) => {
+  console.log("i am running", req.files, req.body);
+
+  if (!req.files) {
+    throw new Error("No photo found");
+  }
+  const uploadedData = await cloudinary.uploader.upload(
+    req.files.profilePic.tempFilePath,
+    {
+      folder: "chatApp",
+    }
+  );
+
+  const user = await UserSchema.findOne({ email: req.user.email });
+  console.log(user, "oooooooooooo");
+  user.photoUrl = uploadedData.secure_url;
+
+  await user.save();
+
+  res.json({ data: user, message: "Profile pic updated successfully" });
 });

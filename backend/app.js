@@ -2,19 +2,28 @@ require("dotenv").config();
 const express = require("express");
 const app = express();
 const morgan = require("morgan");
-// const fileUpload = require("express-fileupload");
-var cors = require("cors");
+const fileUpload = require("express-fileupload");
+const cors = require("cors");
+const cloudinary = require("cloudinary").v2;
 
 // middlewares
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-// app.use(
-//   fileUpload({
-//     useTempFiles: true,
-//     tempFileDir: "/tmp/",
-//   })
-// );
+app.use(
+  fileUpload({
+    useTempFiles: true,
+    tempFileDir: "/tmp/",
+  })
+);
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+  secure: true,
+});
+
 app.use(morgan("tiny"));
 
 // import routes here

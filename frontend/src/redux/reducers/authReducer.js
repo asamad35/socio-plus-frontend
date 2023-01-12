@@ -13,6 +13,7 @@ const initialState = {
     __v: 0,
   },
   authButton: "idle",
+  profilePicLoader: "idle",
 };
 
 const authReducer = createSlice({
@@ -46,6 +47,13 @@ const authReducer = createSlice({
       })
       .addCase(thunks.postUpdateName.fulfilled, (state, action) => {
         state.user = action.payload;
+      })
+      .addCase(thunks.postUpdatePhoto.pending, (state, action) => {
+        state.profilePicLoader = "loading";
+      })
+      .addCase(thunks.postUpdatePhoto.fulfilled, (state, action) => {
+        state.user = action.payload;
+        state.profilePicLoader = "ideal";
       });
   },
 });

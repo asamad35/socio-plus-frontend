@@ -10,6 +10,7 @@ import ClickAnimation from "./ClickAnimation";
 import ScaleDivsAnimation from "./ScaleDivsAnimation";
 import { postUpdateName, postUpdatePhoto, postUpdateStatus } from "../thunks";
 import { getFormData } from "../helper";
+import { CircularProgress } from "@mui/material";
 
 const InfoDrawer = () => {
   const dispatch = useDispatch();
@@ -18,6 +19,7 @@ const InfoDrawer = () => {
   const infoDrawer = useSelector((state) => state.chatReducer.infoDrawer);
   const isUserProfile = useSelector((state) => state.chatReducer.isUserProfile);
   const loggedUser = useSelector((state) => state.authReducer.user);
+  const authReducer = useSelector((state) => state.authReducer);
   const selectedUser = useSelector((state) => state.chatReducer.selectedUser);
 
   console.log({ loggedUser });
@@ -36,12 +38,7 @@ const InfoDrawer = () => {
         className={`info-drawer ${infoDrawer === true ? "active" : ""}`}
       >
         <div className="profile-pic">
-          <img
-            src={
-              "https://www.muscleandfitness.com/wp-content/uploads/2015/08/what_makes_a_man_more_manly_main0.jpg?quality=86&strip=all"
-            }
-            alt="profile-img"
-          />
+          <img src={loggedUser.photoUrl} alt="profile-img" />
           {isUserProfile && (
             <ClickAnimation className="edit-pic">
               <input
@@ -50,14 +47,9 @@ const InfoDrawer = () => {
                 id="profile-pic-input"
                 className="profile-pic-input"
                 onChange={(e) => {
-                  console.log(
-                    getFormData({ fileName: e.target.files[0] }),
-                    "ddddddddddddddddddddddddddddd"
-                  );
-
                   dispatch(
                     postUpdatePhoto(
-                      getFormData({ fileName: e.target.files[0] })
+                      getFormData({ profilePic: e.target.files[0] })
                     )
                   );
                 }}
@@ -65,7 +57,11 @@ const InfoDrawer = () => {
               <label htmlFor="profile-pic-input" className="profile-pic-label">
                 dwd
               </label>
-              <ModeEditOutlineOutlinedIcon className="edit-icon" />
+              {authReducer.profilePicLoader === "loading" ? (
+                <CircularProgress size={20} />
+              ) : (
+                <ModeEditOutlineOutlinedIcon className="edit-icon" />
+              )}
             </ClickAnimation>
           )}
         </div>

@@ -36,6 +36,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: "Hi! I am using SocioPlus",
   },
+  photoUrl: {
+    type: String,
+    default: "https://static.thenounproject.com/png/3465604-200.png",
+  },
 });
 
 // hash pass before save

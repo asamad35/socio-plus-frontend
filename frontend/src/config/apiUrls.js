@@ -6,4 +6,5 @@ export const API_URLS = {
   postUpdateStatus: "update-status",
   postUpdateName: "update-name",
   postUpdatePhoto: "update-photo",
+  getSearchUsers: "search-users",
 };

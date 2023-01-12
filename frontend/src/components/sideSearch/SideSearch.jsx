@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Box, Typography, InputBase } from "@mui/material";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import { useDispatch, useSelector } from "react-redux";
@@ -6,10 +6,18 @@ import * as actions from "../../redux/actions/index";
 import { AnimatePresence, motion } from "framer-motion";
 import ChatList from "./ChatList";
 import SearchList from "./SearchList";
+import { debounce } from "../../helper";
+import { getSearchUsers } from "../../thunks";
 
 const SideSearch = () => {
   const [searchList, setSearchList] = useState(false);
   const dispatch = useDispatch();
+
+  const callbackFn = useCallback((args) => {
+    console.log({ args }, "in debounce");
+    dispatch(getSearchUsers({ query: args[0] }));
+  }, []);
+  const debounceClosure = useCallback(debounce(callbackFn, 1000), []);
 
   return (
     <Box
@@ -46,7 +54,11 @@ const SideSearch = () => {
           onChange={(e) => {
             if (e.target.value.length === 0) {
               setSearchList(false);
-            } else setSearchList(true);
+            } else {
+              console.log("debounce here");
+              debounceClosure(e.target.value);
+              setSearchList(true);
+            }
           }}
           sx={{ color: "white", fontSize: "0.9rem" }}
           placeholder="Add user to chat"
@@ -54,10 +66,13 @@ const SideSearch = () => {
       </div>
 
       {/* chats list */}
-      {!searchList && <ChatList />}
-
+      {/* {!searchList && <ChatList />} */}
+      <div className="chat-search-list-container">
+        {<ChatList searchList={searchList} />}
+        {<SearchList searchList={searchList} />}
+      </div>
       {/* search List */}
-      {searchList && <SearchList />}
+      {/* {searchList && <SearchList />} */}
     </Box>
   );
 };

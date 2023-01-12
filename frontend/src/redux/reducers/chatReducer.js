@@ -10,6 +10,7 @@ const initialState = {
   nextPage: "signup",
   infoDrawer: false,
   isUserProfile: false,
+  searchUserList: null,
 };
 const chatReducer = createSlice({
   name: "chatReducer",
@@ -38,9 +39,9 @@ const chatReducer = createSlice({
     },
   },
   extraReducers: (builder) => {
-    // builder.addCase(thunks.postChangeStatus.fulfilled, (state, action) => {
-    //   state.todos = action.payload;
-    // });
+    builder.addCase(thunks.getSearchUsers.fulfilled, (state, action) => {
+      state.searchUserList = action.payload;
+    });
   },
 });
 

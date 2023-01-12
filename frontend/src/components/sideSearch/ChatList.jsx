@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { styled } from "@mui/material/styles";
 import goku from "../../assets/goku-avatar.png";
 
-const ChatList = () => {
+const ChatList = ({ searchList }) => {
   function textOverflow(text) {
     return text.slice(0, 43) + "...";
   }
@@ -39,9 +39,11 @@ const ChatList = () => {
   }));
 
   return (
-    <>
+    <div
+      className={`chat-list-container  ${searchList ? "search-active" : ""}`}
+    >
       <h2 className="my-chats-heading">My Chats</h2>
-      <Box sx={{ overflowY: "scroll", overflowX: "hidden", maxHeight: "85%" }}>
+      <Box sx={{ overflowY: "scroll", overflowX: "hidden", maxHeight: "90%" }}>
         <motion.div
           style={{ cursor: "pointer" }}
           whileHover={{ scale: 1.1 }}
@@ -446,7 +448,7 @@ const ChatList = () => {
           </Box>
         </motion.div>
       </Box>
-    </>
+    </div>
   );
 };
 

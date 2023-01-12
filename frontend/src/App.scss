@@ -369,7 +369,7 @@ width: 100%;
       width: 100%;
       height: 100%;
       border-radius: 10rem;
-      object-fit: cover;
+      object-fit: contain;
     }
 
     .edit-pic{
@@ -542,7 +542,7 @@ width: 100%;
   fill:#2962ff !important
 }
 .my-chats-heading{
-  margin: 0rem 2rem;
+  margin: 0rem 1.2rem;
   color: white;
   font-weight: 400;
   font-size: 19px;
@@ -577,13 +577,83 @@ width: 100%;
   overflow-x: hidden; 
   gap: 15px;
   padding-bottom: 2rem;
+  padding-top: 15px;
+  height: 100%;
 }
 .profile-pic-label{
   position: absolute;
   width: 100%;
   height: 100%;
   opacity: 0;
+  cursor: pointer;
 }
 .profile-pic-input{
   display: none;
+  position: relative;
+}
+
+.chat-search-list-container{
+height: 100%;
+position: relative;
+overflow: hidden;
+
+.chat-list-container{
+  position: absolute;
+    height: 100%;
+    transform: translateX(0);
+    transition: transform 0.3s ease-out ;
+}
+.search-list-container{
+  position: absolute;
+    height: 95%;
+    width: 100%;
+    transform: translateX(100%);
+    transition: transform 0.3s ease-out ;
+    display: flex;
+    flex-direction: column;
+}
+
+.search-list-container.search-active{
+  transform: translateX(0);
+
+}
+.chat-list-container.search-active{
+  transform: translateX(-100%);
+
+}
+
+}
+
+
+.text-wrapper {
+  width: 100px;
+  overflow-x: hidden;
+}
+
+.textflow-animation {
+  font-weight: bold;
+  color: #fbfbfb;
+  animation-name: rightToLeft;
+  animation-duration: 6s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  /* animation: rightToLeft 4.5s linear infinite; */
+
+
+}
+
+.search-list-email{
+  color: #2962ff;
+  font-size: 14px;
+  width: fit-content;
+  font-weight: 500;
+}
+
+@keyframes rightToLeft {
+  0% {
+    transform: translateX(50%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
 }

@@ -8,6 +8,7 @@ import ChatList from "./ChatList";
 import SearchList from "./SearchList";
 import { debounce } from "../../helper";
 import { getSearchUsers } from "../../thunks";
+import { setSearchUserListLoader } from "../../redux/actions/index";
 
 const SideSearch = () => {
   const [searchList, setSearchList] = useState(false);
@@ -17,7 +18,7 @@ const SideSearch = () => {
     console.log({ args }, "in debounce");
     dispatch(getSearchUsers({ query: args[0] }));
   }, []);
-  const debounceClosure = useCallback(debounce(callbackFn, 1000), []);
+  const debounceClosure = useCallback(debounce(callbackFn, 700), []);
 
   return (
     <Box
@@ -52,10 +53,11 @@ const SideSearch = () => {
         <SearchOutlinedIcon sx={{ color: "white" }} />
         <InputBase
           onChange={(e) => {
+            console.log(e.target.value, e.target.value.length, "ioioioioioioi");
             if (e.target.value.length === 0) {
+              dispatch(setSearchUserListLoader(true));
               setSearchList(false);
             } else {
-              console.log("debounce here");
               debounceClosure(e.target.value);
               setSearchList(true);
             }

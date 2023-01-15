@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import ChatHeader from "./ChatHeader";
 import ChatBody from "./ChatBody";
 import ChatFooter from "./ChatFooter";
-import { Box } from "@mui/material";
+import { Box, CircularProgress } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
@@ -30,7 +30,9 @@ const ChatWindow = () => {
       <ChatHeader />
 
       <ChatBody />
-
+      {/* <div className="chat-loader">
+        <CircularProgress size={150} />
+      </div> */}
       <ChatFooter />
     </Box>
   );

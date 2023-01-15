@@ -10,7 +10,7 @@ export const getSearchUsers = createAsyncThunk(
       token: getState().authReducer.token,
     });
     if (data.data) {
-      toast.success(data.message);
+      // toast.success(data.message);
       return data.data;
     } else {
       toast.error(data.message);

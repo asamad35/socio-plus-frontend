@@ -11,6 +11,7 @@ const initialState = {
   infoDrawer: false,
   isUserProfile: false,
   searchUserList: null,
+  searchUserListLoader: true,
 };
 const chatReducer = createSlice({
   name: "chatReducer",
@@ -37,11 +38,22 @@ const chatReducer = createSlice({
     setIsUserProfile(state, action) {
       state.isUserProfile = action.payload;
     },
+    setSearchUserListLoader(state, action) {
+      state.searchUserListLoader = true;
+    },
   },
   extraReducers: (builder) => {
-    builder.addCase(thunks.getSearchUsers.fulfilled, (state, action) => {
-      state.searchUserList = action.payload;
-    });
+    builder
+      .addCase(thunks.getSearchUsers.pending, (state, action) => {
+        state.searchUserListLoader = true;
+      })
+      .addCase(thunks.getSearchUsers.fulfilled, (state, action) => {
+        state.searchUserList = action.payload;
+        state.searchUserListLoader = false;
+      })
+      .addCase(thunks.getSearchUsers.rejected, (state, action) => {
+        state.searchUserListLoader = false;
+      });
   },
 });
 
@@ -53,5 +65,6 @@ export const {
   setStatus,
   setInfoDrawer,
   setIsUserProfile,
+  setSearchUserListLoader,
 } = chatReducer.actions;
 export default chatReducer.reducer;

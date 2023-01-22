@@ -7,7 +7,6 @@ export const getSearchUsers = createAsyncThunk(
   async (payload, { getState }) => {
     const data = await services.getSearchUsers({
       ...payload,
-      token: getState().authReducer.token,
     });
     if (data.data) {
       // toast.success(data.message);

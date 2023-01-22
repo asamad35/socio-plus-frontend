@@ -3,6 +3,7 @@ const UserSchema = require("../models/userModel");
 const jwt = require("jsonwebtoken");
 
 exports.isLoggedIn = bigPromise(async (req, res, next) => {
+  console.log(req.header("Authorization"), "ppppppppppppppppppp");
   const token =
     req.body.token ||
     (req.header("Authorization") &&

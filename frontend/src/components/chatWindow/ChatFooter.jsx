@@ -9,7 +9,7 @@ import { debounce } from "../../helper";
 import { motion } from "framer-motion";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
-import AudioRecorder from "../AudioRecorder";
+// import AudioRecorder from "../AudioRecorder";
 import AudioMessagePreview from "../AudioMessagePreview";
 import { useDispatch, useSelector } from "react-redux";
 import * as actions from "../../redux/actions/index";
@@ -251,7 +251,7 @@ const ChatFooter = () => {
                 <SendOutlinedIcon fontSize="small" />
               </motion.div>
 
-              <AudioRecorder />
+              {/* <AudioRecorder /> */}
             </Box>
           </Tooltip>
         </ClickAnimation>

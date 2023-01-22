@@ -15,8 +15,10 @@ export const postSignup = createAsyncThunk("postSignup", async (payload) => {
 
 export const postLogin = createAsyncThunk("postLogin", async (payload) => {
   const data = await services.postLogin(payload);
-  if (data.data) toast.success(data.message);
-  else {
+  if (data.data) {
+    toast.success(data.message);
+    localStorage.setItem("socioPlusToken", data.token);
+  } else {
     toast.error(data.message);
     throw new Error();
   }
@@ -25,11 +27,8 @@ export const postLogin = createAsyncThunk("postLogin", async (payload) => {
 
 export const postUpdateStatus = createAsyncThunk(
   "postUpdateStatus",
-  async (payload, { getState }) => {
-    const data = await services.postUpdateStatus({
-      ...payload,
-      token: getState().authReducer.token,
-    });
+  async (payload) => {
+    const data = await services.postUpdateStatus(payload);
     if (data.data) {
       toast.success(data.message);
       return data.data;
@@ -42,11 +41,8 @@ export const postUpdateStatus = createAsyncThunk(
 
 export const postUpdateName = createAsyncThunk(
   "postUpdateName",
-  async (payload, { getState }) => {
-    const data = await services.postUpdateName({
-      ...payload,
-      token: getState().authReducer.token,
-    });
+  async (payload) => {
+    const data = await services.postUpdateName(payload);
     if (data.data) {
       toast.success(data.message);
       return data.data;
@@ -59,8 +55,7 @@ export const postUpdateName = createAsyncThunk(
 
 export const postUpdatePhoto = createAsyncThunk(
   "postUpdatePhoto",
-  async (payload, { getState }) => {
-    payload.append("token", getState().authReducer.token);
+  async (payload) => {
     const data = await services.postUpdatePhoto(payload);
     if (data.data) {
       toast.success(data.message);

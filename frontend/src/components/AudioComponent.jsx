@@ -26,6 +26,15 @@ const AudioComponent = ({ sendOrReceived }) => {
       normalize: true,
       responsive: true,
       fillParent: true,
+      // xhr: {
+      //   cache: "default",
+      //   mode: "no-cors",
+      //   method: "GET",
+      //   credentials: "same-origin",
+      //   redirect: "follow",
+      //   referrer: "client",
+      //   headers: [{ key: "Authorization", value: "my-token" }],
+      // },
     });
 
     // console.log("wav", wav);

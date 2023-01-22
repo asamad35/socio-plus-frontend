@@ -3,7 +3,7 @@ import { customAxios } from "../config/customAxios";
 
 export const getSearchUsers = async (payload) => {
   try {
-    const res = await customAxios.post(
+    const res = await customAxios.get(
       API_URLS.getSearchUsers + `?search=${payload.query}`,
       payload
     );

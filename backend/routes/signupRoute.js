@@ -5,6 +5,6 @@ const { signup, login, allUsers } = require("../controllers/userController");
 
 router.route("/signup").post(signup);
 router.route("/login").post(login);
-router.route("/search-users").post(isLoggedIn, allUsers);
+router.route("/search-users").get(isLoggedIn, allUsers);
 
 module.exports = router;

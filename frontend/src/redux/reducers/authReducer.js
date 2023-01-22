@@ -22,6 +22,7 @@ const authReducer = createSlice({
   reducers: {
     logout(state, action) {
       state.token = null;
+      localStorage.removeItem("socioPlusToken");
     },
   },
   extraReducers: (builder) => {
@@ -53,6 +54,9 @@ const authReducer = createSlice({
       })
       .addCase(thunks.postUpdatePhoto.fulfilled, (state, action) => {
         state.user = action.payload;
+        state.profilePicLoader = "ideal";
+      })
+      .addCase(thunks.postUpdatePhoto.rejected, (state, action) => {
         state.profilePicLoader = "ideal";
       });
   },

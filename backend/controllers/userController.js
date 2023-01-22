@@ -71,7 +71,6 @@ exports.updateName = bigPromise(async (req, res, next) => {
 
 exports.allUsers = bigPromise(async (req, res, next) => {
   const dynamicRegex = new RegExp("^" + req.query.search);
-  console.log({ dynamicRegex }, req.query);
   const keyword = req.query.search
     ? {
         $and: [
@@ -107,7 +106,6 @@ exports.updatePhoto = bigPromise(async (req, res, next) => {
   );
 
   const user = await UserSchema.findOne({ email: req.user.email });
-  console.log(user, "oooooooooooo");
   user.photoUrl = uploadedData.secure_url;
 
   await user.save();

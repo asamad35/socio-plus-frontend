@@ -12,17 +12,17 @@ exports.accessChat = bigPromise(async (req, res) => {
     ],
   };
   const existingChat = await chatSchema.find(findQuery);
-  console.log({ existingChat });
+  console.log({ data: existingChat });
 
   if (existingChat.length > 0) {
-    res.json({ message: "chat already exist" });
+    res.json({ data: { message: "chat already exist" } });
   } else {
     // create new chat
     const newChat = await chatSchema.create({
       users: [otherUserID, req.user._id],
     });
 
-    res.json({ newChat });
+    res.json({ data: newChat });
   }
 });
 
@@ -30,5 +30,5 @@ exports.fetchChatList = bigPromise(async (req, res) => {
   const findQuery = { users: { $elemMatch: { $eq: req.user._id } } };
   const chatList = await chatSchema.find(findQuery).sort({ updatedAt: "desc" });
 
-  res.json({ chatList });
+  res.json({ data: chatList });
 });

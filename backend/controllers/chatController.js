@@ -28,7 +28,11 @@ exports.accessChat = bigPromise(async (req, res) => {
 
 exports.fetchChatList = bigPromise(async (req, res) => {
   const findQuery = { users: { $elemMatch: { $eq: req.user._id } } };
-  const chatList = await chatSchema.find(findQuery).sort({ updatedAt: "desc" });
+  let chatList = await chatSchema
+    .find(findQuery)
+    .sort({ updatedAt: "desc" })
+    .populate("users")
+    .populate("latestMessage");
 
   res.json({ data: chatList });
 });

@@ -1,14 +1,26 @@
 import { Avatar, Typography, Box, Stack, Badge } from "@mui/material";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { motion } from "framer-motion";
 import { styled } from "@mui/material/styles";
 import goku from "../../assets/goku-avatar.png";
 import ClickAnimation from "../ClickAnimation";
+import { useDispatch, useSelector } from "react-redux";
+import { getChatList } from "../../thunks";
 
 const ChatList = ({ searchList }) => {
-  function textOverflow(text) {
-    return text.slice(0, 43) + "...";
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(getChatList());
+  }, []);
+
+  const chatList = useSelector((state) => state.chatReducer.chatList);
+  console.log({ chatList });
+
+  function textOverflow(text = " ") {
+    let overflow = text.length > 42 ? "..." : "";
+    return text.slice(0, 43) + overflow;
   }
   const StyledBadge = styled(Badge)(({ theme }) => ({
     "& .MuiBadge-badge": {
@@ -45,8 +57,8 @@ const ChatList = ({ searchList }) => {
     >
       <h2 className="my-chats-heading">My Chats</h2>
       <Box sx={{ overflowY: "scroll", overflowX: "hidden", maxHeight: "90%" }}>
-        {Array.from(Array(10).keys()).map(() => (
-          <ClickAnimation style={{ cursor: "pointer" }}>
+        {chatList?.map((el, idx) => (
+          <ClickAnimation key={idx} style={{ cursor: "pointer" }}>
             <Box
               sx={{
                 display: "flex",
@@ -73,7 +85,7 @@ const ChatList = ({ searchList }) => {
                 <Typography
                   sx={{ color: "white", fontSize: "0.9rem", fontWeight: "500" }}
                 >
-                  Son Goku
+                  {el.otherUser.firstName + " " + el.otherUser.lastName}
                 </Typography>
                 <Typography
                   sx={{
@@ -82,9 +94,7 @@ const ChatList = ({ searchList }) => {
                     fontWeight: "400",
                   }}
                 >
-                  {textOverflow(
-                    " I will never giveup sa sadda sdad asca as asds"
-                  )}
+                  {textOverflow(el?.latestMessage?.content)}
                 </Typography>
               </Stack>
               <Avatar

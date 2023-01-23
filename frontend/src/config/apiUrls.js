@@ -7,4 +7,5 @@ export const API_URLS = {
   postUpdateName: "update-name",
   postUpdatePhoto: "update-photo",
   getSearchUsers: "search-users",
+  getChatList: "chat/get-chat-list",
 };

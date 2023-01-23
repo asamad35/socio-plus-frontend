@@ -4,6 +4,6 @@ const { isLoggedIn } = require("../middlewares/userMiddleware");
 const { accessChat, fetchChatList } = require("../controllers/chatController");
 
 router.route("/access-chat").post(isLoggedIn, accessChat);
-router.route("/fetch-chat-list").post(isLoggedIn, fetchChatList);
+router.route("/get-chat-list").get(isLoggedIn, fetchChatList);
 
 module.exports = router;

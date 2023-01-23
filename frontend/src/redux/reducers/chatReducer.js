@@ -12,6 +12,8 @@ const initialState = {
   isUserProfile: false,
   searchUserList: null,
   searchUserListLoader: true,
+  chatList: null,
+  chatListLoader: null,
 };
 const chatReducer = createSlice({
   name: "chatReducer",
@@ -53,6 +55,16 @@ const chatReducer = createSlice({
       })
       .addCase(thunks.getSearchUsers.rejected, (state, action) => {
         state.searchUserListLoader = false;
+      })
+      .addCase(thunks.getChatList.pending, (state, action) => {
+        state.chatListLoader = true;
+      })
+      .addCase(thunks.getChatList.fulfilled, (state, action) => {
+        state.chatList = action.payload;
+        state.chatListLoader = false;
+      })
+      .addCase(thunks.getChatList.rejected, (state, action) => {
+        state.chatListLoader = false;
       });
   },
 });

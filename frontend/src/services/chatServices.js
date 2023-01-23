@@ -12,3 +12,11 @@ export const getSearchUsers = async (payload) => {
     console.log("Some error occured:", error);
   }
 };
+export const getChatList = async () => {
+  try {
+    const res = await customAxios.get(API_URLS.getChatList);
+    return res.data;
+  } catch (error) {
+    console.log("Some error occured:", error);
+  }
+};

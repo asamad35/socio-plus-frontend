@@ -2,7 +2,7 @@ const bigPromise = require("../middlewares/bigPromise");
 const messageSchema = require("../models/messageModel");
 const chatSchema = require("../models/chatModel");
 
-exports.sendMessage = bigPromise(async (req, res) => {
+exports.sendMessage = bigPromise(async (req, res) => {  
   const { content, chatID } = req.body;
 
   if (!content) throw new Error("Cannot send empty message");
@@ -26,7 +26,8 @@ exports.fetchAllMessages = bigPromise(async (req, res) => {
   const findQuery = { chat: chatID };
   const allMessages = await messageSchema
     .find(findQuery)
-    .sort({ updatedAt: "desc" });
+    .sort({ updatedAt: "asc" })
+    .populate("sender");
 
   res.json({ data: allMessages });
 });

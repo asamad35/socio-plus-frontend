@@ -12,8 +12,11 @@ const initialState = {
   isUserProfile: false,
   searchUserList: null,
   searchUserListLoader: true,
-  chatList: null,
+  chatList: [],
   chatListLoader: null,
+  selectedChat: null,
+  allMessages: [],
+  allMessagesLoader: false,
 };
 const chatReducer = createSlice({
   name: "chatReducer",
@@ -43,6 +46,12 @@ const chatReducer = createSlice({
     setSearchUserListLoader(state, action) {
       state.searchUserListLoader = true;
     },
+    setSelectedChat(state, action) {
+      state.selectedChat = action.payload;
+    },
+    pushSendMessage(state, action) {
+      state.allMessages.push(action.payload);
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -65,6 +74,30 @@ const chatReducer = createSlice({
       })
       .addCase(thunks.getChatList.rejected, (state, action) => {
         state.chatListLoader = false;
+      })
+      .addCase(thunks.getAllMessages.pending, (state, action) => {
+        state.allMessagesLoader = true;
+      })
+      .addCase(thunks.getAllMessages.fulfilled, (state, action) => {
+        state.allMessages = action.payload;
+        state.allMessagesLoader = false;
+      })
+      .addCase(thunks.getAllMessages.rejected, (state, action) => {
+        state.allMessagesLoader = false;
+      })
+      .addCase(thunks.postSendMessage.fulfilled, (state, action) => {
+        const payload = action.meta.arg;
+        const messageIdx = state.allMessages.findIndex(
+          (el) => el.uuid === payload.uuid
+        );
+        state.allMessages[messageIdx].messageStatus = "successful";
+      })
+      .addCase(thunks.postSendMessage.rejected, (state, action) => {
+        const payload = action.meta.arg;
+        const messageIdx = state.allMessages.findIndex(
+          (el) => el.uuid === payload.uuid
+        );
+        state.allMessages[messageIdx].messageStatus = "error";
       });
   },
 });
@@ -78,5 +111,7 @@ export const {
   setInfoDrawer,
   setIsUserProfile,
   setSearchUserListLoader,
+  setSelectedChat,
+  pushSendMessage,
 } = chatReducer.actions;
 export default chatReducer.reducer;

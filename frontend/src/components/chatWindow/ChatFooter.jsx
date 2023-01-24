@@ -1,6 +1,7 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 
 import { Box, Tooltip } from "@mui/material";
+import { v4 as uuidv4 } from "uuid";
 
 import SendOutlinedIcon from "@mui/icons-material/SendOutlined";
 import AttachFileOutlinedIcon from "@mui/icons-material/AttachFileOutlined";
@@ -15,6 +16,7 @@ import { useDispatch, useSelector } from "react-redux";
 import * as actions from "../../redux/actions/index";
 import useLongPress from "../../customHooks/useLongPress";
 import ClickAnimation from "../ClickAnimation";
+import { postSendMessage } from "../../thunks";
 
 const ChatFooter = () => {
   const dispatch = useDispatch();
@@ -28,6 +30,9 @@ const ChatFooter = () => {
   const [emojiPicker, setEmojiPicker] = useState(false);
   const [text, setText] = useState("");
   const [emojiButtonHover, setEmojiButtonHover] = useState(false);
+
+  const loggedUser = useSelector((state) => state.authReducer.user);
+  const selectedChat = useSelector((state) => state.chatReducer.selectedChat);
 
   const emojiContainer = useRef(null);
 
@@ -45,6 +50,20 @@ const ChatFooter = () => {
   };
 
   const onClick = () => {
+    const uuid = uuidv4();
+    dispatch(
+      postSendMessage({ content: text, chatID: selectedChat._id, uuid })
+    );
+    dispatch(
+      actions.pushSendMessage({
+        chat: selectedChat._id,
+        content: text,
+        sender: { ...loggedUser },
+        messageStatus: "sending",
+        uuid,
+      })
+    );
+    setText("");
     console.log("click is triggered");
   };
 

@@ -79,6 +79,8 @@
 .chatBody{
   overflow-y: scroll;
   overflow-x: hidden;
+  width: 100%;
+  height: 100%;
 }
 .chatBody::-webkit-scrollbar-track {
   background: #a9c0ff; 

@@ -8,4 +8,6 @@ export const API_URLS = {
   postUpdatePhoto: "update-photo",
   getSearchUsers: "search-users",
   getChatList: "chat/get-chat-list",
+  getAllMessages: "message/fetch-all-messages",
+  postSendMessage: "message/send-message",
 };

@@ -16,19 +16,34 @@ export const getSearchUsers = createAsyncThunk(
   }
 );
 
-export const getChatList = createAsyncThunk(
-  "getChatList",
-  async (payload, { getState }) => {
-    const data = await services.getChatList(payload);
-    if (data.data) {
-      data.data?.map((el) => {
-        el.otherUser = el.users.filter(
-          (user) => user._id !== getState().authReducer.user._id
-        )[0];
+export const getChatList = createAsyncThunk("getChatList", async (payload) => {
+  const data = await services.getChatList(payload);
+  if (data.data) {
+    return data.data;
+  } else {
+    toast.error(data.message);
+    throw new Error();
+  }
+});
 
-        delete el["users"];
-        return el;
-      });
+export const getAllMessages = createAsyncThunk(
+  "getAllMessages",
+  async (payload) => {
+    const data = await services.getAllMessages(payload);
+    if (data.data) {
+      return data.data;
+    } else {
+      toast.error(data.message);
+      throw new Error();
+    }
+  }
+);
+
+export const postSendMessage = createAsyncThunk(
+  "postSendMessage",
+  async (payload) => {
+    const data = await services.postSendMessage(payload);
+    if (data.data) {
       return data.data;
     } else {
       toast.error(data.message);

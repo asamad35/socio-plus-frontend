@@ -6,7 +6,9 @@ import { styled } from "@mui/material/styles";
 import goku from "../../assets/goku-avatar.png";
 import ClickAnimation from "../ClickAnimation";
 import { useDispatch, useSelector } from "react-redux";
-import { getChatList } from "../../thunks";
+import { getAllMessages, getChatList } from "../../thunks";
+import * as actions from "../../redux/actions";
+import { getOtherUserInfo } from "../../helper";
 
 const ChatList = ({ searchList }) => {
   const dispatch = useDispatch();
@@ -15,7 +17,9 @@ const ChatList = ({ searchList }) => {
     dispatch(getChatList());
   }, []);
 
+  const loggedUser = useSelector((state) => state.authReducer.user);
   const chatList = useSelector((state) => state.chatReducer.chatList);
+  const selectedChat = useSelector((state) => state.chatReducer.selectedChat);
   console.log({ chatList });
 
   function textOverflow(text = " ") {
@@ -58,7 +62,14 @@ const ChatList = ({ searchList }) => {
       <h2 className="my-chats-heading">My Chats</h2>
       <Box sx={{ overflowY: "scroll", overflowX: "hidden", maxHeight: "90%" }}>
         {chatList?.map((el, idx) => (
-          <ClickAnimation key={idx} style={{ cursor: "pointer" }}>
+          <ClickAnimation
+            key={idx}
+            style={{ cursor: "pointer" }}
+            onClick={() => {
+              dispatch(actions.setSelectedChat(el));
+              dispatch(getAllMessages({ chatID: el._id }));
+            }}
+          >
             <Box
               sx={{
                 display: "flex",
@@ -68,6 +79,9 @@ const ChatList = ({ searchList }) => {
                 padding: "0.5rem 2rem",
                 marginBottom: "0.5rem",
                 transition: "0.2s ease-in",
+                backgroundColor: `${
+                  selectedChat?._id === el._id ? "#7ea0ff" : ""
+                }`,
                 "&:hover": {
                   backgroundColor: "#7ea0ff",
                 },
@@ -85,7 +99,9 @@ const ChatList = ({ searchList }) => {
                 <Typography
                   sx={{ color: "white", fontSize: "0.9rem", fontWeight: "500" }}
                 >
-                  {el.otherUser.firstName + " " + el.otherUser.lastName}
+                  {getOtherUserInfo(el.users, loggedUser).firstName +
+                    " " +
+                    getOtherUserInfo(el.users, loggedUser).lastName}
                 </Typography>
                 <Typography
                   sx={{

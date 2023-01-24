@@ -26,3 +26,13 @@ export function getFormData(obj = {}) {
   }
   return result;
 }
+
+export function getOtherUserInfo(usersArr, loggedUser) {
+  let otherUserInfo = {};
+
+  usersArr.forEach((el) => {
+    if (el._id !== loggedUser._id) otherUserInfo = el;
+  });
+
+  return otherUserInfo;
+}

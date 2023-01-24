@@ -2,7 +2,7 @@ import React from "react";
 import { Avatar, Box, Typography } from "@mui/material";
 import goku from "../../assets/goku-avatar.png";
 
-const TextMessage = ({ sendOrReceived }) => {
+const TextMessage = ({ sendOrReceived, content, profilePic }) => {
   return (
     <Box
       sx={{
@@ -16,7 +16,7 @@ const TextMessage = ({ sendOrReceived }) => {
         alignItems: "center",
       }}
     >
-      <Avatar alt="Remy Sharp" src={goku} />
+      <Avatar alt="Remy Sharp" src={profilePic} />
       <Typography
         sx={{
           fontSize: "1rem",
@@ -26,8 +26,7 @@ const TextMessage = ({ sendOrReceived }) => {
           borderRadius: "1rem",
         }}
       >
-        jdnasjdsa djqwdjk qwjdjq djqwdnjqd djqwdqd dqwd d qdidnqwd idnwqidnd
-        widqndn iqwdnwqind{" "}
+        {content ?? " no text"}
       </Typography>
     </Box>
   );

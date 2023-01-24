@@ -20,3 +20,20 @@ export const getChatList = async () => {
     console.log("Some error occured:", error);
   }
 };
+export const getAllMessages = async (payload) => {
+  try {
+    const res = await customAxios.post(API_URLS.getAllMessages, payload);
+    return res.data;
+  } catch (error) {
+    console.log("Some error occured:", error);
+  }
+};
+
+export const postSendMessage = async (payload) => {
+  try {
+    const res = await customAxios.post(API_URLS.postSendMessage, payload);
+    return res.data;
+  } catch (error) {
+    console.log("Some error occured:", error);
+  }
+};

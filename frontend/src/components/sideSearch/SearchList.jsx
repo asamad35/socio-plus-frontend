@@ -1,16 +1,18 @@
 import { Avatar, CircularProgress, Skeleton, Typography } from "@mui/material";
 import React from "react";
 import ClickAnimation from "../ClickAnimation";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { postAccessChat } from "../../thunks";
 
-const SearchList = ({ searchList }) => {
+const SearchList = ({ searchList, setSearchList }) => {
+  const dispatch = useDispatch();
   const searchUserList = useSelector(
     (state) => state.chatReducer.searchUserList
   );
   const searchUserListLoader = useSelector(
     (state) => state.chatReducer.searchUserListLoader
   );
-  console.log({ searchUserList });
+
   return (
     <div
       className={` search-list-container ${searchList ? "search-active" : ""}`}
@@ -33,6 +35,15 @@ const SearchList = ({ searchList }) => {
               <ClickAnimation
                 className={"search-result"}
                 style={{ cursor: "pointer" }}
+                onClick={() => {
+                  dispatch(
+                    postAccessChat({
+                      otherUserID: el._id,
+                      document,
+                      setSearchList,
+                    })
+                  );
+                }}
               >
                 {idx + 1}
                 <Avatar alt="Remy Sharp" src={el.photoUrl} />

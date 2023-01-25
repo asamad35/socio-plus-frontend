@@ -26,7 +26,8 @@ const SideSearch = () => {
         backgroundColor: "#2962ff",
         // backgroundColor: "#fff",
         height: "100%",
-        width: "40%",
+        width: "25%",
+        minWidth: "16rem",
         paddingTop: "2rem",
         display: "flex",
         flexDirection: "column",
@@ -52,6 +53,7 @@ const SideSearch = () => {
       <div className="search-box">
         <SearchOutlinedIcon sx={{ color: "white" }} />
         <InputBase
+          className="searchInput"
           onChange={(e) => {
             console.log(e.target.value, e.target.value.length, "ioioioioioioi");
             if (e.target.value.length === 0) {
@@ -71,7 +73,7 @@ const SideSearch = () => {
       {/* {!searchList && <ChatList />} */}
       <div className="chat-search-list-container">
         {<ChatList searchList={searchList} />}
-        {<SearchList searchList={searchList} />}
+        {<SearchList setSearchList={setSearchList} searchList={searchList} />}
       </div>
       {/* search List */}
       {/* {searchList && <SearchList />} */}

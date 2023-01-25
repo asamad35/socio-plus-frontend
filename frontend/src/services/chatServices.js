@@ -1,3 +1,4 @@
+import { toast } from "react-toastify";
 import { API_URLS } from "../config/apiUrls";
 import { customAxios } from "../config/customAxios";
 
@@ -35,5 +36,14 @@ export const postSendMessage = async (payload) => {
     return res.data;
   } catch (error) {
     console.log("Some error occured:", error);
+  }
+};
+
+export const postAccessChat = async (payload) => {
+  try {
+    const res = await customAxios.post(API_URLS.postAccessChat, payload);
+    return res.data;
+  } catch (error) {
+    console.log(toast.error(error.message));
   }
 };

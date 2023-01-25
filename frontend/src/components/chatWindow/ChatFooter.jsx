@@ -50,6 +50,7 @@ const ChatFooter = () => {
   };
 
   const onClick = () => {
+    if (text.trim() === "") return;
     const uuid = uuidv4();
     dispatch(
       postSendMessage({ content: text, chatID: selectedChat._id, uuid })
@@ -160,10 +161,6 @@ const ChatFooter = () => {
               onClickOutside={(e) => {
                 if (emojiPicker) {
                   setEmojiPicker(false);
-                  // setTimeout(() => {
-                  //   if (!emojiButtonHover)
-                  //     emojiContainer.current.style.zIndex = -10;
-                  // }, 100);
                 }
               }}
               onEmojiSelect={(e) => {

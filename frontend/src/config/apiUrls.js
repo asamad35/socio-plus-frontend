@@ -10,4 +10,5 @@ export const API_URLS = {
   getChatList: "chat/get-chat-list",
   getAllMessages: "message/fetch-all-messages",
   postSendMessage: "message/send-message",
+  postAccessChat: "chat/access-chat",
 };

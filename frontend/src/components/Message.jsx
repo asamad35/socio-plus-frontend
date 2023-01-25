@@ -7,7 +7,6 @@ import AudioMessage from "./messages/AudioMessage";
 import { useSelector } from "react-redux";
 
 const Message = () => {
-  const selectedChat = useSelector((state) => state.chatReducer.selectedChat);
   const allMessages = useSelector((state) => state.chatReducer.allMessages);
   const loggedUser = useSelector((state) => state.authReducer.user);
 
@@ -25,6 +24,8 @@ const Message = () => {
         sendOrReceived={getMessageUserInfo(message, loggedUser).sendOrReceived}
         content={getMessageUserInfo(message, loggedUser).content}
         profilePic={getMessageUserInfo(message, loggedUser).sender.photoUrl}
+        messageStatus={getMessageUserInfo(message, loggedUser).messageStatus}
+        messageID={getMessageUserInfo(message, loggedUser).uuid}
       />
     ));
     // <>

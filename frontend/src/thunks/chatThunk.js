@@ -51,3 +51,16 @@ export const postSendMessage = createAsyncThunk(
     }
   }
 );
+
+export const postAccessChat = createAsyncThunk(
+  "postAccessChat",
+  async (payload) => {
+    const data = await services.postAccessChat(payload);
+    if (data.data) {
+      return data.data;
+    } else {
+      toast.error(data.message);
+      throw new Error();
+    }
+  }
+);

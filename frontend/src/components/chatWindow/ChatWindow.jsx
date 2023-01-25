@@ -24,7 +24,7 @@ const ChatWindow = () => {
         flexDirection: "column",
         alignItems: "center",
         height: "100%",
-        width: "100%",
+        width: "75%",
       }}
     >
       <ChatHeader />

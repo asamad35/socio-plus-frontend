@@ -12,19 +12,20 @@ import { getOtherUserInfo } from "../../helper";
 
 const ChatList = ({ searchList }) => {
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    dispatch(getChatList());
-  }, []);
-
   const loggedUser = useSelector((state) => state.authReducer.user);
   const chatList = useSelector((state) => state.chatReducer.chatList);
   const selectedChat = useSelector((state) => state.chatReducer.selectedChat);
   console.log({ chatList });
 
+  useEffect(() => {
+    dispatch(getChatList());
+  }, []);
+
+  useEffect(() => {}, [selectedChat]);
+
   function textOverflow(text = " ") {
-    let overflow = text.length > 42 ? "..." : "";
-    return text.slice(0, 43) + overflow;
+    let overflow = text.length > 20 ? "..." : "";
+    return text.slice(0, 21) + overflow;
   }
   const StyledBadge = styled(Badge)(({ theme }) => ({
     "& .MuiBadge-badge": {
@@ -60,7 +61,7 @@ const ChatList = ({ searchList }) => {
       className={`chat-list-container  ${searchList ? "search-active" : ""}`}
     >
       <h2 className="my-chats-heading">My Chats</h2>
-      <Box sx={{ overflowY: "scroll", overflowX: "hidden", maxHeight: "90%" }}>
+      <Box sx={{ overflowY: "scroll", overflowX: "hidden", height: "90%" }}>
         {chatList?.map((el, idx) => (
           <ClickAnimation
             key={idx}
@@ -95,9 +96,14 @@ const ChatList = ({ searchList }) => {
                 <Avatar alt="Remy Sharp" src={goku} />
               </StyledBadge>
               {/* < alt="Son Goku" src={goku}/> */}
-              <Stack>
+              <Stack sx={{ maxWidth: "6rem" }}>
                 <Typography
-                  sx={{ color: "white", fontSize: "0.9rem", fontWeight: "500" }}
+                  sx={{
+                    color: "white",
+                    fontSize: "0.9rem",
+                    fontWeight: "500",
+                    wordBreak: "break-word",
+                  }}
                 >
                   {getOtherUserInfo(el.users, loggedUser).firstName +
                     " " +
@@ -108,6 +114,7 @@ const ChatList = ({ searchList }) => {
                     color: "white",
                     fontSize: "0.8rem",
                     fontWeight: "400",
+                    wordBreak: "break-word",
                   }}
                 >
                   {textOverflow(el?.latestMessage?.content)}

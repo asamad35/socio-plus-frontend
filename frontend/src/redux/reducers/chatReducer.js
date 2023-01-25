@@ -85,6 +85,14 @@ const chatReducer = createSlice({
       .addCase(thunks.getAllMessages.rejected, (state, action) => {
         state.allMessagesLoader = false;
       })
+      .addCase(thunks.postSendMessage.pending, (state, action) => {
+        const payload = action.meta.arg;
+        const messageIdx = state.allMessages.findIndex(
+          (el) => el.uuid === payload.uuid
+        );
+        const targetMssg = state.allMessages[messageIdx];
+        if (targetMssg) targetMssg.messageStatus = "sending";
+      })
       .addCase(thunks.postSendMessage.fulfilled, (state, action) => {
         const payload = action.meta.arg;
         const messageIdx = state.allMessages.findIndex(
@@ -98,7 +106,22 @@ const chatReducer = createSlice({
           (el) => el.uuid === payload.uuid
         );
         state.allMessages[messageIdx].messageStatus = "error";
-      });
+      })
+      .addCase(thunks.postAccessChat.pending, (state, action) => {})
+      .addCase(thunks.postAccessChat.fulfilled, (state, action) => {
+        const chatExist = state.chatList.find(
+          (el) => el._id === action.payload._id
+        );
+        if (!chatExist) {
+          state.chatList.unshift(action.payload);
+        }
+        state.selectedChat = action.payload;
+
+        const { document, setSearchList } = action.meta.arg;
+        document.querySelector(".searchInput").firstElementChild.value = "";
+        setSearchList("");
+      })
+      .addCase(thunks.postAccessChat.rejected, (state, action) => {});
   },
 });
 

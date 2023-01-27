@@ -6,8 +6,16 @@ import Message from "../Message";
 const ChatBody = () => {
   const allMessages = useSelector((state) => state.chatReducer.allMessages);
   const bottomRef = useRef(null);
+  const renderRef = useRef(0);
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "auto" });
+    if (renderRef.current === 0) {
+      setTimeout(() => {
+        bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+      }, 1000);
+      renderRef.current++;
+    } else {
+      bottomRef.current?.scrollIntoView({ behavior: "auto" });
+    }
   }, [allMessages]);
   return (
     <Box className="chatBody">

@@ -39,10 +39,16 @@ function App() {
             path="/chatUI"
             element={
               <>
-                <div style={{ display: "flex", height: "100%" }}>
-                  <InfoDrawer />
+                <div
+                  style={{
+                    display: "flex",
+                    height: "100%",
+                    position: "relative",
+                  }}
+                >
                   <SideSearch />
                   <ChatWindow />
+                  <InfoDrawer />
                 </div>
               </>
             }

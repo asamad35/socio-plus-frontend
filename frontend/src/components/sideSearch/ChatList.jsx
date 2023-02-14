@@ -21,7 +21,9 @@ const ChatList = ({ searchList }) => {
     dispatch(getChatList());
   }, []);
 
-  useEffect(() => {}, [selectedChat]);
+  useEffect(() => {
+    dispatch(getAllMessages({ chatID: selectedChat._id }));
+  }, [selectedChat]);
 
   function textOverflow(text = " ") {
     let overflow = text.length > 20 ? "..." : "";
@@ -68,7 +70,6 @@ const ChatList = ({ searchList }) => {
             style={{ cursor: "pointer" }}
             onClick={() => {
               dispatch(actions.setSelectedChat(el));
-              dispatch(getAllMessages({ chatID: el._id }));
             }}
           >
             <Box

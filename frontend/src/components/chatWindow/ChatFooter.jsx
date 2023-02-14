@@ -91,6 +91,11 @@ const ChatFooter = () => {
       {!showKeyboard && <AudioMessagePreview />}
       {showKeyboard && (
         <textarea
+          onKeyPress={(e) => {
+            if (e.key === "Enter") {
+              onClick();
+            }
+          }}
           onChange={(e) => {
             setText(e.target.value);
             if (status === null) dispatch(actions.setStatus("typing"));

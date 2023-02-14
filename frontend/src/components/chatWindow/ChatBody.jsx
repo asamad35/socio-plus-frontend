@@ -11,7 +11,7 @@ const ChatBody = () => {
     if (renderRef.current === 0) {
       setTimeout(() => {
         bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-      }, 1000);
+      }, 300);
       renderRef.current++;
     } else {
       bottomRef.current?.scrollIntoView({ behavior: "auto" });

@@ -24,7 +24,7 @@ cloudinary.config({
   secure: true,
 });
 
-app.use(morgan("tiny"));
+// app.use(morgan("tiny"));
 
 // import routes here
 const signupRoute = require("./routes/signupRoute");
@@ -45,8 +45,5 @@ app.use((err, req, res, next) => {
     stack: err.stack,
   });
 });
-// app.post("/api/v1/signup", (req, res) => {
-//   res.send("success");
-// });
 
 module.exports = app;

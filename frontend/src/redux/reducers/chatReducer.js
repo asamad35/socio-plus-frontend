@@ -16,7 +16,7 @@ const initialState = {
   chatListLoader: null,
   selectedChat: null,
   allMessages: [],
-  allMessagesLoader: false,
+  chatLoader: false
 };
 const chatReducer = createSlice({
   name: "chatReducer",
@@ -76,14 +76,14 @@ const chatReducer = createSlice({
         state.chatListLoader = false;
       })
       .addCase(thunks.getAllMessages.pending, (state, action) => {
-        state.allMessagesLoader = true;
+        state.chatLoader = true;
       })
       .addCase(thunks.getAllMessages.fulfilled, (state, action) => {
         state.allMessages = action.payload;
-        state.allMessagesLoader = false;
+        state.chatLoader = false;
       })
       .addCase(thunks.getAllMessages.rejected, (state, action) => {
-        state.allMessagesLoader = false;
+        state.chatLoader = false;
       })
       .addCase(thunks.postSendMessage.pending, (state, action) => {
         const payload = action.meta.arg;

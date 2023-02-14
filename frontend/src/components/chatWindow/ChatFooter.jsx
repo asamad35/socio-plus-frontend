@@ -18,7 +18,7 @@ import useLongPress from "../../customHooks/useLongPress";
 import ClickAnimation from "../ClickAnimation";
 import { postSendMessage } from "../../thunks";
 
-const ChatFooter = () => {
+const ChatFooter = ({ socket }) => {
   const dispatch = useDispatch();
   const recordingState = useSelector(
     (state) => state.chatReducer.recordingState
@@ -33,8 +33,29 @@ const ChatFooter = () => {
 
   const loggedUser = useSelector((state) => state.authReducer.user);
   const selectedChat = useSelector((state) => state.chatReducer.selectedChat);
+  const allMessages = useSelector((state) => state.chatReducer.allMessages);
 
   const emojiContainer = useRef(null);
+
+  useEffect(() => {
+    if (!selectedChat) return;
+    socket.emit("chatSelected", { loggedUser, selectedChat });
+
+    return () => {
+      socket.emit("leaveRoom", { loggedUser, selectedChat });
+    };
+  }, [selectedChat]);
+
+  useEffect(() => {
+    // update chats
+    socket.on("updateMessages", (message) => {
+      console.log("updating messages");
+      dispatch(actions.pushSendMessage(message));
+    });
+    return () => {
+      socket.off();
+    };
+  }, [allMessages]);
 
   const callbackFn = useCallback((args) => {
     dispatch(actions.setStatus(null));
@@ -64,6 +85,11 @@ const ChatFooter = () => {
         uuid,
       })
     );
+    socket.emit("newMessage", {
+      chat: selectedChat._id,
+      content: text,
+      sender: { ...loggedUser },
+    });
     setText("");
     console.log("click is triggered");
   };

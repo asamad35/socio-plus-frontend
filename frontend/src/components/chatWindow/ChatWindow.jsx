@@ -15,23 +15,24 @@ const ChatWindow = () => {
   const navigate = useNavigate();
   const token = useSelector((state) => state.authReducer.token);
   const chatLoader = useSelector((state) => state.chatReducer.chatLoader);
+  const selectedChat = useSelector((state) => state.chatReducer.selectedChat);
 
   // socket
   useEffect(() => {
     console.log("hi");
     socket.on("connect", () => {
-      alert("Connected to socket");
+      console.log("Connected to socket");
     });
 
     return () => {
-      socket.disconnect();
+      // socket.disconnect();
     };
   }, []);
 
   useEffect(() => {
     if (!token) navigate("/login");
   }, [token]);
-
+  console.log({ selectedChat });
   return (
     <Box
       sx={{
@@ -48,11 +49,13 @@ const ChatWindow = () => {
         <div className="chat-loader">
           <CircularProgress size={130} />
         </div>
-      ) : (
+      ) : selectedChat ? (
         <ChatBody />
+      ) : (
+        <div></div>
       )}
 
-      <ChatFooter />
+      <ChatFooter socket={socket} />
     </Box>
   );
 };

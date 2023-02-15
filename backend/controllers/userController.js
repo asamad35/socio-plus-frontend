@@ -87,8 +87,8 @@ exports.allUsers = bigPromise(async (req, res, next) => {
 
   const users = await UserSchema.find(keyword);
 
-  const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-  await sleep(2000);
+  // const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+  // await sleep(2000);
   res.json({ data: users, message: "list of users" });
 });
 

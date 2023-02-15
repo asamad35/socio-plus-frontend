@@ -5,8 +5,10 @@ import * as services from "../services";
 import { toast } from "react-toastify";
 export const postSignup = createAsyncThunk("postSignup", async (payload) => {
   const data = await services.postSignup(payload);
-  if (data.data) toast.success(data.message);
-  else {
+  if (data.data) {
+    toast.success(data.message);
+    localStorage.setItem("socioPlusToken", data.token);
+  } else {
     toast.error(data.message);
     throw new Error();
   }

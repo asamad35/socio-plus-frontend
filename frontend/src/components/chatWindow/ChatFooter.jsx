@@ -39,10 +39,10 @@ const ChatFooter = ({ socket }) => {
 
   useEffect(() => {
     if (!selectedChat) return;
-    socket.emit("chatSelected", { loggedUser, selectedChat });
+    selectedChat && socket.emit("chatSelected", { loggedUser, selectedChat });
 
     return () => {
-      socket.emit("leaveRoom", { loggedUser, selectedChat });
+      selectedChat && socket.emit("leaveRoom", { loggedUser, selectedChat });
     };
   }, [selectedChat]);
 
@@ -52,12 +52,29 @@ const ChatFooter = ({ socket }) => {
       console.log("updating messages");
       dispatch(actions.pushSendMessage(message));
     });
+
     return () => {
-      socket.off();
+      socket.off("updateMessages");
     };
   }, [allMessages]);
 
+  useEffect(() => {
+    socket.on("userIsTyping", () => {
+      console.log("user typing : started");
+      dispatch(actions.setStatus("typing"));
+    });
+    socket.on("userStoppedTyping", () => {
+      console.log("user typing : stopped");
+      dispatch(actions.setStatus(null));
+    });
+    return () => {
+      socket.off("userIsTyping");
+      socket.off("userStoppedTyping");
+    };
+  });
+
   const callbackFn = useCallback((args) => {
+    args[1].emit("stoppedTyping", args[0]);
     dispatch(actions.setStatus(null));
   }, []);
   const debounceClosure = useCallback(debounce(callbackFn, 1000), []);
@@ -123,9 +140,13 @@ const ChatFooter = ({ socket }) => {
             }
           }}
           onChange={(e) => {
+            console.log("qqqq", selectedChat);
+            if (!selectedChat) return;
             setText(e.target.value);
-            if (status === null) dispatch(actions.setStatus("typing"));
-            debounceClosure("abcd", "efgh");
+            if (status === null) {
+              selectedChat && socket.emit("typing", selectedChat);
+            }
+            debounceClosure(selectedChat, socket);
           }}
           value={text}
           id="textbox"
@@ -195,8 +216,11 @@ const ChatFooter = ({ socket }) => {
                 }
               }}
               onEmojiSelect={(e) => {
+                if (!selectedChat) return;
+
                 setText(text + e.native);
-                if (status === null) dispatch(actions.setStatus("typing"));
+                if (status === null)
+                  selectedChat && socket.emit("typing", selectedChat);
                 debounceClosure("abcd", "efgh");
               }}
               data={data}

@@ -16,7 +16,7 @@ const initialState = {
   chatListLoader: null,
   selectedChat: null,
   allMessages: [],
-  chatLoader: false
+  chatLoader: false,
 };
 const chatReducer = createSlice({
   name: "chatReducer",
@@ -51,6 +51,9 @@ const chatReducer = createSlice({
     },
     pushSendMessage(state, action) {
       state.allMessages.push(action.payload);
+    },
+    updateOnlineChatList(state, action) {
+      state.chatList = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -136,5 +139,6 @@ export const {
   setSearchUserListLoader,
   setSelectedChat,
   pushSendMessage,
+  updateOnlineChatList,
 } = chatReducer.actions;
 export default chatReducer.reducer;

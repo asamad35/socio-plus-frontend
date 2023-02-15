@@ -18,31 +18,54 @@ app.get("/", (req, res) => {
   res.sendFile(__dirname + "/index.html");
 });
 
+let onlineUsers = [];
+
 io.on("connection", (socket) => {
-  console.log("a user connected");
+  console.log("a user connected", { socketID: socket.id });
+
+  // add user to list of online users
+  socket.on("new-user", (user) => {
+    onlineUsers.push({ ...user, socketID: socket.id });
+    // console.log({ userId, socketID: socket.id });
+    io.emit("onlinUsersList", onlineUsers);
+  });
 
   // user joining room based on chat id
   socket.on("chatSelected", ({ loggedUser, selectedChat }) => {
     socket.join(selectedChat._id);
-    console.log(
-      "user " + loggedUser._id + " joined the room " + selectedChat._id
-    );
+    // console.log(
+    //   "user " + loggedUser._id + " joined the room " + selectedChat._id
+    // );
   });
 
   socket.on("newMessage", (message) => {
     socket.to(message.chat).emit("updateMessages", message);
-    console.log({ message });
+  });
+
+  socket.on("typing", (selectedChat) => {
+    console.log("startTyping");
+    socket.to(selectedChat._id).emit("userIsTyping");
+  });
+
+  socket.on("stoppedTyping", (selectedChat) => {
+    console.log("stoppedTyping");
+    socket.to(selectedChat._id).emit("userStoppedTyping");
   });
 
   // user leaving room based on chat id
   socket.on("leaveRoom", ({ loggedUser, selectedChat }) => {
     socket.leave(selectedChat._id);
-    console.log(
-      "user " + loggedUser._id + " left the room " + selectedChat._id
-    );
   });
 
-  socket.on("disconnecting", (loggedUser) => {
+  socket.on("disconnecting", () => {
+    // remove user from online list
+    onlineUsers = onlineUsers.filter((el) => {
+      // console.log(el.socketID, socket.id);
+      return el.socketID !== socket.id;
+    });
+    // console.log({ onlineUsers });
+    io.emit("onlinUsersList", onlineUsers);
+
     console.log("socket disconnected");
   });
 });

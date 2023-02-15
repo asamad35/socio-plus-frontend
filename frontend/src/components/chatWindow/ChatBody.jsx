@@ -1,18 +1,18 @@
-import { Badge, Box, duration, Tooltip, Typography } from "@mui/material";
-import React, { useEffect, useRef } from "react";
+import { Box } from "@mui/material";
+import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import Message from "../Message";
 
-const ChatBody = () => {
+const ChatBody = ({ smoothScroll, setSmoothScroll }) => {
   const allMessages = useSelector((state) => state.chatReducer.allMessages);
   const bottomRef = useRef(null);
-  const renderRef = useRef(0);
   useEffect(() => {
-    if (renderRef.current === 0) {
+    if (smoothScroll) {
+      console.log("hiii upar", smoothScroll);
       setTimeout(() => {
         bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-      }, 300);
-      renderRef.current++;
+        setSmoothScroll(false);
+      }, 1000);
     } else {
       bottomRef.current?.scrollIntoView({ behavior: "auto" });
     }

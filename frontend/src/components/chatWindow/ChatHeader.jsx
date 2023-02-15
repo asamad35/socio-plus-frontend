@@ -10,10 +10,22 @@ import { useState } from "react";
 import { useEffect } from "react";
 import ClickAnimation from "../ClickAnimation";
 import { toast } from "react-toastify";
+import { getOtherUserInfo } from "../../helper";
+import { useMemo } from "react";
 
 const ChatHeader = () => {
   const dispatch = useDispatch();
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const loggedUser = useSelector((state) => state.authReducer.user);
+  const selectedChat = useSelector((state) => state.chatReducer.selectedChat);
+
+  const otherUser = useMemo(
+    () => getOtherUserInfo(selectedChat?.users, loggedUser),
+    [selectedChat]
+  );
+
+  console.log({ otherUser });
 
   // hide menu on outside click
   useEffect(() => {
@@ -53,7 +65,9 @@ const ChatHeader = () => {
           marginRight: "15px",
         }}
       >
-        Elizabeth Nelson
+        {otherUser
+          ? otherUser.firstName + " " + otherUser.lastName
+          : "Select a chat"}
       </Typography>
 
       {/* typing animation */}
@@ -184,6 +198,7 @@ const ChatHeader = () => {
             </p>
             <p
               onClick={() => {
+                dispatch(actions.setSelectedChat(null));
                 dispatch(actions.logout());
               }}
               className="menu-items"

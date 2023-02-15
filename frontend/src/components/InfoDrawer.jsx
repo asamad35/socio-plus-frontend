@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import * as actions from "../redux/actions";
 import ModeEditOutlineOutlinedIcon from "@mui/icons-material/ModeEditOutlineOutlined";
@@ -9,7 +9,7 @@ import ClearOutlinedIcon from "@mui/icons-material/ClearOutlined";
 import ClickAnimation from "./ClickAnimation";
 import ScaleDivsAnimation from "./ScaleDivsAnimation";
 import { postUpdateName, postUpdatePhoto, postUpdateStatus } from "../thunks";
-import { getFormData } from "../helper";
+import { getFormData, getOtherUserInfo } from "../helper";
 import { CircularProgress } from "@mui/material";
 
 const InfoDrawer = () => {
@@ -20,9 +20,13 @@ const InfoDrawer = () => {
   const isUserProfile = useSelector((state) => state.chatReducer.isUserProfile);
   const loggedUser = useSelector((state) => state.authReducer.user);
   const authReducer = useSelector((state) => state.authReducer);
-  const selectedUser = useSelector((state) => state.chatReducer.selectedUser);
+  const selectedChat = useSelector((state) => state.chatReducer.selectedChat);
 
-  console.log({ loggedUser });
+  const otherUser = useMemo(
+    () => getOtherUserInfo(selectedChat?.users, loggedUser),
+    [selectedChat]
+  );
+
   useEffect(() => {
     setStatusInput({ ...statusInput, value: loggedUser.status });
     setNameInput({
@@ -38,7 +42,10 @@ const InfoDrawer = () => {
         className={`info-drawer ${infoDrawer === true ? "active" : ""}`}
       >
         <div className="profile-pic">
-          <img src={loggedUser.photoUrl} alt="profile-img" />
+          <img
+            src={isUserProfile ? loggedUser?.photoUrl : otherUser?.photoUrl}
+            alt="profile-img"
+          />
           {isUserProfile && (
             <ClickAnimation className="edit-pic">
               <input
@@ -72,7 +79,13 @@ const InfoDrawer = () => {
             <div className="name">
               <h4>Name</h4>
               <ScaleDivsAnimation openState={nameInput.open}>
-                <p>{loggedUser.firstName + " " + loggedUser.lastName}</p>
+                <p>
+                  {isUserProfile
+                    ? loggedUser.firstName + " " + loggedUser.lastName
+                    : otherUser
+                    ? otherUser.firstName + " " + otherUser.lastName
+                    : "Select a chat"}
+                </p>
                 <input
                   onChange={(e) => {
                     setNameInput({
@@ -131,7 +144,7 @@ const InfoDrawer = () => {
               <ScaleDivsAnimation openState={statusInput.open}>
                 {isUserProfile
                   ? loggedUser.status
-                  : selectedUser?.status || "selected user status"}
+                  : otherUser?.status || "selected a chat"}
                 <textarea
                   value={statusInput.value}
                   onChange={(e) => {

@@ -28,9 +28,10 @@ export function getFormData(obj = {}) {
 }
 
 export function getOtherUserInfo(usersArr, loggedUser) {
+  if (!loggedUser || !usersArr) return null;
   let otherUserInfo = {};
 
-  usersArr.forEach((el) => {
+  usersArr?.forEach((el) => {
     if (el._id !== loggedUser._id) otherUserInfo = el;
   });
 

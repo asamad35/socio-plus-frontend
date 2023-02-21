@@ -1,4 +1,4 @@
-import "./App.scss";
+import "./index.scss";
 import { Container } from "@mui/material";
 import SideSearch from "./components/sideSearch/SideSearch";
 import ChatWindow from "./components/chatWindow/ChatWindow";
@@ -6,57 +6,34 @@ import Login from "./components/Authentication/Login";
 import Signup from "./components/Authentication/Signup";
 import InfoDrawer from "./components/InfoDrawer";
 
-import { Route } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import ReactSlideRoutes from "react-slide-routes";
 import ToastMessage from "./components/ToastMessage";
 
-function App() {
+export default function App() {
   return (
-    <div className="outer">
-      <Container
-        maxWidth="lg"
-        sx={{
-          backgroundColor: "white",
-          display: "flex",
-          justifyContent: "flex-start",
-          alignItems: "center",
-          height: "90%",
-          width: "60%",
-          borderRadius: "1.5rem",
-          overflow: "hidden",
-          padding: { xs: "0" },
-          position: "relative",
-          boxShadow:
-            "0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)",
-        }}
-      >
+    <div className="grid h-screen w-screen place-items-center bg-secondary">
+      <section className="bg-white h-screen w-screen md:w-4/5 md:h-5/6 md:rounded-2xl md:max-w-5xl md:shadow-2xl">
         <ToastMessage />
-
-        <ReactSlideRoutes duration={500} timing={"ease-in-out"}>
+        <Routes>
+          {/* <ReactSlideRoutes duration={500} timing={"ease-in-out"}> */}
           <Route path="/" element={<Signup />} />
           <Route path="/login" element={<Login />} />
           <Route
             path="/chatUI"
             element={
               <>
-                <div
-                  style={{
-                    display: "flex",
-                    height: "100%",
-                    position: "relative",
-                  }}
-                >
+                <div className="flex w-full h-full md:rounded-2xl">
                   <SideSearch />
-                  <ChatWindow />
-                  <InfoDrawer />
+                  {/* <ChatWindow /> */}
+                  {/* <InfoDrawer /> */}
                 </div>
               </>
             }
           />
-        </ReactSlideRoutes>
-      </Container>
+          {/* </ReactSlideRoutes> */}
+        </Routes>
+      </section>
     </div>
   );
 }
-
-export default App;

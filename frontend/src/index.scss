@@ -1,22 +1,14 @@
-@import url('https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
+  @import url('https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&display=swap');
 *{
   box-sizing: border-box;
   margin: 0;
   padding: 0;
   font-family: 'Rubik', sans-serif !important;
 }
-
-.outer{
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding-bottom: 2rem;
-  height: 100vh;
-  width: 100vw;
-  background-color: #a9c0ff;
-}
-
 
 /* width */
 ::-webkit-scrollbar {
@@ -137,27 +129,13 @@
 }
 
 /*  authetication */
-.authentication{
-  width: 100%;
-  height: 100%;
-  display: flex;
-  position: absolute;
-}
-.authentication-left{
-  width: 40%;
-  background-color: #2962ff;
-  height: 100%;
-  display: grid;
-  place-items: center;
+.image{
+  // background-image: url('./assets/auth.jpg');
+  background-size: cover;
+  height: 70%;
+  width: 70%;
+  border-radius: 1rem;
 
-  .image{
-    background-image: url('./assets/authentication-bg.jpg');
-    background-size: cover;
-    height: 70%;
-    width: 70%;
-    border-radius: 1rem;
-
-  }
 }
 .authentication-right{
   width: 60%;
@@ -281,15 +259,7 @@
 }
 }
 
-.password-box{
-  // background-color: #E8F0FE;
-  display: flex;
-  border: 2px solid #cdcdcd;
-  align-items: center;
-  border-radius: 0.6rem;
-  margin-bottom: 14px;
-  background-color: #E8F0FE;
-}
+
 
 .password-input{
   padding: 0.6rem;
@@ -303,17 +273,15 @@
   font-weight: 400;
 }
 
-.validation-form{
   .errorPara{
   margin-bottom: 10px;
     font-size: 12px;
-    margin-top: -8px;
+    // margin-top: -8px;
     color: red;
 }
 .errorPara::before {
   display: inline;
   content: "⚠ ";
-}
 }
 .go-to-signup{
   font-size: 13px;

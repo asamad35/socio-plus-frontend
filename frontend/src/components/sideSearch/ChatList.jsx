@@ -61,91 +61,95 @@ const ChatList = ({ searchList }) => {
 
   return (
     <div
-      className={`chat-list-container  ${searchList ? "search-active" : ""}`}
+      className={`chat-list-container w-full flex flex-col h-full ${
+        searchList ? "search-active" : ""
+      }`}
     >
-      <h2 className="my-chats-heading">My Chats</h2>
-      <Box sx={{ overflowY: "scroll", overflowX: "hidden", height: "90%" }}>
-        {chatList?.map((el, idx) => {
-          return (
-            <ClickAnimation
-              key={idx}
-              style={{ cursor: "pointer" }}
-              onClick={() => {
-                dispatch(actions.setSelectedChat(el));
-              }}
-            >
-              <Box
-                sx={{
-                  display: "flex",
-                  gap: "1rem",
-                  alignItems: "center",
-                  justifyContent: "start",
-                  padding: "0.5rem 2rem",
-                  marginBottom: "0.5rem",
-                  transition: "0.2s ease-in",
-                  backgroundColor: `${
-                    selectedChat?._id === el._id ? "#7ea0ff" : ""
-                  }`,
-                  "&:hover": {
-                    backgroundColor: "#7ea0ff",
-                  },
+      <h2 className="text-white text-xl mb-4 ml-8">My Chats</h2>
+      <div className="h-full">
+        {[...chatList, ...chatList, ...chatList, ...chatList]?.map(
+          (el, idx) => {
+            return (
+              <ClickAnimation
+                key={idx}
+                style={{ cursor: "pointer" }}
+                onClick={() => {
+                  dispatch(actions.setSelectedChat(el));
                 }}
               >
-                {el?.active ? (
-                  <StyledBadge
-                    overlap="circular"
-                    anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-                    variant="dot"
-                  >
-                    <Avatar alt="Remy Sharp" src={goku} />
-                  </StyledBadge>
-                ) : (
-                  <Avatar alt="Remy Sharp" src={goku} />
-                )}
-
-                {/* < alt="Son Goku" src={goku}/> */}
-                <Stack sx={{ maxWidth: "6rem" }}>
-                  <Typography
-                    sx={{
-                      color: "white",
-                      fontSize: "0.9rem",
-                      fontWeight: "500",
-                      wordBreak: "break-word",
-                    }}
-                  >
-                    {getOtherUserInfo(el.users, loggedUser)?.firstName +
-                      " " +
-                      getOtherUserInfo(el.users, loggedUser)?.lastName}
-                  </Typography>
-                  <Typography
-                    sx={{
-                      color: "white",
-                      fontSize: "0.8rem",
-                      fontWeight: "400",
-                      wordBreak: "break-word",
-                    }}
-                  >
-                    {textOverflow(el?.latestMessage?.content)}
-                  </Typography>
-                </Stack>
-                <Avatar
+                <Box
                   sx={{
-                    backgroundColor: "white",
-                    marginLeft: "auto",
-                    color: "#2962ff",
-                    width: "1.1rem",
-                    height: "1.1rem",
-                    fontSize: "0.8rem",
-                    fontWeight: "400",
+                    display: "flex",
+                    gap: "1rem",
+                    alignItems: "center",
+                    justifyContent: "start",
+                    padding: "0.5rem 2rem",
+                    marginBottom: "0.5rem",
+                    transition: "0.2s ease-in",
+                    backgroundColor: `${
+                      selectedChat?._id === el._id ? "#7ea0ff" : ""
+                    }`,
+                    "&:hover": {
+                      backgroundColor: "#7ea0ff",
+                    },
                   }}
                 >
-                  10
-                </Avatar>
-              </Box>
-            </ClickAnimation>
-          );
-        })}
-      </Box>
+                  {el?.active ? (
+                    <StyledBadge
+                      overlap="circular"
+                      anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                      variant="dot"
+                    >
+                      <Avatar alt="Remy Sharp" src={goku} />
+                    </StyledBadge>
+                  ) : (
+                    <Avatar alt="Remy Sharp" src={goku} />
+                  )}
+
+                  {/* < alt="Son Goku" src={goku}/> */}
+                  <Stack sx={{ maxWidth: "6rem" }}>
+                    <Typography
+                      sx={{
+                        color: "white",
+                        fontSize: "0.9rem",
+                        fontWeight: "500",
+                        wordBreak: "break-word",
+                      }}
+                    >
+                      {getOtherUserInfo(el.users, loggedUser)?.firstName +
+                        " " +
+                        getOtherUserInfo(el.users, loggedUser)?.lastName}
+                    </Typography>
+                    <Typography
+                      sx={{
+                        color: "white",
+                        fontSize: "0.8rem",
+                        fontWeight: "400",
+                        wordBreak: "break-word",
+                      }}
+                    >
+                      {textOverflow(el?.latestMessage?.content)}
+                    </Typography>
+                  </Stack>
+                  <Avatar
+                    sx={{
+                      backgroundColor: "white",
+                      marginLeft: "auto",
+                      color: "#2962ff",
+                      width: "1.1rem",
+                      height: "1.1rem",
+                      fontSize: "0.8rem",
+                      fontWeight: "400",
+                    }}
+                  >
+                    10
+                  </Avatar>
+                </Box>
+              </ClickAnimation>
+            );
+          }
+        )}
+      </div>
     </div>
   );
 };

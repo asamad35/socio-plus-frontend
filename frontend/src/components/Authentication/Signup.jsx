@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import * as actions from "../../redux/actions/index";
 import { useDispatch, useSelector } from "react-redux";
 import { postSignup } from "../../thunks";
+import AuthLeft from "./AuthLeft";
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -49,170 +50,221 @@ const Signup = () => {
   }, [token]);
 
   return (
-    <div className="authentication signup">
-      {/* <div className="authentication signup"> */}
-      <div className="authentication-left">
-        <div className="image"></div>
-      </div>
-      <div className="authentication-right">
-        <div className="right-inner">
-          <h1 className="app-name">SocioPlus</h1>
-          <h1 className="heading">Sign up</h1>
-          <p className="heading-info">
+    <div className="signup-auth flex h-full w-full">
+      <AuthLeft signup={"signup"} />
+
+      <section className="grid place-items-center basis-full md:basis-2/3 ">
+        <div className="flex flex-col items-start m-4 w-4/5">
+          <h1 className="text-3xl font-bold text-primary mb-6">SocioPlus</h1>
+          <h1 className="text-xl mb-1 font-semibold">Sign in</h1>
+          <p className="text-sm text-gray-500 font-semibold mb-6 ">
             Few steps away from connecting to the world.
           </p>
-          <form className="validation-form" onSubmit={handleSubmit(onSubmit)}>
-            <div className="user-name">
-              <div className="first-name">
-                <label htmlFor="first-name" className="authentication-label">
+          <form
+            className="validation-form w-full "
+            onSubmit={handleSubmit(onSubmit)}
+          >
+            {/* name */}
+            <div className="flex flex-col gap-1 w-full md:gap-3 md:flex-row mb-4">
+              <div className="name flex-1">
+                <label
+                  htmlFor="first-name"
+                  className="block text-sm mb-1 text-input font-medium"
+                >
                   First Name
                 </label>
                 <input
                   {...register("firstName")}
                   type="text"
-                  className="authentication-input"
+                  className="bg-input p-2 text-sm rounded-xl text-input border-2 border-input focus:border-input-focus outline-0 w-full"
                   id="first-name"
                   placeholder="First Name"
                 />
                 {<AuthError errors={errors} field="firstName" />}
               </div>
-              <div className="last-name">
-                <label htmlFor="last-name" className="authentication-label">
+              <div className="name flex-1">
+                <label
+                  htmlFor="last-name"
+                  className="block text-sm mb-1 text-input font-medium"
+                >
                   Last Name
                 </label>
                 <input
                   {...register("lastName")}
                   type="text"
-                  className="authentication-input"
+                  className="bg-input p-2 text-sm rounded-xl text-input border-2 border-input focus:border-input-focus outline-0 w-full"
                   id="last-name"
                   placeholder="Last Name"
                 />
                 {<AuthError errors={errors} field="lastName" />}
               </div>
             </div>
-            <label htmlFor="email" className="authentication-label">
-              Email
-            </label>
-            <input
-              {...register("email")}
-              type="text"
-              className="authentication-input"
-              id="email"
-              placeholder="Enter your email"
-            />
-            {<AuthError errors={errors} field="email" />}
+            {/* email */}
+            <div className="flex flex-col gap-1 w-full md:gap-3 md:flex-row mb-4">
+              <div className="name flex-1">
+                <label
+                  htmlFor="email"
+                  className="block text-sm mb-1 text-input font-medium"
+                >
+                  Email
+                </label>
+                <input
+                  {...register("email")}
+                  type="text"
+                  className="bg-input p-2 text-sm rounded-xl text-input border-2 border-input focus:border-input-focus outline-0 w-full"
+                  id="email"
+                  placeholder="Email"
+                />
+                {<AuthError errors={errors} field="email" />}
+              </div>
+              <div className="name flex-1">
+                <label
+                  htmlFor="phone-number"
+                  className="block text-sm mb-1 text-input font-medium"
+                >
+                  Phone Number
+                </label>
+                <input
+                  {...register("phoneNumber")}
+                  type="text"
+                  className="bg-input p-2 text-sm rounded-xl text-input border-2 border-input focus:border-input-focus outline-0 w-full"
+                  id="phone-number"
+                  placeholder="Phone Number"
+                />
+                {<AuthError errors={errors} field="phoneNumber" />}
+              </div>
+            </div>
+            {/* password */}
+            <div className="flex flex-col gap-1 w-full md:gap-3 md:flex-row mb-4">
+              <div className="pass flex-1">
+                <label
+                  htmlFor="password"
+                  className="block text-sm mb-1 text-input font-medium"
+                >
+                  Password
+                </label>
+                <div className="flex items-center bg-input border-2 rounded-xl border-input focus:border-input-focus">
+                  <input
+                    {...register("password")}
+                    type={isPassVisible ? "text" : "password"}
+                    className="bg-input p-2 rounded-xl text-sm text-input outline-0 w-full "
+                    id="password"
+                    placeholder="Enter your password"
+                  />
+                  {!isPassVisible && (
+                    <VisibilityOffIcon
+                      onClick={() => {
+                        setIsPassVisible(!isPassVisible);
+                      }}
+                      className="mr-2"
+                      sx={{
+                        color: "#cdcdcd",
+                        cursor: "pointer",
+                      }}
+                    />
+                  )}
+                  {isPassVisible && (
+                    <VisibilityIcon
+                      onClick={() => {
+                        setIsPassVisible(!isPassVisible);
+                      }}
+                      sx={{
+                        color: "#cdcdcd",
+                        marginRight: "8px",
+                        cursor: "pointer",
+                      }}
+                    />
+                  )}
+                </div>
+                {<AuthError errors={errors} field="password" />}
+              </div>
+              <div className="pass flex-1">
+                <label
+                  htmlFor="password"
+                  className="block text-sm mb-1 text-input font-medium"
+                >
+                  Confirm Password
+                </label>
+                <div className="flex items-center bg-input border-2 rounded-xl border-input focus:border-input-focus">
+                  <input
+                    {...register("confirmPassword")}
+                    type={isConfirmPassVisible ? "text" : "password"}
+                    className="bg-input p-2  rounded-xl text-sm text-input outline-0 w-full "
+                    id="confirm-password"
+                    placeholder="Confirm your password"
+                  />
+                  {!isConfirmPassVisible && (
+                    <VisibilityOffIcon
+                      onClick={() => {
+                        setIsConfirmPassVisible(!isConfirmPassVisible);
+                      }}
+                      className="mr-2"
+                      sx={{
+                        color: "#cdcdcd",
+                        cursor: "pointer",
+                      }}
+                    />
+                  )}
+                  {isConfirmPassVisible && (
+                    <VisibilityIcon
+                      onClick={() => {
+                        setIsConfirmPassVisible(!isConfirmPassVisible);
+                      }}
+                      sx={{
+                        color: "#cdcdcd",
+                        marginRight: "8px",
+                        cursor: "pointer",
+                      }}
+                    />
+                  )}
+                </div>
+                {<AuthError errors={errors} field="confirmPassword" />}
+              </div>
+            </div>
 
-            <label htmlFor="password" className="authentication-label">
-              Password
-            </label>
-
-            <div className="password-box">
+            <div className="flex items-center">
               <input
-                {...register("password")}
-                type={isPassVisible ? "text" : "password"}
-                className="password-input"
-                id="password"
-                placeholder="Enter your password"
+                type="checkbox"
+                id="remember"
+                className="accent-primary cursor-pointer"
               />
-              {!isPassVisible && (
-                <VisibilityOffIcon
-                  onClick={() => {
-                    setIsPassVisible(!isPassVisible);
-                  }}
-                  sx={{
-                    color: "#cdcdcd",
-                    marginRight: "8px",
-                    cursor: "pointer",
-                  }}
-                />
-              )}
-              {isPassVisible && (
-                <VisibilityIcon
-                  onClick={() => {
-                    setIsPassVisible(!isPassVisible);
-                  }}
-                  sx={{
-                    color: "#cdcdcd",
-                    marginRight: "8px",
-                    cursor: "pointer",
-                  }}
-                />
-              )}
+              <label
+                htmlFor="remember"
+                className="text-sm ml-2 mr-auto text-input"
+              >
+                Remember me for 30 days
+              </label>
+              <span className="text-primary text-sm font-semibold cursor-pointer">
+                Forgot password?
+              </span>
             </div>
-            {<AuthError errors={errors} field="password" />}
-
-            <label htmlFor="password" className="authentication-label">
-              Confirm Password
-            </label>
-            <div className="password-box">
-              <input
-                {...register("confirmPassword")}
-                type={isConfirmPassVisible ? "text" : "password"}
-                className="password-input"
-                id="confirm-password"
-                placeholder="Confirm your password"
-              />
-              {!isConfirmPassVisible && (
-                <VisibilityOffIcon
-                  onClick={() => {
-                    setIsConfirmPassVisible(!isConfirmPassVisible);
-                  }}
-                  sx={{
-                    color: "#cdcdcd",
-                    marginRight: "8px",
-                    cursor: "pointer",
-                  }}
-                />
-              )}
-              {isConfirmPassVisible && (
-                <VisibilityIcon
-                  onClick={() => {
-                    setIsConfirmPassVisible(!isConfirmPassVisible);
-                  }}
-                  sx={{
-                    color: "#cdcdcd",
-                    marginRight: "8px",
-                    cursor: "pointer",
-                  }}
-                />
-              )}
-            </div>
-            {<AuthError errors={errors} field="confirmPassword" />}
-
-            <div className="remember-me">
-              <input {...register("rememberMe")} type="checkbox" />{" "}
-              <span className="remember-me-text">Remember me for 30 days</span>
-              <span className="forgot-password-text"> Forgot password</span>
-            </div>
-            <Button
+            <button
               type="submit"
-              className={`auth-button signin-button ${
-                authButton === "loading" ? "loading-button" : ""
+              className={`bg-primary flex justify-center text-white block px-4 py-2 rounded-xl w-full mt-6 ${
+                authButton === "loading" ? "opacity-80 pointer-events-none" : ""
               } `}
-              variant="contained"
-              disableElevation
             >
-              {
-                authButton === "loading" ? (
-                  <CircularProgress size={"25px"} className="button-loader" />
-                ) : (
-                  "Sign up"
-                )
-                // "Log in"
-              }
-            </Button>
+              {authButton === "loading" ? (
+                <CircularProgress size={"25px"} sx={{ color: "white" }} />
+              ) : (
+                "Sign in"
+              )}
+            </button>
+            <p
+              className=" text-sm text-center mt-8 mb-2"
+              onClick={() => {
+                navigate("/login");
+              }}
+            >
+              Already have an account?{" "}
+              <span className="text-primary font-semibold cursor-pointer">
+                {" "}
+                Log in{" "}
+              </span>
+            </p>
           </form>
-          <p
-            className="go-to-signup"
-            onClick={() => {
-              navigate("/login");
-            }}
-          >
-            Already have an account? <span> Log in </span>
-          </p>
         </div>
-      </div>
-      {/* </div> */}
+      </section>
     </div>
   );
 };

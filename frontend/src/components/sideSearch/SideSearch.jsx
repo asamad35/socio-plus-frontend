@@ -21,41 +21,24 @@ const SideSearch = () => {
   const debounceClosure = useCallback(debounce(callbackFn, 700), []);
 
   return (
-    <Box
-      sx={{
-        backgroundColor: "#2962ff",
-        // backgroundColor: "#fff",
-        height: "100%",
-        width: "25%",
-        minWidth: "16rem",
-        paddingTop: "2rem",
-        display: "flex",
-        flexDirection: "column",
-      }}
-    >
+    <section className="bg-primary flex flex-col justify-start items-start absolute w-4/5 h-full z-50 pt-6 ">
       {/* title  */}
-      <Box
+      <div
+        className="mb-6 px-8"
         onClick={() => {
           dispatch(actions.logout());
         }}
-        sx={{ marginBottom: "1.5rem", padding: "0rem 2rem" }}
       >
-        <Typography
-          variant="h1"
-          sx={{ fontSize: "22px", color: "white", fontWeight: "500" }}
-        >
-          Socio Plus
-        </Typography>
-      </Box>
+        <h1 className="text-2xl text-white font-medium">Socio Plus</h1>
+      </div>
 
       {/* search bar */}
 
-      <div className="search-box">
+      <div className="px-4 flex mb-6 mx-8 gap-2 bg-secondary rounded-xl w-4/5 justify-start items-center p-2 bg-[#7ea0ff]  ">
         <SearchOutlinedIcon sx={{ color: "white" }} />
         <InputBase
           className="searchInput"
           onChange={(e) => {
-            console.log(e.target.value, e.target.value.length, "ioioioioioioi");
             if (e.target.value.length === 0) {
               dispatch(setSearchUserListLoader(true));
               setSearchList(false);
@@ -69,15 +52,11 @@ const SideSearch = () => {
         ></InputBase>
       </div>
 
-      {/* chats list */}
-      {/* {!searchList && <ChatList />} */}
-      <div className="chat-search-list-container">
+      <div className="w-full flex overflow-y-scroll ">
         {<ChatList searchList={searchList} />}
-        {<SearchList setSearchList={setSearchList} searchList={searchList} />}
+        {/* {<SearchList setSearchList={setSearchList} searchList={searchList} />} */}
       </div>
-      {/* search List */}
-      {/* {searchList && <SearchList />} */}
-    </Box>
+    </section>
   );
 };
 

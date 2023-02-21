@@ -34,6 +34,11 @@ exports.login = bigPromise(async (req, res, next) => {
 
   if (!isPasswordValid) throw Error("Password does not match.");
 
+  const sleep = (ms) =>
+    new Promise((resolve) => setTimeout(() => resolve(), ms));
+
+  // await sleep(2000);
+  // throw Error();
   res.status(200).json({
     data: user,
     token: user.getJwtToken(),

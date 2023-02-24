@@ -15,12 +15,13 @@ const SearchList = ({ searchList, setSearchList }) => {
 
   return (
     <div
-      className={` search-list-container ${searchList ? "search-active" : ""}`}
+      className={` search-list-container w-full absolute top-0 left-0 flex flex-col h-full transition-all duration-300 ${
+        searchList ? "translate-x-0" : "translate-x-full"
+      }`}
     >
-      <h2 className="my-chats-heading">Search List</h2>
+      <h2 className="text-white text-xl mb-4 ml-8">Search List</h2>
       {searchUserListLoader ? (
         <div className="search-loader">
-          {/* <CircularProgress size={90} /> */}
           <Skeleton />
           <Skeleton />
           <Skeleton />
@@ -29,7 +30,9 @@ const SearchList = ({ searchList, setSearchList }) => {
           <Skeleton />
         </div>
       ) : (
-        <div className={`search-list`}>
+        <div
+          className={`h-full flex flex-col justify-start items-center gap-4`}
+        >
           {searchUserList.length ? (
             searchUserList.map((el, idx) => (
               <ClickAnimation
@@ -46,7 +49,10 @@ const SearchList = ({ searchList, setSearchList }) => {
                 }}
               >
                 {idx + 1}
-                <Avatar alt="Remy Sharp" src={el.photoUrl} />
+                <img
+                  className="rounded-full object-top object-cover w-12 h-12 "
+                  src={el.photoUrl}
+                />
                 <div className="search-user-info">
                   <Typography
                     sx={{

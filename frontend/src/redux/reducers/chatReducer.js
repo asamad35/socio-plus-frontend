@@ -1,5 +1,12 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, current } from "@reduxjs/toolkit";
 import * as thunks from "../../thunks";
+import sentAudio from "../../assets/sent-sound.mp3";
+import audioReceived from "../../assets/received-sound.mp3";
+import { showMessagePic } from "../../helper";
+
+const messageSentAudio = new Audio(sentAudio);
+const messageReceivedAudio = new Audio(audioReceived);
+
 const initialState = {
   audioPreviewUrl: "",
   recordingState: false,
@@ -50,10 +57,64 @@ const chatReducer = createSlice({
       state.selectedChat = action.payload;
     },
     pushSendMessage(state, action) {
-      state.allMessages.push(action.payload);
+      // update message list
+      if (state.allMessages.length === 0) {
+        state.allMessages.push({ ...action.payload, showPic: true });
+      } else {
+        const lastMssgSenderId =
+          state.allMessages[state.allMessages.length - 1].sender._id;
+
+        const newMssgSenderId = action.payload.sender._id;
+
+        if (lastMssgSenderId === newMssgSenderId) {
+          state.allMessages[state.allMessages.length - 1].showPic = false;
+        }
+
+        state.allMessages.push({ ...action.payload, showPic: true });
+      }
+      // sound effect
+      if (action.payload.received) {
+        console.log("received sound played");
+        messageReceivedAudio.play();
+      }
+
+      // update chat latest message
+      state.chatList = state.chatList.map((el) => {
+        if (el._id === action.payload.chat) {
+          return {
+            ...el,
+            latestMessage: action.payload,
+          };
+        } else {
+          return el;
+        }
+      });
+
+      // move the chatList el to the top
+      const chatIdx = state.chatList.findIndex(
+        (el) => el._id === state.selectedChat._id
+      );
+      console.log({ chatIdx });
+      if (chatIdx === 0) return;
+      const chatListEl = state.chatList.splice(chatIdx, 1);
+      state.chatList.unshift(chatListEl[0]);
     },
     updateOnlineChatList(state, action) {
       state.chatList = action.payload;
+    },
+    prependInChatList(state, action) {
+      const chatListEl = action.payload;
+
+      const chatIdx = state.chatList.findIndex(
+        (el) => el._id === chatListEl._id
+      );
+
+      if (chatIdx === -1) {
+        state.chatList.unshift(chatListEl);
+      } else {
+        state.chatList.splice(chatIdx, 1);
+        state.chatList.unshift(chatListEl);
+      }
     },
   },
   extraReducers: (builder) => {
@@ -82,7 +143,7 @@ const chatReducer = createSlice({
         state.chatLoader = true;
       })
       .addCase(thunks.getAllMessages.fulfilled, (state, action) => {
-        state.allMessages = action.payload;
+        state.allMessages = showMessagePic(action.payload);
         state.chatLoader = false;
       })
       .addCase(thunks.getAllMessages.rejected, (state, action) => {
@@ -102,6 +163,8 @@ const chatReducer = createSlice({
           (el) => el.uuid === payload.uuid
         );
         state.allMessages[messageIdx].messageStatus = "successful";
+
+        messageSentAudio.play();
       })
       .addCase(thunks.postSendMessage.rejected, (state, action) => {
         const payload = action.meta.arg;
@@ -140,5 +203,6 @@ export const {
   setSelectedChat,
   pushSendMessage,
   updateOnlineChatList,
+  prependInChatList,
 } = chatReducer.actions;
 export default chatReducer.reducer;

@@ -37,3 +37,18 @@ export function getOtherUserInfo(usersArr, loggedUser) {
 
   return otherUserInfo;
 }
+
+export function showMessagePic(allMessages) {
+  const messageList = allMessages.map((el, i) => {
+    if (
+      allMessages[i]?.sender?._id === allMessages[i + 1]?.sender?._id &&
+      i + 1 <= allMessages.length
+    ) {
+      return { ...el, showPic: false };
+    } else {
+      return { ...el, showPic: true };
+    }
+  });
+
+  return messageList;
+}

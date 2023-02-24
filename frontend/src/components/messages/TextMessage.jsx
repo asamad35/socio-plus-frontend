@@ -6,45 +6,30 @@ import * as actions from "../../redux/actions/index";
 import { postSendMessage } from "../../thunks";
 import { CircularProgress } from "@mui/material";
 
-const TextMessage = ({
-  sendOrReceived,
-  content,
-  profilePic,
-  messageStatus,
-  messageID,
-}) => {
+const TextMessage = ({ messageObj }) => {
   const dispatch = useDispatch();
   const selectedChat = useSelector((state) => state.chatReducer.selectedChat);
   const loggedUser = useSelector((state) => state.authReducer.user);
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        gap: "1rem",
-        margin: "1.5rem",
-        justifyContent: ` ${sendOrReceived === "received" ? "start" : "end"} `,
-        flexDirection: ` ${
-          sendOrReceived === "received" ? "row" : "row-reverse"
-        } `,
-        alignItems: "center",
-      }}
+    <div
+      className={`flex gap-2 m-4 items-center ${
+        messageObj.sendOrReceived === "received"
+          ? "justify-start flex-row"
+          : "flex-row-reverse"
+      }`}
     >
-      <Avatar alt="Remy Sharp" src={profilePic} />
-      <Typography
-        sx={{
-          fontSize: "1rem",
-          backgroundColor: "#dcdddc",
-          maxWidth: "20rem",
-          padding: "0.5rem",
-          borderRadius: "1rem",
-          wordWrap: "break-word",
-        }}
-      >
-        {content ?? " no text"}
-      </Typography>
+      <img
+        className={`rounded-full object-top object-cover w-10 h-10 ${
+          messageObj.showPic ? "opacity-100" : "opacity-0"
+        } `}
+        src={messageObj.sender.photoUrl}
+      />
+      <p className="text-base p-2 rounded-2xl break-words bg-[#dcdddc] max-w-[200px] sm:max-w-[250px] md:max-w-[300px]">
+        {messageObj.content ?? " no text"}
+      </p>
 
-      {messageStatus === "error" && (
+      {messageObj.messageStatus === "error" && (
         <ReplayOutlinedIcon
           sx={{ fill: "red" }}
           onClick={() => {
@@ -53,15 +38,15 @@ const TextMessage = ({
                 content: content,
                 chatID: selectedChat._id,
                 messageStatus: "sending",
-                uuid: messageID,
+                uuid: messageObj.uuid,
                 sender: { ...loggedUser },
               })
             );
           }}
         />
       )}
-      {messageStatus === "sending" && <CircularProgress size={20} />}
-    </Box>
+      {messageObj.messageStatus === "sending" && <CircularProgress size={20} />}
+    </div>
   );
 };
 

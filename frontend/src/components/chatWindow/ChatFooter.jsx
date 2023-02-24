@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useCallback, useRef, useEffect, useMemo } from "react";
 
 import { Box, Tooltip } from "@mui/material";
 import { v4 as uuidv4 } from "uuid";
@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from "uuid";
 import SendOutlinedIcon from "@mui/icons-material/SendOutlined";
 import AttachFileOutlinedIcon from "@mui/icons-material/AttachFileOutlined";
 import EmojiEmotionsOutlinedIcon from "@mui/icons-material/EmojiEmotionsOutlined";
-import { debounce } from "../../helper";
+import { debounce, getOtherUserInfo } from "../../helper";
 import { motion } from "framer-motion";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
@@ -26,6 +26,7 @@ const ChatFooter = ({ socket }) => {
   const status = useSelector((state) => state.chatReducer.status);
   const showMic = useSelector((state) => state.chatReducer.showMic);
   const showKeyboard = useSelector((state) => state.chatReducer.showKeyboard);
+  const chatList = useSelector((state) => state.chatReducer.chatList);
 
   const [emojiPicker, setEmojiPicker] = useState(false);
   const [text, setText] = useState("");
@@ -36,6 +37,11 @@ const ChatFooter = ({ socket }) => {
   const allMessages = useSelector((state) => state.chatReducer.allMessages);
 
   const emojiContainer = useRef(null);
+
+  const otherUser = useMemo(
+    () => getOtherUserInfo(selectedChat?.users, loggedUser),
+    [selectedChat]
+  );
 
   useEffect(() => {
     if (!selectedChat) return;
@@ -50,13 +56,25 @@ const ChatFooter = ({ socket }) => {
     // update chats
     socket.on("updateMessages", (message) => {
       console.log("updating messages");
-      dispatch(actions.pushSendMessage(message));
+      dispatch(actions.pushSendMessage({ ...message, received: true }));
     });
-
     return () => {
       socket.off("updateMessages");
     };
   }, [allMessages]);
+
+  useEffect(() => {
+    // update chats
+    socket.on("updateLatestMessage", (message) => {
+      console.log({ updateLatestMessage: message });
+      if (message.chat === selectedChat._id) return;
+
+      dispatch(actions.prependInChatList(message));
+    });
+    return () => {
+      socket.off("updateLatestMessage");
+    };
+  }, []);
 
   useEffect(() => {
     socket.on("userIsTyping", () => {
@@ -106,6 +124,8 @@ const ChatFooter = ({ socket }) => {
       chat: selectedChat._id,
       content: text,
       sender: { ...loggedUser },
+      otherUserId: otherUser._id,
+      selectedChat,
     });
     setText("");
     console.log("click is triggered");
@@ -128,7 +148,7 @@ const ChatFooter = ({ socket }) => {
         display: "flex",
         justifyContent: "flex-start",
         alignItems: "center",
-        boxShadow: " 0px 1px 7px rgb(50 50 50 / 56%);",
+        boxShadow: "0px 1px 7px rgb(50 50 50 / 56%);",
       }}
     >
       {!showKeyboard && <AudioMessagePreview />}
@@ -232,7 +252,7 @@ const ChatFooter = ({ socket }) => {
             />
           </motion.div>
         </div>
-        <ClickAnimation>
+        <ClickAnimation className="hidden md:block">
           <Tooltip title="Add emoji">
             <Box
               onMouseEnter={() => {

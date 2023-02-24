@@ -6,11 +6,13 @@ import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import CheckOutlinedIcon from "@mui/icons-material/CheckOutlined";
 import ClearOutlinedIcon from "@mui/icons-material/ClearOutlined";
+import AlternateEmailIcon from "@mui/icons-material/AlternateEmail";
 import ClickAnimation from "./ClickAnimation";
 import ScaleDivsAnimation from "./ScaleDivsAnimation";
 import { postUpdateName, postUpdatePhoto, postUpdateStatus } from "../thunks";
 import { getFormData, getOtherUserInfo } from "../helper";
 import { CircularProgress } from "@mui/material";
+import { useSwipeable } from "react-swipeable";
 
 const InfoDrawer = () => {
   const dispatch = useDispatch();
@@ -22,11 +24,17 @@ const InfoDrawer = () => {
   const authReducer = useSelector((state) => state.authReducer);
   const selectedChat = useSelector((state) => state.chatReducer.selectedChat);
 
+  const handlers = useSwipeable({
+    onSwipedRight: () => dispatch(actions.setInfoDrawer(false)),
+    swipeDuration: 500,
+    preventScrollOnSwipe: true,
+    trackMouse: true,
+  });
+
   const otherUser = useMemo(
     () => getOtherUserInfo(selectedChat?.users, loggedUser),
     [selectedChat]
   );
-
   useEffect(() => {
     setStatusInput({ ...statusInput, value: loggedUser.status });
     setNameInput({
@@ -38,16 +46,19 @@ const InfoDrawer = () => {
   return (
     <>
       <div
+        {...handlers}
         onClick={(e) => {}}
-        className={`info-drawer ${infoDrawer === true ? "active" : ""}`}
+        className={`info-drawer w-[90%] md:w-1/3 rounded-r-2xl overflow-hidden ${
+          infoDrawer === true ? "active" : ""
+        }`}
       >
-        <div className="profile-pic">
+        <div className="profile-pic w-[100px] h-[100px] md:w-[150px] md:h-[150px] relative">
           <img
             src={isUserProfile ? loggedUser?.photoUrl : otherUser?.photoUrl}
             alt="profile-img"
           />
           {isUserProfile && (
-            <ClickAnimation className="edit-pic">
+            <ClickAnimation className="rounded-full bg-white flex justify-center items-center absolute right-[-8px] bottom-[0px] cursor-pointer border-2 border-primary h-[35px] w-[35px] md:bottom-[0px] md:right-[10px]">
               <input
                 type="file"
                 name="profile-pic"
@@ -67,7 +78,7 @@ const InfoDrawer = () => {
               {authReducer.profilePicLoader === "loading" ? (
                 <CircularProgress size={20} />
               ) : (
-                <ModeEditOutlineOutlinedIcon className="edit-icon" />
+                <ModeEditOutlineOutlinedIcon className="text-primary" />
               )}
             </ClickAnimation>
           )}
@@ -134,6 +145,21 @@ const InfoDrawer = () => {
                 </ClickAnimation>
               </div>
             )}
+          </div>
+
+          {/* email */}
+          <div className="name-box">
+            <AlternateEmailIcon className="icon" />
+            <div className="name">
+              <h4>Email</h4>
+              <p>
+                {isUserProfile
+                  ? loggedUser.email
+                  : otherUser
+                  ? otherUser.email
+                  : "Select a chat"}
+              </p>
+            </div>
           </div>
 
           {/* Status */}
@@ -207,7 +233,9 @@ const InfoDrawer = () => {
         onClick={(e) => {
           dispatch(actions.setInfoDrawer(false));
         }}
-        className={`back-drop ${infoDrawer === true ? "active" : ""} `}
+        className={`back-drop rounded-r-2xl overflow-hidden ${
+          infoDrawer === true ? "active" : ""
+        } `}
       ></div>
     </>
   );

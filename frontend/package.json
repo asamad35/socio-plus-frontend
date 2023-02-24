@@ -30,6 +30,7 @@
     "react-router-dom": "^6.5.0",
     "react-scripts": "5.0.1",
     "react-slide-routes": "^3.0.3",
+    "react-swipeable": "^7.0.0",
     "react-toastify": "^9.1.1",
     "redux-logger": "^3.0.6",
     "redux-persist": "^6.0.0",

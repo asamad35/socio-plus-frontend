@@ -21,11 +21,12 @@ const Message = () => {
   function createMessage() {
     return allMessages.map((message) => (
       <TextMessage
-        sendOrReceived={getMessageUserInfo(message, loggedUser).sendOrReceived}
-        content={getMessageUserInfo(message, loggedUser).content}
-        profilePic={getMessageUserInfo(message, loggedUser).sender.photoUrl}
-        messageStatus={getMessageUserInfo(message, loggedUser).messageStatus}
-        messageID={getMessageUserInfo(message, loggedUser).uuid}
+        messageObj={getMessageUserInfo(message, loggedUser)}
+        // sendOrReceived={getMessageUserInfo(message, loggedUser).sendOrReceived}
+        // content={getMessageUserInfo(message, loggedUser).content}
+        // profilePic={getMessageUserInfo(message, loggedUser).sender.photoUrl}
+        // messageStatus={getMessageUserInfo(message, loggedUser).messageStatus}
+        // messageID={getMessageUserInfo(message, loggedUser).uuid}
       />
     ));
     // <>

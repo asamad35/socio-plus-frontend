@@ -7,6 +7,7 @@ connectWithDb();
 const http = require("http");
 const server = http.createServer(app);
 const { Server } = require("socket.io");
+const { updateLatestMessage } = require("./controllers/chatController");
 const io = new Server(server, {
   cors: {
     origin: "http://localhost:5173",
@@ -40,6 +41,8 @@ io.on("connection", (socket) => {
   });
 
   socket.on("newMessage", (message) => {
+    // console.log({ message });
+    updateLatestMessage({ onlineUsers, message, socket, io });
     socket.to(message.chat).emit("updateMessages", message);
   });
 

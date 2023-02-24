@@ -1,4 +1,3 @@
-import { Box } from "@mui/material";
 import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import Message from "../Message";
@@ -18,10 +17,10 @@ const ChatBody = ({ smoothScroll, setSmoothScroll }) => {
     }
   }, [allMessages]);
   return (
-    <Box className="chatBody">
+    <div className="chatBody">
       <Message />
       <div ref={bottomRef} className="bottomDiv"></div>
-    </Box>
+    </div>
   );
 };
 

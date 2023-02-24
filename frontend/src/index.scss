@@ -316,7 +316,6 @@ width: 100%;
   right: 0;
   z-index: 100;
   background: #d4e0ff;
-  width: 40%;
   transition: 0.3s ease-in-out;
   transform: translateX(100%);
   display: flex;
@@ -326,9 +325,6 @@ width: 100%;
 
   .profile-pic{
     background-color: grey;
-    position: relative;
-    width: 150px;
-    height: 150px;
     border-radius: 100rem;
     margin-top: 20px;
     border: 3px solid #2962ff;

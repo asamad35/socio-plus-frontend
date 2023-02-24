@@ -13,6 +13,7 @@ const initialState = {
   },
   authButton: "idle",
   profilePicLoader: "idle",
+  sideSearch: false,
 };
 
 const authReducer = createSlice({
@@ -23,12 +24,21 @@ const authReducer = createSlice({
       state.token = null;
       localStorage.removeItem("socioPlusToken");
     },
+    setSideSearch(state, action) {
+      state.sideSearch = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder
       .addCase(thunks.postSignup.fulfilled, (state, action) => {
         state.user = action.payload.data;
         state.token = action.payload.token;
+        state.authButton = "idle";
+      })
+      .addCase(thunks.postSignup.pending, (state, action) => {
+        state.authButton = "loading";
+      })
+      .addCase(thunks.postSignup.rejected, (state, action) => {
         state.authButton = "idle";
       })
       .addCase(thunks.postLogin.pending, (state, action) => {
@@ -61,6 +71,6 @@ const authReducer = createSlice({
   },
 });
 
-export const { logout } = authReducer.actions;
+export const { logout, setSideSearch } = authReducer.actions;
 
 export default authReducer.reducer;

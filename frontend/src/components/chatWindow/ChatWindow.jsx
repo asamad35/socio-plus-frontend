@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import io from "socket.io-client";
 import * as actions from "../../redux/actions/index";
+import { useSwipeable } from "react-swipeable";
 
 var socket = null;
 const ChatWindow = () => {
@@ -19,6 +20,13 @@ const ChatWindow = () => {
   const chatList = useSelector((state) => state.chatReducer.chatList);
   const [smoothScroll, setSmoothScroll] = useState(true);
 
+  const handlers = useSwipeable({
+    onSwipedLeft: () => dispatch(actions.setSideSearch(false)),
+    swipeDuration: 500,
+    preventScrollOnSwipe: true,
+    trackMouse: true,
+  });
+
   // socket
   useEffect(() => {
     if (!token) {
@@ -26,7 +34,8 @@ const ChatWindow = () => {
       navigate("/login");
     }
 
-    socket = io("http://localhost:5000/");
+    // socket = io("https://socio-backend-gvab.onrender.com/");
+    socket = io("http://localhost:5000");
     socket.on("connect", () => {
       console.log("Connected to socket");
       socket.emit("new-user", loggedUser);
@@ -64,15 +73,9 @@ const ChatWindow = () => {
   });
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        justifyContent: "flex-start",
-        flexDirection: "column",
-        alignItems: "center",
-        height: "100%",
-        width: "75%",
-      }}
+    <div
+      {...handlers}
+      className="flex rounded-r-2xl overflow-hidden justify-start flex-col items-center h-full w-full"
     >
       <ChatHeader />
       {chatLoader ? (
@@ -89,7 +92,7 @@ const ChatWindow = () => {
       )}
 
       {socket && <ChatFooter socket={socket} />}
-    </Box>
+    </div>
   );
 };
 

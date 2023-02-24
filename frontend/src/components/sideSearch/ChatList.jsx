@@ -24,6 +24,7 @@ const ChatList = ({ searchList }) => {
   useEffect(() => {
     if (!selectedChat) return;
     dispatch(getAllMessages({ chatID: selectedChat?._id }));
+    dispatch(actions.setSideSearch(false));
   }, [selectedChat]);
 
   function textOverflow(text = " ") {
@@ -61,14 +62,14 @@ const ChatList = ({ searchList }) => {
 
   return (
     <div
-      className={`chat-list-container w-full flex flex-col h-full ${
-        searchList ? "search-active" : ""
+      className={`chat-list-container w-full flex flex-col h-full transition-all duration-300 ${
+        searchList ? "-translate-x-full" : "translate-x-0"
       }`}
     >
       <h2 className="text-white text-xl mb-4 ml-8">My Chats</h2>
       <div className="h-full">
-        {[...chatList, ...chatList, ...chatList, ...chatList]?.map(
-          (el, idx) => {
+        {chatList.length ? (
+          chatList?.map((el, idx) => {
             return (
               <ClickAnimation
                 key={idx}
@@ -131,7 +132,7 @@ const ChatList = ({ searchList }) => {
                       {textOverflow(el?.latestMessage?.content)}
                     </Typography>
                   </Stack>
-                  <Avatar
+                  {/* <Avatar
                     sx={{
                       backgroundColor: "white",
                       marginLeft: "auto",
@@ -143,11 +144,18 @@ const ChatList = ({ searchList }) => {
                     }}
                   >
                     10
-                  </Avatar>
+                  </Avatar> */}
                 </Box>
               </ClickAnimation>
             );
-          }
+          })
+        ) : (
+          <h2
+            className="text-center"
+            style={{ color: "white", fontWeight: "300" }}
+          >
+            No chats found
+          </h2>
         )}
       </div>
     </div>

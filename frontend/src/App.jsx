@@ -12,11 +12,14 @@ import ToastMessage from "./components/ToastMessage";
 
 export default function App() {
   return (
-    <div className="grid h-screen w-screen place-items-center bg-secondary">
-      <section className="bg-white h-screen w-screen md:w-4/5 md:h-5/6 md:rounded-2xl md:max-w-5xl md:shadow-2xl">
+    <div
+      className="grid w-screen place-items-center bg-secondary"
+      style={{ height: "100dvh" }}
+    >
+      <section className="bg-white h-full w-full relative md:w-4/5 md:h-5/6 md:rounded-2xl md:max-w-5xl md:shadow-2xl">
         <ToastMessage />
-        <Routes>
-          {/* <ReactSlideRoutes duration={500} timing={"ease-in-out"}> */}
+        {/* <Routes> */}
+        <ReactSlideRoutes duration={500} timing={"ease-in-out"}>
           <Route path="/" element={<Signup />} />
           <Route path="/login" element={<Login />} />
           <Route
@@ -25,14 +28,14 @@ export default function App() {
               <>
                 <div className="flex w-full h-full md:rounded-2xl">
                   <SideSearch />
-                  {/* <ChatWindow /> */}
-                  {/* <InfoDrawer /> */}
+                  <ChatWindow />
+                  <InfoDrawer />
                 </div>
               </>
             }
           />
-          {/* </ReactSlideRoutes> */}
-        </Routes>
+        </ReactSlideRoutes>
+        {/* </Routes> */}
       </section>
     </div>
   );

@@ -51,7 +51,7 @@ const Login = () => {
   return (
     <div className="log-auth flex h-full w-full ">
       <AuthLeft />
-      <section className="grid place-items-center basis-full md:basis-1/2">
+      <section className="grid place-items-center basis-full overflow-auto overflow-x-hidden md:overflow-hidden md:basis-1/2">
         <div className="flex flex-col items-start m-8">
           <h1 className="text-3xl font-bold text-primary mb-6">SocioPlus</h1>
           <h1 className="text-xl mb-1 font-semibold">Log in</h1>

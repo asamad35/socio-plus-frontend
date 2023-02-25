@@ -55,6 +55,13 @@ const chatReducer = createSlice({
     },
     setSelectedChat(state, action) {
       state.selectedChat = action.payload;
+
+      // updating unread messages to 0
+      const chatIdx = state.chatList.findIndex((el) => el._id);
+
+      if (chatIdx !== -1) {
+        state.chatList[chatIdx].unreadCount = 0;
+      }
     },
     pushSendMessage(state, action) {
       // update message list

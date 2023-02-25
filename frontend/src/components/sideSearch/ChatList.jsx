@@ -19,6 +19,7 @@ const ChatList = ({ searchList }) => {
 
   useEffect(() => {
     dispatch(getChatList());
+    dispatch(actions.setSelectedChat(null));
   }, []);
 
   useEffect(() => {
@@ -107,7 +108,6 @@ const ChatList = ({ searchList }) => {
                     <Avatar alt="Remy Sharp" src={goku} />
                   )}
 
-                  {/* < alt="Son Goku" src={goku}/> */}
                   <Stack sx={{ maxWidth: "6rem" }}>
                     <Typography
                       sx={{
@@ -125,26 +125,32 @@ const ChatList = ({ searchList }) => {
                       sx={{
                         color: "white",
                         fontSize: "0.8rem",
-                        fontWeight: "400",
+                        fontWeight:
+                          el.unreadCount !== 0 &&
+                          el.unreadUser === loggedUser._id
+                            ? "800"
+                            : "400",
                         wordBreak: "break-word",
                       }}
                     >
                       {textOverflow(el?.latestMessage?.content)}
                     </Typography>
                   </Stack>
-                  {/* <Avatar
-                    sx={{
-                      backgroundColor: "white",
-                      marginLeft: "auto",
-                      color: "#2962ff",
-                      width: "1.1rem",
-                      height: "1.1rem",
-                      fontSize: "0.8rem",
-                      fontWeight: "400",
-                    }}
-                  >
-                    10
-                  </Avatar> */}
+                  {el.unreadCount !== 0 && el.unreadUser === loggedUser._id && (
+                    <Avatar
+                      sx={{
+                        backgroundColor: "white",
+                        marginLeft: "auto",
+                        color: "#2962ff",
+                        width: "1.1rem",
+                        height: "1.1rem",
+                        fontSize: "0.8rem",
+                        fontWeight: "400",
+                      }}
+                    >
+                      {el.unreadCount}
+                    </Avatar>
+                  )}
                 </Box>
               </ClickAnimation>
             );

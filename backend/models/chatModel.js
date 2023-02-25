@@ -10,7 +10,11 @@ const chatSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
-    unreadUser: { type: mongoose.Schema.Types.ObjectId, ref: "UserSchema" },
+    unreadUser: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "UserSchema",
+      default: null,
+    },
     users: [{ type: mongoose.Schema.Types.ObjectId, ref: "UserSchema" }],
   },
   { timestamps: true }

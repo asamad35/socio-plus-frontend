@@ -12,7 +12,7 @@ exports.accessChat = bigPromise(async (req, res) => {
       { users: { $elemMatch: { $eq: otherUserID } } },
     ],
   };
-  const existingChat = await chatSchema.find(findQuery);
+  const existingChat = await chatSchema.find(findQuery).populate("users");
 
   if (existingChat.length > 0) {
     res.json({ data: existingChat[0] });
@@ -43,6 +43,8 @@ exports.fetchChatList = bigPromise(async (req, res) => {
 
 exports.updateLatestMessage = bigPromise(
   async ({ message, socket, io, onlineUsers }) => {
+    console.log({ message });
+
     // create a chatListEl according to frontend need
     const chatListEl = {
       ...message.selectedChat,
@@ -78,33 +80,41 @@ exports.updateLatestMessage = bigPromise(
       ? onlineUsers.find((el) => el._id === message.otherUserId).socketID
       : null;
 
-    console.log({ isOtherUserOnline, otherUserSocketId, isOtherUserInRoom });
+    // console.log({ isOtherUserOnline, otherUserSocketId, isOtherUserInRoom });
 
     // if otherUser is in the room then do nothing
     // if it's not in the room emit and update on db
     // if its offline then only update in db
 
-    //  if it's not in the room emit and update on db
+    //  if it's online but not in the room emit and update on db
     if (isOtherUserOnline && !isOtherUserInRoom) {
-      io.to(otherUserSocketId).emit("updateLatestMessage", chatListEl);
+      let mssgUnreadCount;
 
       const chat = await chatSchema.findOne({ _id: message.chat });
+      // console.log(chat.unreadCount, "pehle, online but not in room");
       chat.unreadCount = chat.unreadCount + 1;
+      mssgUnreadCount = chat.unreadCount;
+      // console.log(chat.unreadCount, "baadme, online but not in room");
       chat.unreadUser = mongoose.Types.ObjectId(message.otherUserId);
 
-      console.log(chat, message.chat, "not in room");
+      // console.log(chat, message.chat, "not in room");
       await chat.save();
+
+      io.to(otherUserSocketId).emit("updateLatestMessage", {
+        ...chatListEl,
+        unreadCount: mssgUnreadCount,
+      });
     }
 
     // if user is offline
     if (!isOtherUserOnline) {
       const chat = await chatSchema.findOne({ _id: message.chat });
-      console.log(chat.unreadCount, "pehle");
+      // console.log(chat.unreadCount, "pehle, offline");
       chat.unreadCount = chat.unreadCount + 1;
-      console.log(chat.unreadCount, "baadme");
+      // console.log(chat.unreadCount, "baadme, offline");
       chat.unreadUser = mongoose.Types.ObjectId(message.otherUserId);
 
-      console.log(chat, message.chat, "user offline");
+      // console.log(chat, message.chat, "user offline");
 
       await chat.save();
     }

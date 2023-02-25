@@ -2,7 +2,7 @@ const bigPromise = require("../middlewares/bigPromise");
 const messageSchema = require("../models/messageModel");
 const chatSchema = require("../models/chatModel");
 
-exports.sendMessage = bigPromise(async (req, res) => {  
+exports.sendMessage = bigPromise(async (req, res) => {
   const { content, chatID } = req.body;
 
   if (!content) throw new Error("Cannot send empty message");
@@ -20,6 +20,23 @@ exports.sendMessage = bigPromise(async (req, res) => {
 
 exports.fetchAllMessages = bigPromise(async (req, res) => {
   const { chatID } = req.body;
+
+  // update unread mssg count to 0 if unread user matches with the logged user
+  const chat = await chatSchema.findOne({ _id: chatID });
+  console.log("hiiiiiiiiiiiiiiiiiiiii");
+  console.log(
+    req.user._id
+    // chat.unreadUser
+    // req.user._id.toString() === chat?.unreadUser.toString()
+  );
+  if (
+    chat &&
+    chat.unreadUser &&
+    req.user._id.toString() === chat?.unreadUser.toString()
+  ) {
+    chat.unreadCount = 0;
+    chat.save();
+  }
 
   if (!chatID) throw new Error("Chat ID not found");
 

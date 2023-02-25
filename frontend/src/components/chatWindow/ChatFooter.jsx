@@ -66,8 +66,12 @@ const ChatFooter = ({ socket }) => {
   useEffect(() => {
     // update chats
     socket.on("updateLatestMessage", (message) => {
-      console.log({ updateLatestMessage: message });
-      if (message.chat === selectedChat._id) return;
+      console.log(
+        { updateLatestMessage: message },
+        message._id,
+        selectedChat?._id
+      );
+      if (message._id === selectedChat?._id) return;
 
       dispatch(actions.prependInChatList(message));
     });
@@ -120,6 +124,7 @@ const ChatFooter = ({ socket }) => {
         uuid,
       })
     );
+    console.log({ selectedChat });
     socket.emit("newMessage", {
       chat: selectedChat._id,
       content: text,

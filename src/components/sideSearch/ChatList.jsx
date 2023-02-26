@@ -19,7 +19,6 @@ const ChatList = ({ searchList }) => {
 
   useEffect(() => {
     dispatch(getChatList());
-    dispatch(actions.setSelectedChat(null));
   }, []);
 
   useEffect(() => {
@@ -102,10 +101,18 @@ const ChatList = ({ searchList }) => {
                       anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
                       variant="dot"
                     >
-                      <Avatar alt="Remy Sharp" src={goku} />
+                      <Avatar
+                        sx={{ background: "white" }}
+                        alt="Remy Sharp"
+                        src={getOtherUserInfo(el.users, loggedUser)?.photoUrl}
+                      />
                     </StyledBadge>
                   ) : (
-                    <Avatar alt="Remy Sharp" src={goku} />
+                    <Avatar
+                      sx={{ background: "white" }}
+                      alt="Remy Sharp"
+                      src={getOtherUserInfo(el.users, loggedUser)?.photoUrl}
+                    />
                   )}
 
                   <Stack sx={{ maxWidth: "6rem" }}>

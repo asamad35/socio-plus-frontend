@@ -24,11 +24,16 @@ const initialState = {
   selectedChat: null,
   allMessages: [],
   chatLoader: false,
+
+  onlineUsers: [],
 };
 const chatReducer = createSlice({
   name: "chatReducer",
   initialState,
   reducers: {
+    setOnlineUsers(state, action) {
+      state.onlineUsers = action.payload;
+    },
     setAudioPreviewUrl(state, action) {
       state.audioPreviewUrl = action.payload;
     },
@@ -57,7 +62,9 @@ const chatReducer = createSlice({
       state.selectedChat = action.payload;
 
       // updating unread messages to 0
-      const chatIdx = state.chatList.findIndex((el) => el._id);
+      const chatIdx = state.chatList.findIndex(
+        (el) => el._id === state.selectedChat?._id
+      );
 
       if (chatIdx !== -1) {
         state.chatList[chatIdx].unreadCount = 0;
@@ -185,11 +192,27 @@ const chatReducer = createSlice({
         const chatExist = state.chatList.find(
           (el) => el._id === action.payload._id
         );
-        if (!chatExist) {
-          state.chatList.unshift(action.payload);
-        }
-        state.selectedChat = action.payload;
 
+        if (!chatExist) {
+          const isOtherUserActive = !!state.onlineUsers.find((onlineUser) =>
+            action.payload.users.find(
+              (chatUser) => chatUser._id === onlineUser._id
+            )
+          );
+          const chatListEl = {
+            ...action.payload,
+            active: isOtherUserActive,
+          };
+          console.log(
+            action.payload,
+            "iiiiiiiiiiiiiiiiiiiiii",
+            isOtherUserActive
+          );
+          state.chatList.unshift(chatListEl);
+          state.selectedChat = chatListEl;
+        } else {
+          state.selectedChat = chatExist;
+        }
         const { document, setSearchList } = action.meta.arg;
         document.querySelector(".searchInput").firstElementChild.value = "";
         setSearchList("");
@@ -211,5 +234,6 @@ export const {
   pushSendMessage,
   updateOnlineChatList,
   prependInChatList,
+  setOnlineUsers,
 } = chatReducer.actions;
 export default chatReducer.reducer;

@@ -14,6 +14,7 @@ import { getOtherUserInfo } from "../../helper";
 import { useMemo } from "react";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import { useCallback } from "react";
+import { postLogoutWithGoogle } from "../../thunks/index";
 
 const ChatHeader = () => {
   const dispatch = useDispatch();
@@ -203,7 +204,8 @@ const ChatHeader = () => {
             <p
               onClick={() => {
                 dispatch(actions.setSelectedChat(null));
-                dispatch(actions.logout());
+                dispatch(postLogoutWithGoogle());
+                if (!loggedUser.loggedInWithGoogle) dispatch(actions.logout());
               }}
               className="menu-items"
             >

@@ -146,7 +146,15 @@ const Login = () => {
               )}
             </button>
             <button
-              onClick={(e) => e.preventDefault()}
+              onClick={(e) => {
+                e.preventDefault();
+                {
+                  window.open(
+                    "http://localhost:5000/api/v1/login-with-google",
+                    "_self"
+                  );
+                }
+              }}
               className={`bg-white border-primary border-2 flex text-input justify-center items-center gap-2  px-4 py-1 rounded-xl w-full mt-6 ${
                 authButton === "loading" ? "opacity-80 pointer-events-none" : ""
               } `}

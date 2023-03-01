@@ -27,6 +27,35 @@ export const postLogin = createAsyncThunk("postLogin", async (payload) => {
   return data;
 });
 
+export const getLoginWithGoogleSuccess = createAsyncThunk(
+  "getLoginWithGoogleSuccess",
+  async () => {
+    const data = await services.getLoginWithGoogleSuccess();
+    if (data.data) {
+      toast.success(data.message);
+      localStorage.setItem("socioPlusToken", data.token);
+    } else {
+      toast.error(data.message);
+      throw new Error();
+    }
+    return data;
+  }
+);
+
+export const postLogoutWithGoogle = createAsyncThunk(
+  "postLogoutWithGoogle",
+  async () => {
+    const data = await services.postLogoutWithGoogle();
+    if (data.data) {
+      toast.success(data.message);
+    } else {
+      toast.error(data.message);
+      throw new Error();
+    }
+    return data;
+  }
+);
+
 export const postUpdateStatus = createAsyncThunk(
   "postUpdateStatus",
   async (payload) => {

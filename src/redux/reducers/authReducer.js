@@ -52,6 +52,14 @@ const authReducer = createSlice({
       .addCase(thunks.postLogin.rejected, (state, action) => {
         state.authButton = "idle";
       })
+      .addCase(thunks.getLoginWithGoogleSuccess.fulfilled, (state, action) => {
+        state.user = action.payload.data;
+        state.token = action.payload.token;
+        state.authButton = "idle";
+      })
+      .addCase(thunks.postLogoutWithGoogle.fulfilled, (state, action) => {
+        logout();
+      })
       .addCase(thunks.postUpdateStatus.fulfilled, (state, action) => {
         state.user = action.payload;
       })

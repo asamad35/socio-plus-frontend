@@ -9,8 +9,19 @@ import InfoDrawer from "./components/InfoDrawer";
 import { Route, Routes } from "react-router-dom";
 import ReactSlideRoutes from "react-slide-routes";
 import ToastMessage from "./components/ToastMessage";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { getLoginWithGoogleSuccess } from "./thunks/index";
+
 
 export default function App() {
+  const dispatch = useDispatch();
+  const token = useSelector((state) => state.authReducer.token);
+
+  useEffect(() => {
+    if (!token) dispatch(getLoginWithGoogleSuccess());
+  }, []);
+
   return (
     <div
       className="grid w-screen place-items-center bg-secondary"

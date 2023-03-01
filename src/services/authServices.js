@@ -18,6 +18,27 @@ export const postLogin = async (payload) => {
     return error;
   }
 };
+
+export const getLoginWithGoogleSuccess = async (payload) => {
+  try {
+    const res = await customAxios.get(API_URLS.getLoginWithGoogleSuccess, {
+      withCredentials: true,
+    });
+    return res.data;
+  } catch (error) {
+    return error;
+  }
+};
+
+export const postLogoutWithGoogle = async (payload) => {
+  try {
+    const res = await customAxios.post(API_URLS.postLogoutWithGoogle);
+    return res.data;
+  } catch (error) {
+    return error;
+  }
+};
+
 export const postUpdateStatus = async (payload) => {
   try {
     const res = await customAxios.post(API_URLS.postUpdateStatus, payload);

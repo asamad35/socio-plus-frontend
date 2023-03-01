@@ -60,6 +60,7 @@ const ChatWindow = () => {
         actions.setSelectedChat({
           ...selectedChat,
           active: selectedChatHasOnlineUser,
+          dontReloadMessages: true,
         })
       );
     console.log({ selectedChatHasOnlineUser });

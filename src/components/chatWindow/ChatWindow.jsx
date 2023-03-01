@@ -60,7 +60,7 @@ const ChatWindow = () => {
         actions.setSelectedChat({
           ...selectedChat,
           active: selectedChatHasOnlineUser,
-          dontReloadMessages: true,
+          // dontReloadMessages: true,
         })
       );
     console.log({ selectedChatHasOnlineUser });
@@ -80,8 +80,8 @@ const ChatWindow = () => {
       navigate("/login");
     }
 
-    // socket = io("https://socio-backend-gvab.onrender.com/");
-    socket = io("http://localhost:5000");
+    socket = io("https://socio-backend-gvab.onrender.com/");
+    // socket = io("http://localhost:5000");
     socket.on("connect", () => {
       console.log("Connected to socket");
       socket.emit("new-user", loggedUser);

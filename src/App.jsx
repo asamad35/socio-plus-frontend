@@ -13,7 +13,6 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getLoginWithGoogleSuccess } from "./thunks/index";
 
-
 export default function App() {
   const dispatch = useDispatch();
   const token = useSelector((state) => state.authReducer.token);
@@ -31,8 +30,8 @@ export default function App() {
         <ToastMessage />
         {/* <Routes> */}
         <ReactSlideRoutes duration={500} timing={"ease-in-out"}>
-          <Route path="/" element={<Signup />} />
-          <Route path="/login" element={<Login />} />
+          <Route path="/" element={<Login />} />
+          <Route path="/login" element={<Signup />} />
           <Route
             path="/chatUI"
             element={

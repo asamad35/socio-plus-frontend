@@ -24,8 +24,8 @@ const ChatList = ({ searchList }) => {
   useEffect(() => {
     if (!selectedChat) return;
     dispatch(actions.setSideSearch(false));
-    if (!selectedChat.dontReloadMessages)
-      dispatch(getAllMessages({ chatID: selectedChat?._id }));
+    // if (!selectedChat.dontReloadMessages)
+    // dispatch(getAllMessages({ chatID: selectedChat?._id }));
   }, [selectedChat]);
 
   function textOverflow(text = " ") {
@@ -77,6 +77,7 @@ const ChatList = ({ searchList }) => {
                 style={{ cursor: "pointer" }}
                 onClick={() => {
                   dispatch(actions.setSelectedChat(el));
+                  dispatch(getAllMessages({ chatID: el?._id }));
                 }}
               >
                 <Box

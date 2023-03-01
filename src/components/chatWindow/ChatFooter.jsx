@@ -55,8 +55,9 @@ const ChatFooter = ({ socket }) => {
   useEffect(() => {
     // update chats
     socket.on("updateMessages", (message) => {
-      console.log("updating messages");
-      dispatch(actions.pushSendMessage({ ...message, received: true }));
+      console.log("updating messages", { message });
+      if (message.selectedChat._id === selectedChat._id)
+        dispatch(actions.pushSendMessage({ ...message, received: true }));
     });
     return () => {
       socket.off("updateMessages");

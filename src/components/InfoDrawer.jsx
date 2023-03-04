@@ -65,6 +65,7 @@ const InfoDrawer = () => {
                 id="profile-pic-input"
                 className="profile-pic-input"
                 onChange={(e) => {
+                  console.log(e.target.files[0], "kkkkkkkkkkk");
                   dispatch(
                     postUpdatePhoto(
                       getFormData({ profilePic: e.target.files[0] })
@@ -72,9 +73,10 @@ const InfoDrawer = () => {
                   );
                 }}
               />
-              <label htmlFor="profile-pic-input" className="profile-pic-label">
-                dwd
-              </label>
+              <label
+                htmlFor="profile-pic-input"
+                className="profile-pic-label"
+              ></label>
               {authReducer.profilePicLoader === "loading" ? (
                 <CircularProgress size={20} />
               ) : (
@@ -233,7 +235,7 @@ const InfoDrawer = () => {
         onClick={(e) => {
           dispatch(actions.setInfoDrawer(false));
         }}
-        className={`back-drop rounded-r-2xl overflow-hidden ${
+        className={`back-drop rounded-2xl overflow-hidden ${
           infoDrawer === true ? "active" : ""
         } `}
       ></div>

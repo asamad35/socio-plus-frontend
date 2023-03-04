@@ -1,8 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import Message from "../Message";
+import PreviewImages from "../PreviewImages";
 
-const ChatBody = ({ smoothScroll, setSmoothScroll }) => {
+const ChatBody = ({
+  smoothScroll,
+  setSmoothScroll,
+  selectedFiles,
+  setSelectedFiles,
+}) => {
   const allMessages = useSelector((state) => state.chatReducer.allMessages);
   const bottomRef = useRef(null);
   useEffect(() => {
@@ -17,9 +23,13 @@ const ChatBody = ({ smoothScroll, setSmoothScroll }) => {
     }
   }, [allMessages]);
   return (
-    <div className="chatBody">
+    <div className="chatBody relative">
       <Message />
       <div ref={bottomRef} className="bottomDiv"></div>
+      <PreviewImages
+        selectedFiles={selectedFiles}
+        setSelectedFiles={setSelectedFiles}
+      />
     </div>
   );
 };

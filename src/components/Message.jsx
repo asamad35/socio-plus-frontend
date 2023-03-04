@@ -5,6 +5,7 @@ import AudioComponent from "./AudioComponent";
 import TextMessage from "./messages/TextMessage";
 import AudioMessage from "./messages/AudioMessage";
 import { useSelector } from "react-redux";
+import ImageMessage from "./messages/ImageMessage";
 
 const Message = () => {
   const allMessages = useSelector((state) => state.chatReducer.allMessages);
@@ -19,16 +20,19 @@ const Message = () => {
   }
 
   function createMessage() {
-    return allMessages.map((message) => (
-      <TextMessage
-        messageObj={getMessageUserInfo(message, loggedUser)}
-        // sendOrReceived={getMessageUserInfo(message, loggedUser).sendOrReceived}
-        // content={getMessageUserInfo(message, loggedUser).content}
-        // profilePic={getMessageUserInfo(message, loggedUser).sender.photoUrl}
-        // messageStatus={getMessageUserInfo(message, loggedUser).messageStatus}
-        // messageID={getMessageUserInfo(message, loggedUser).uuid}
-      />
-    ));
+    return allMessages.map((message) => {
+      if (message.files.length > 0) {
+        return (
+          <ImageMessage messageObj={getMessageUserInfo(message, loggedUser)} />
+          // <TextMessage messageObj={getMessageUserInfo(message, loggedUser)} />
+        );
+      } else {
+        console.log(message, "bbbbbbbbbbbbbbbbbbbb");
+        return (
+          <TextMessage messageObj={getMessageUserInfo(message, loggedUser)} />
+        );
+      }
+    });
     // <>
 
     //    <AudioMessage sendOrReceived={"send"} />
@@ -52,7 +56,7 @@ const Message = () => {
     // </>
   }
 
-  return createMessage();
+  return <>{createMessage()}</>;
 };
 
 export default Message;

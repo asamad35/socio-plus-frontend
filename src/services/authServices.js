@@ -1,4 +1,5 @@
-import { API_URLS } from "../config/apiUrls";
+import axios from "axios";
+import { API_URLS, googleUserInfoData } from "../config/apiUrls";
 import { customAxios } from "../config/customAxios";
 
 export const postSignup = async (payload) => {
@@ -19,20 +20,20 @@ export const postLogin = async (payload) => {
   }
 };
 
-export const getLoginWithGoogleSuccess = async (payload) => {
+export const postLoginWithGoogleDB = async (payload) => {
   try {
-    const res = await customAxios.get(API_URLS.getLoginWithGoogleSuccess, {
-      withCredentials: true,
-    });
+    const res = await customAxios.post(API_URLS.postLoginWithGoogleDB, payload);
     return res.data;
   } catch (error) {
     return error;
   }
 };
 
-export const postLogoutWithGoogle = async (payload) => {
+export const getLoginWithGoogle = async (payload) => {
   try {
-    const res = await customAxios.post(API_URLS.postLogoutWithGoogle);
+    const res = await axios.get(googleUserInfoData, {
+      headers: { Authorization: `Bearer ${payload.access_token}` },
+    });
     return res.data;
   } catch (error) {
     return error;

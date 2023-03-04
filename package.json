@@ -16,6 +16,7 @@
     "@hookform/resolvers": "^2.9.10",
     "@mui/icons-material": "^5.10.15",
     "@mui/material": "^5.10.15",
+    "@react-oauth/google": "^0.8.0",
     "@reduxjs/toolkit": "^1.9.2",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
@@ -47,6 +48,7 @@
     "@vitejs/plugin-react": "^3.1.0",
     "autoprefixer": "^10.4.13",
     "postcss": "^8.4.21",
+    "react-error-overlay": "^6.0.9",
     "tailwindcss": "^3.2.6",
     "vite": "^4.1.0"
   }

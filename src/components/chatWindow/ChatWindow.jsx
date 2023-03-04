@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import io from "socket.io-client";
 import * as actions from "../../redux/actions/index";
 import { useSwipeable } from "react-swipeable";
+import { SOCKET_CONNECTION_URL } from "../../config/apiUrls";
 
 var socket = null;
 const ChatWindow = () => {
@@ -19,6 +20,7 @@ const ChatWindow = () => {
   const selectedChat = useSelector((state) => state.chatReducer.selectedChat);
   const chatList = useSelector((state) => state.chatReducer.chatList);
   const [smoothScroll, setSmoothScroll] = useState(true);
+  const [selectedFiles, setSelectedFiles] = useState([]);
 
   const chatListLoader = useSelector(
     (state) => state.chatReducer.chatListLoader
@@ -77,11 +79,10 @@ const ChatWindow = () => {
   useEffect(() => {
     if (!token) {
       setSmoothScroll(true);
-      navigate("/login");
+      navigate("/");
     }
 
-    socket = io("https://socio-backend-gvab.onrender.com/");
-    // socket = io("http://localhost:5000");
+    socket = io(SOCKET_CONNECTION_URL);
     socket.on("connect", () => {
       console.log("Connected to socket");
       socket.emit("new-user", loggedUser);
@@ -156,6 +157,8 @@ const ChatWindow = () => {
         </div>
       ) : selectedChat ? (
         <ChatBody
+          selectedFiles={selectedFiles}
+          setSelectedFiles={setSelectedFiles}
           smoothScroll={smoothScroll}
           setSmoothScroll={setSmoothScroll}
         />
@@ -163,7 +166,13 @@ const ChatWindow = () => {
         <div></div>
       )}
 
-      {socket && <ChatFooter socket={socket} />}
+      {socket && (
+        <ChatFooter
+          selectedFiles={selectedFiles}
+          setSelectedFiles={setSelectedFiles}
+          socket={socket}
+        />
+      )}
     </div>
   );
 };

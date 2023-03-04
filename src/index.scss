@@ -19,6 +19,7 @@
 ::-webkit-scrollbar-track {
   background: #7ea0ff; 
   border-radius: 1rem;
+ 
 
 }
  
@@ -28,7 +29,16 @@
   border-radius: 1rem;
 
 }
-
+.preview-images::-webkit-scrollbar-thumb{
+  background: #2962ff; 
+  height: 7px;
+}
+.preview-images::-webkit-scrollbar-thumb:hover{
+  background: #2962ff; 
+}
+.preview-images::-webkit-scrollbar{
+  height: 7px;
+}
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
   background: #a9c0ff; 

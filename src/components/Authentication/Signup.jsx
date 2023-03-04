@@ -253,7 +253,7 @@ const Signup = () => {
             <p
               className=" text-sm text-center mt-8 mb-2"
               onClick={() => {
-                navigate("/login");
+                navigate("/");
               }}
             >
               Already have an account?{" "}

@@ -42,7 +42,6 @@ const SearchList = ({ searchList, setSearchList }) => {
                   dispatch(
                     postAccessChat({
                       otherUserID: el._id,
-                      document,
                       setSearchList,
                     })
                   );

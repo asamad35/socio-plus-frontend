@@ -9,18 +9,8 @@ import InfoDrawer from "./components/InfoDrawer";
 import { Route, Routes } from "react-router-dom";
 import ReactSlideRoutes from "react-slide-routes";
 import ToastMessage from "./components/ToastMessage";
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { getLoginWithGoogleSuccess } from "./thunks/index";
 
 export default function App() {
-  const dispatch = useDispatch();
-  const token = useSelector((state) => state.authReducer.token);
-
-  useEffect(() => {
-    if (!token) dispatch(getLoginWithGoogleSuccess());
-  }, []);
-
   return (
     <div
       className="grid w-screen place-items-center bg-secondary"
@@ -31,7 +21,7 @@ export default function App() {
         {/* <Routes> */}
         <ReactSlideRoutes duration={500} timing={"ease-in-out"}>
           <Route path="/" element={<Login />} />
-          <Route path="/login" element={<Signup />} />
+          <Route path="/signup" element={<Signup />} />
           <Route
             path="/chatUI"
             element={

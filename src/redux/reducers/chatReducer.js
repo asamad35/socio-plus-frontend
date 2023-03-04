@@ -3,6 +3,7 @@ import * as thunks from "../../thunks";
 import sentAudio from "../../assets/sent-sound.mp3";
 import audioReceived from "../../assets/received-sound.mp3";
 import { showMessagePic } from "../../helper";
+import { getAllMessages } from "../../thunks";
 
 const messageSentAudio = new Audio(sentAudio);
 const messageReceivedAudio = new Audio(audioReceived);
@@ -24,7 +25,6 @@ const initialState = {
   selectedChat: null,
   allMessages: [],
   chatLoader: false,
-
   onlineUsers: [],
 };
 const chatReducer = createSlice({
@@ -34,6 +34,7 @@ const chatReducer = createSlice({
     setOnlineUsers(state, action) {
       state.onlineUsers = action.payload;
     },
+
     setAudioPreviewUrl(state, action) {
       state.audioPreviewUrl = action.payload;
     },
@@ -173,9 +174,13 @@ const chatReducer = createSlice({
       })
       .addCase(thunks.postSendMessage.fulfilled, (state, action) => {
         const payload = action.meta.arg;
+        const payloadUuid =
+          payload instanceof FormData ? payload.get("uuid") : payload.uuid;
+
         const messageIdx = state.allMessages.findIndex(
-          (el) => el.uuid === payload.uuid
+          (el) => el.uuid === payloadUuid
         );
+        console.log({ payloadUuid, messageIdx });
         state.allMessages[messageIdx].messageStatus = "successful";
 
         messageSentAudio.play();
@@ -187,7 +192,9 @@ const chatReducer = createSlice({
         );
         state.allMessages[messageIdx].messageStatus = "error";
       })
-      .addCase(thunks.postAccessChat.pending, (state, action) => {})
+      .addCase(thunks.postAccessChat.pending, (state, action) => {
+        state.chatLoader = true;
+      })
       .addCase(thunks.postAccessChat.fulfilled, (state, action) => {
         const chatExist = state.chatList.find(
           (el) => el._id === action.payload._id
@@ -203,17 +210,13 @@ const chatReducer = createSlice({
             ...action.payload,
             active: isOtherUserActive,
           };
-          console.log(
-            action.payload,
-            "iiiiiiiiiiiiiiiiiiiiii",
-            isOtherUserActive
-          );
           state.chatList.unshift(chatListEl);
           state.selectedChat = chatListEl;
         } else {
           state.selectedChat = chatExist;
         }
-        const { document, setSearchList } = action.meta.arg;
+
+        const { setSearchList } = action.meta.arg;
         document.querySelector(".searchInput").firstElementChild.value = "";
         setSearchList("");
       })

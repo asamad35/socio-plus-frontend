@@ -18,11 +18,17 @@ export function secondsToMinutes(totalSeconds) {
   return result;
 }
 
-export function getFormData(obj = {}) {
+export function getFormData(obj = {}, fileArr, propertyName) {
   const result = new FormData();
 
   for (const property in obj) {
     result.append(property, obj[property]);
+  }
+  if (fileArr) {
+    fileArr.forEach((el) => {
+      console.log({ aaa: el, bbb: el[0] });
+      result.append(propertyName, el);
+    });
   }
   return result;
 }

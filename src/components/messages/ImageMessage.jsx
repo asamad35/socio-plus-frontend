@@ -4,14 +4,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { postSendMessage } from "../../thunks";
 import { CircularProgress } from "@mui/material";
 
-const TextMessage = ({ messageObj }) => {
-  const dispatch = useDispatch();
-  const selectedChat = useSelector((state) => state.chatReducer.selectedChat);
-  const loggedUser = useSelector((state) => state.authReducer.user);
-
+const ImageMessage = ({ messageObj }) => {
   return (
     <div
-      className={`flex gap-2 m-4 items-center ${
+      className={`flex gap-2 m-4 items-end ${
         messageObj.sendOrReceived === "received"
           ? "justify-start flex-row"
           : "flex-row-reverse"
@@ -23,10 +19,18 @@ const TextMessage = ({ messageObj }) => {
         } `}
         src={messageObj.sender.photoUrl}
       />
-      <p className="text-base p-2 rounded-2xl break-words bg-[#dcdddc] max-w-[200px] sm:max-w-[250px] md:max-w-[300px]">
-        {messageObj.content ?? " no text"}
-      </p>
-
+      <div className=" flex flex-col items-end gap-1">
+        {messageObj.files.map((file) => (
+          <img
+            className="rounded-lg object-contain w-[200px] h-[200px] cursor-pointer bg-secondary border-4 rounded-lg border-primary sm:w-[250px] sm:h-[250px]  "
+            src={file.url}
+            alt=""
+          />
+        ))}
+        <p className="text-base p-2 rounded-2xl break-words w-fit bg-[#dcdddc] max-w-[200px] sm:max-w-[250px] md:max-w-[300px]">
+          {messageObj.content ?? " no text"}
+        </p>
+      </div>
       {messageObj.messageStatus === "error" && (
         <ReplayOutlinedIcon
           sx={{ fill: "red" }}
@@ -48,4 +52,4 @@ const TextMessage = ({ messageObj }) => {
   );
 };
 
-export default TextMessage;
+export default ImageMessage;

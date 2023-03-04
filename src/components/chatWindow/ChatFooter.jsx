@@ -4,9 +4,8 @@ import { Box, Tooltip } from "@mui/material";
 import { v4 as uuidv4 } from "uuid";
 
 import SendOutlinedIcon from "@mui/icons-material/SendOutlined";
-import AttachFileOutlinedIcon from "@mui/icons-material/AttachFileOutlined";
 import EmojiEmotionsOutlinedIcon from "@mui/icons-material/EmojiEmotionsOutlined";
-import { debounce, getOtherUserInfo } from "../../helper";
+import { debounce, getFormData, getOtherUserInfo } from "../../helper";
 import { motion } from "framer-motion";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
@@ -17,8 +16,9 @@ import * as actions from "../../redux/actions/index";
 import useLongPress from "../../customHooks/useLongPress";
 import ClickAnimation from "../ClickAnimation";
 import { postSendMessage } from "../../thunks";
+import ImageUploadButton from "../ImageUploadButton";
 
-const ChatFooter = ({ socket }) => {
+const ChatFooter = ({ socket, selectedFiles, setSelectedFiles }) => {
   const dispatch = useDispatch();
   const recordingState = useSelector(
     (state) => state.chatReducer.recordingState
@@ -26,7 +26,6 @@ const ChatFooter = ({ socket }) => {
   const status = useSelector((state) => state.chatReducer.status);
   const showMic = useSelector((state) => state.chatReducer.showMic);
   const showKeyboard = useSelector((state) => state.chatReducer.showKeyboard);
-  const chatList = useSelector((state) => state.chatReducer.chatList);
 
   const [emojiPicker, setEmojiPicker] = useState(false);
   const [text, setText] = useState("");
@@ -46,6 +45,7 @@ const ChatFooter = ({ socket }) => {
   useEffect(() => {
     if (!selectedChat) return;
     selectedChat && socket.emit("chatSelected", { loggedUser, selectedChat });
+    dispatch(actions.setStatus(null));
 
     return () => {
       selectedChat && socket.emit("leaveRoom", { loggedUser, selectedChat });
@@ -112,21 +112,40 @@ const ChatFooter = ({ socket }) => {
   };
 
   const onClick = () => {
-    if (text.trim() === "") return;
+    if (text.trim() === "" && selectedFiles.length === 0) return;
+
+    const fileArray = selectedFiles.map((file) => {
+      if (file.type.includes("image")) {
+        return { url: URL.createObjectURL(file) };
+      } else {
+        return { name: file.name };
+      }
+    });
+
     const uuid = uuidv4();
-    dispatch(
-      postSendMessage({ content: text, chatID: selectedChat._id, uuid })
-    );
+    let payload = { content: text, chatID: selectedChat._id, uuid };
+    if (selectedFiles.length) {
+      payload = getFormData(
+        {
+          content: text,
+          chatID: selectedChat._id,
+          uuid,
+        },
+        selectedFiles,
+        "filesToUpload"
+      );
+    }
+    dispatch(postSendMessage(payload));
     dispatch(
       actions.pushSendMessage({
         chat: selectedChat._id,
         content: text,
         sender: { ...loggedUser },
         messageStatus: "sending",
+        files: fileArray,
         uuid,
       })
     );
-    console.log({ selectedChat });
     socket.emit("newMessage", {
       chat: selectedChat._id,
       content: text,
@@ -291,25 +310,10 @@ const ChatFooter = ({ socket }) => {
           </Tooltip>
         </ClickAnimation>
 
-        <ClickAnimation>
-          <Tooltip title="Add attachment">
-            <Box
-              sx={{
-                backgroundColor: "#848584",
-                borderRadius: "2rem",
-                height: "30px",
-                width: "30px",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                color: "white",
-                cursor: "pointer",
-              }}
-            >
-              <AttachFileOutlinedIcon fontSize="small" />
-            </Box>
-          </Tooltip>
-        </ClickAnimation>
+        <ImageUploadButton
+          selectedFiles={selectedFiles}
+          setSelectedFiles={setSelectedFiles}
+        />
 
         <ClickAnimation>
           <Tooltip

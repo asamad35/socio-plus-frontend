@@ -12,8 +12,10 @@ import AuthError from "./AuthError";
 import { useNavigate } from "react-router-dom";
 import * as actions from "../../redux/actions";
 import { useDispatch, useSelector } from "react-redux";
-import { postLogin } from "../../thunks";
+import { getLoginWithGoogle, postLogin } from "../../thunks";
 import AuthLeft from "./AuthLeft";
+import { BASE_URL } from "../../config/apiUrls";
+import { useGoogleLogin } from "@react-oauth/google";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -22,6 +24,14 @@ const Login = () => {
   const token = useSelector((state) => state.authReducer.token);
   const authButton = useSelector((state) => state.authReducer.authButton);
 
+  const loginWithGoogle = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      console.log(tokenResponse);
+
+      dispatch(getLoginWithGoogle(tokenResponse));
+    },
+    onError: (errorResponse) => console.log(errorResponse),
+  });
   // yup validation
   const validationSchema = yup.object().shape({
     email: yup.string().email().required(),
@@ -149,10 +159,8 @@ const Login = () => {
               onClick={(e) => {
                 e.preventDefault();
                 {
-                  window.open(
-                    "http://localhost:5000/api/v1/login-with-google",
-                    "_self"
-                  );
+                  // window.open(`${BASE_URL}login-with-google`, "_self");
+                  loginWithGoogle();
                 }
               }}
               className={`bg-white border-primary border-2 flex text-input justify-center items-center gap-2  px-4 py-1 rounded-xl w-full mt-6 ${
@@ -165,13 +173,12 @@ const Login = () => {
             <p
               className=" text-sm text-center mt-8"
               onClick={() => {
-                navigate("/");
+                navigate("/signup");
               }}
             >
               Don't have an account yet?{" "}
               <span className="text-primary font-semibold cursor-pointer">
-                {" "}
-                Sign Up{" "}
+                Sign Up
               </span>
             </p>
           </form>

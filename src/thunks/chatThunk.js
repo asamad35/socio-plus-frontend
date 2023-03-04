@@ -54,9 +54,11 @@ export const postSendMessage = createAsyncThunk(
 
 export const postAccessChat = createAsyncThunk(
   "postAccessChat",
-  async (payload) => {
+  async (payload, thunkAPI) => {
     const data = await services.postAccessChat(payload);
     if (data.data) {
+      console.log(data, "lllllllllllllll");
+      thunkAPI.dispatch(getAllMessages({ chatID: data.data._id }));
       return data.data;
     } else {
       toast.error(data.message);

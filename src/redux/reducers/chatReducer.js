@@ -8,6 +8,13 @@ import { getAllMessages } from "../../thunks";
 const messageSentAudio = new Audio(sentAudio);
 const messageReceivedAudio = new Audio(audioReceived);
 
+const getMessageIdxByUUID = (state, payload) => {
+  const payloadUuid =
+    payload instanceof FormData ? payload.get("uuid") : payload.uuid;
+
+  return state.allMessages.findIndex((el) => el.uuid === payloadUuid);
+};
+
 const initialState = {
   audioPreviewUrl: "",
   recordingState: false,
@@ -165,31 +172,38 @@ const chatReducer = createSlice({
         state.chatLoader = false;
       })
       .addCase(thunks.postSendMessage.pending, (state, action) => {
-        const payload = action.meta.arg;
-        const messageIdx = state.allMessages.findIndex(
-          (el) => el.uuid === payload.uuid
-        );
+        const payload = action.meta.arg.payload;
+        const messageIdx = getMessageIdxByUUID(state, payload);
         const targetMssg = state.allMessages[messageIdx];
         if (targetMssg) targetMssg.messageStatus = "sending";
       })
       .addCase(thunks.postSendMessage.fulfilled, (state, action) => {
-        const payload = action.meta.arg;
-        const payloadUuid =
-          payload instanceof FormData ? payload.get("uuid") : payload.uuid;
-
-        const messageIdx = state.allMessages.findIndex(
-          (el) => el.uuid === payloadUuid
-        );
-        console.log({ payloadUuid, messageIdx });
+        const payload = action.meta.arg.payload;
+        const messageIdx = getMessageIdxByUUID(state, payload);
         state.allMessages[messageIdx].messageStatus = "successful";
+
+        const isPayloadFormData = payload instanceof FormData;
+
+        if (isPayloadFormData) {
+          const socket = action.meta.arg.socket;
+          const socketPayload = {
+            chat: action.payload.chat,
+            content: action.payload.content,
+            sender: action.meta.arg.sender,
+            otherUserId: action.meta.arg.otherUserId,
+            selectedChat: action.meta.arg.selectedChat,
+            files: action.payload.files,
+          };
+          console.log(socketPayload, "zzzzzzzzzzzzzz");
+
+          socket.emit("newMessage", socketPayload);
+        }
 
         messageSentAudio.play();
       })
       .addCase(thunks.postSendMessage.rejected, (state, action) => {
-        const payload = action.meta.arg;
-        const messageIdx = state.allMessages.findIndex(
-          (el) => el.uuid === payload.uuid
-        );
+        const payload = action.meta.arg.payload;
+        const messageIdx = getMessageIdxByUUID(state, payload);
         state.allMessages[messageIdx].messageStatus = "error";
       })
       .addCase(thunks.postAccessChat.pending, (state, action) => {

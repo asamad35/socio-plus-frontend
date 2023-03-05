@@ -1,3 +1,9 @@
+import pdfIcon from "./assets/pdf-icon.png";
+import otherFile from "./assets/other-file-icon.png";
+import pptIcon from "./assets/ppt-icon.png";
+import wordIcon from "./assets/word-icon.webp";
+import excelIcon from "./assets/excel-icon.png";
+
 export function debounce(callbackFn, sec = 2000) {
   let timer;
   return function (...args) {
@@ -57,4 +63,66 @@ export function showMessagePic(allMessages) {
   });
 
   return messageList;
+}
+
+export function getFileIcon(fileName) {
+  const nameSplit = fileName.split(".");
+  const extName = nameSplit[nameSplit.length - 1];
+
+  let icon;
+  switch (extName) {
+    case "pdf":
+      icon = pdfIcon;
+      break;
+
+    case "ppt":
+    case "pptx":
+      icon = pptIcon;
+      break;
+
+    case "doc":
+    case "docx":
+    case "docm":
+      icon = wordIcon;
+      break;
+
+    case "xlsx":
+    case "xls":
+    case "xlsm":
+      icon = excelIcon;
+      break;
+
+    default:
+      icon = otherFile;
+  }
+
+  return icon;
+}
+
+
+export const downloadMedia = async (e, originalurl) => {
+  e.preventDefault();
+  try {
+      fetch(originalurl)
+      .then(resp => resp.blob())
+      .then(blob => {
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.style.display = 'none';
+          a.href = url;
+
+          const nameSplit = originalurl.split("/");
+          const duplicateName = nameSplit.pop();
+
+          // the filename you want
+          a.download = "" + duplicateName + "";
+          document.body.appendChild(a);
+          a.click();
+          window.URL.revokeObjectURL(url);
+      })
+      .catch((error) => console.log('Error while downloading the image ', error))
+
+  } catch (error) {
+      console.log('Error while downloading the image ', error);
+  }
 }

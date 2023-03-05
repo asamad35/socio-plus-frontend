@@ -17,6 +17,7 @@ import useLongPress from "../../customHooks/useLongPress";
 import ClickAnimation from "../ClickAnimation";
 import { postSendMessage } from "../../thunks";
 import ImageUploadButton from "../ImageUploadButton";
+import PreviewImages from "../PreviewImages";
 
 const ChatFooter = ({ socket, selectedFiles, setSelectedFiles }) => {
   const dispatch = useDispatch();
@@ -113,21 +114,25 @@ const ChatFooter = ({ socket, selectedFiles, setSelectedFiles }) => {
 
   const onClick = () => {
     if (text.trim() === "" && selectedFiles.length === 0) return;
-
+    const content = text.trim();
     const fileArray = selectedFiles.map((file) => {
       if (file.type.includes("image")) {
-        return { url: URL.createObjectURL(file) };
+        return {
+          url: URL.createObjectURL(file),
+          isImage: true,
+          name: file.name,
+        };
       } else {
-        return { name: file.name };
+        return { name: file.name, url: false, isImage: false };
       }
     });
 
     const uuid = uuidv4();
-    let payload = { content: text, chatID: selectedChat._id, uuid };
+    let payload = { content, chatID: selectedChat._id, uuid };
     if (selectedFiles.length) {
       payload = getFormData(
         {
-          content: text,
+          content,
           chatID: selectedChat._id,
           uuid,
         },
@@ -135,25 +140,39 @@ const ChatFooter = ({ socket, selectedFiles, setSelectedFiles }) => {
         "filesToUpload"
       );
     }
-    dispatch(postSendMessage(payload));
+    dispatch(
+      postSendMessage({
+        payload,
+        socket,
+        sender: { ...loggedUser },
+        otherUserId: otherUser._id,
+        selectedChat,
+      })
+    );
     dispatch(
       actions.pushSendMessage({
         chat: selectedChat._id,
-        content: text,
+        content,
         sender: { ...loggedUser },
         messageStatus: "sending",
+        otherUserId: otherUser._id,
         files: fileArray,
         uuid,
       })
     );
+    setText("");
+    setSelectedFiles([]);
+
+    if (payload instanceof FormData) return;
+
     socket.emit("newMessage", {
       chat: selectedChat._id,
-      content: text,
+      content,
       sender: { ...loggedUser },
       otherUserId: otherUser._id,
       selectedChat,
+      files: [],
     });
-    setText("");
     console.log("click is triggered");
   };
 
@@ -175,19 +194,29 @@ const ChatFooter = ({ socket, selectedFiles, setSelectedFiles }) => {
         justifyContent: "flex-start",
         alignItems: "center",
         boxShadow: "0px 1px 7px rgb(50 50 50 / 56%);",
+        position: "relative",
       }}
     >
+      <PreviewImages
+        selectedFiles={selectedFiles}
+        setSelectedFiles={setSelectedFiles}
+      />
+
       {!showKeyboard && <AudioMessagePreview />}
       {showKeyboard && (
         <textarea
           onKeyPress={(e) => {
-            if (e.key === "Enter") {
+            if (e.key === "Enter" && !e.shiftKey) {
               onClick();
+              return;
+            }
+            if (e.key === "Enter" && e.shiftKey) {
+              setText(e.target.value);
             }
           }}
           onChange={(e) => {
-            console.log("qqqq", selectedChat);
-            if (!selectedChat) return;
+            console.log("qqqq", e.target.value, e.shiftKey);
+            if (!selectedChat || e.target.value.toString() == "\n") return;
             setText(e.target.value);
             if (status === null) {
               selectedChat && socket.emit("typing", selectedChat);

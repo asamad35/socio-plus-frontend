@@ -42,7 +42,7 @@ export const getAllMessages = createAsyncThunk(
 export const postSendMessage = createAsyncThunk(
   "postSendMessage",
   async (payload) => {
-    const data = await services.postSendMessage(payload);
+    const data = await services.postSendMessage(payload.payload);
     if (data.data) {
       return data.data;
     } else {

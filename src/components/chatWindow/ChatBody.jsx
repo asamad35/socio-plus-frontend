@@ -12,24 +12,20 @@ const ChatBody = ({
   const allMessages = useSelector((state) => state.chatReducer.allMessages);
   const bottomRef = useRef(null);
   useEffect(() => {
-    if (smoothScroll) {
-      console.log("hiii upar", smoothScroll);
-      setTimeout(() => {
-        bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-        setSmoothScroll(false);
-      }, 1000);
-    } else {
-      bottomRef.current?.scrollIntoView({ behavior: "auto" });
-    }
-  }, [allMessages]);
+    // if (smoothScroll) {
+    //   console.log("hiii upar", smoothScroll);
+    //   setTimeout(() => {
+    //     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    //     setSmoothScroll(false);
+    //   }, 1000);
+    // } else {
+    bottomRef.current?.scrollIntoView({ behavior: "auto" });
+    // }
+  }, [allMessages, selectedFiles]);
   return (
     <div className="chatBody relative">
       <Message />
       <div ref={bottomRef} className="bottomDiv"></div>
-      <PreviewImages
-        selectedFiles={selectedFiles}
-        setSelectedFiles={setSelectedFiles}
-      />
     </div>
   );
 };

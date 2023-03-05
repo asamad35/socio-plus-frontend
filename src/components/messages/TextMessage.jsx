@@ -23,7 +23,13 @@ const TextMessage = ({ messageObj }) => {
         } `}
         src={messageObj.sender.photoUrl}
       />
-      <p className="text-base p-2 rounded-2xl break-words bg-[#dcdddc] max-w-[200px] sm:max-w-[250px] md:max-w-[300px]">
+      <p
+        className={` ${
+          messageObj.sendOrReceived === "received"
+            ? ""
+            : "bg-primary text-white"
+        } text-base whitespace-pre-wrap p-2 rounded-2xl break-words w-fit bg-[#dcdddc] max-w-[200px] sm:max-w-[250px] md:max-w-[300px]`}
+      >
         {messageObj.content ?? " no text"}
       </p>
 

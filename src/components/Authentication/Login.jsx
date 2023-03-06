@@ -26,8 +26,6 @@ const Login = () => {
 
   const loginWithGoogle = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
-      console.log(tokenResponse);
-
       dispatch(getLoginWithGoogle(tokenResponse));
     },
     onError: (errorResponse) => console.log(errorResponse),
@@ -53,8 +51,8 @@ const Login = () => {
   } = useForm({
     resolver: yupResolver(validationSchema),
     defaultValues: {
-      email: "abdus@gmail.com",
-      password: "123456",
+      email: import.meta.env.PROD ? "" : "abdus@gmail.com",
+      password: import.meta.env.PROD ? "" : "123456",
     },
   });
 

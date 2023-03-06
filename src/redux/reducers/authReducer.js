@@ -1,28 +1,24 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, current } from "@reduxjs/toolkit";
 import * as thunks from "../../thunks";
 
 const initialState = {
   token: null,
-  user: {
-    _id: "63badbc39cb3880c19453d2e",
-    firstName: "abdus",
-    lastName: "samad",
-    email: "abdus@gmail.com",
-    status: "I am unstoppable",
-    __v: 0,
-  },
+  user: {},
   authButton: "idle",
   profilePicLoader: "idle",
-  sideSearch: false,
+  sideSearch: true,
 };
 
 const authReducer = createSlice({
   name: "authReducer",
   initialState,
   reducers: {
+    resetAuthReducer: () => initialState,
     logout(state, action) {
-      state.token = null;
       localStorage.removeItem("socioPlusToken");
+      // state.token = null;
+      // state = JSON.parse(JSON.stringify(initialState));
+      console.log({ state });
     },
     setSideSearch(state, action) {
       state.sideSearch = action.payload;
@@ -85,6 +81,6 @@ const authReducer = createSlice({
   },
 });
 
-export const { logout, setSideSearch } = authReducer.actions;
+export const { logout, setSideSearch, resetAuthReducer } = authReducer.actions;
 
 export default authReducer.reducer;

@@ -21,7 +21,6 @@ const Message = () => {
 
   function createMessage() {
     return allMessages.map((message) => {
-      console.log(message, "azzzzzzzzzzzzzzzzzzzzzzzzzzzz");
       if (message.files.length > 0) {
         return (
           <ImageMessage messageObj={getMessageUserInfo(message, loggedUser)} />

@@ -13,6 +13,8 @@ import { postUpdateName, postUpdatePhoto, postUpdateStatus } from "../thunks";
 import { getFormData, getOtherUserInfo } from "../helper";
 import { CircularProgress } from "@mui/material";
 import { useSwipeable } from "react-swipeable";
+import { setImageGallery } from "../redux/actions";
+import { toast } from "react-toastify";
 
 const InfoDrawer = () => {
   const dispatch = useDispatch();
@@ -54,8 +56,30 @@ const InfoDrawer = () => {
       >
         <div className="profile-pic w-[100px] h-[100px] md:w-[150px] md:h-[150px] relative">
           <img
-            src={isUserProfile ? loggedUser?.photoUrl : otherUser?.photoUrl}
-            alt="profile-img"
+            className="cursor-pointer text-center text-sm leading-[100px] md:leading-[150px] md:text-xl break-all"
+            onClick={() => {
+              if (!isUserProfile && !selectedChat) {
+                toast.error("Select a chat");
+                return;
+              }
+              dispatch(
+                setImageGallery([
+                  {
+                    original: isUserProfile
+                      ? loggedUser?.photoUrl
+                      : otherUser?.photoUrl,
+                  },
+                ])
+              );
+              dispatch(actions.setInfoDrawer(false));
+            }}
+            src={
+              isUserProfile
+                ? loggedUser?.photoUrl
+                : otherUser?.photoUrl ??
+                  "https://static.thenounproject.com/png/3465604-200.png"
+            }
+            alt="Image"
           />
           {isUserProfile && (
             <ClickAnimation className="rounded-full bg-white flex justify-center items-center absolute right-[-8px] bottom-[0px] cursor-pointer border-2 border-primary h-[35px] w-[35px] md:bottom-[0px] md:right-[10px]">
@@ -65,7 +89,6 @@ const InfoDrawer = () => {
                 id="profile-pic-input"
                 className="profile-pic-input"
                 onChange={(e) => {
-                  console.log(e.target.files[0], "kkkkkkkkkkk");
                   dispatch(
                     postUpdatePhoto(
                       getFormData({ profilePic: e.target.files[0] })
@@ -232,10 +255,11 @@ const InfoDrawer = () => {
       </div>
 
       <div
+        {...handlers}
         onClick={(e) => {
           dispatch(actions.setInfoDrawer(false));
         }}
-        className={`back-drop rounded-2xl overflow-hidden ${
+        className={`back-drop md:rounded-2xl  overflow-hidden ${
           infoDrawer === true ? "active" : ""
         } `}
       ></div>

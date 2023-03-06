@@ -7,7 +7,6 @@ const ImageUploadButton = ({ selectedFiles, setSelectedFiles }) => {
   const onSelectFile = (event) => {
     const userSelectedFiles = event.target.files;
     const selectedFilesArray = Array.from(userSelectedFiles);
-    console.log({ selectedFiles, selectedFilesArray });
     setSelectedFiles([...selectedFilesArray, ...selectedFiles]);
 
     // FOR BUG IN CHROME
@@ -17,7 +16,7 @@ const ImageUploadButton = ({ selectedFiles, setSelectedFiles }) => {
   return (
     <>
       <ClickAnimation>
-        <Tooltip title="Add upto 3 images">
+        <Tooltip title="Add documents">
           <Box
             sx={{
               backgroundColor: "#848584",
@@ -29,6 +28,7 @@ const ImageUploadButton = ({ selectedFiles, setSelectedFiles }) => {
               alignItems: "center",
               color: "white",
               cursor: "pointer",
+              position: "relative",
             }}
           >
             <input

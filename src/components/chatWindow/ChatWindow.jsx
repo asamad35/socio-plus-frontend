@@ -9,6 +9,7 @@ import io from "socket.io-client";
 import * as actions from "../../redux/actions/index";
 import { useSwipeable } from "react-swipeable";
 import { SOCKET_CONNECTION_URL } from "../../config/apiUrls";
+import ImageSlides from "../ImageSlides";
 
 var socket = null;
 const ChatWindow = () => {
@@ -27,12 +28,8 @@ const ChatWindow = () => {
   );
 
   const onlineUsers = useSelector((state) => state.chatReducer.onlineUsers);
-
   useEffect(() => {
-    console.log({ onlineUsers });
-    console.log({ chatList }, "aaaaaaaaaaaaaaaaaa", "11111111111");
     const updatedOnlineChatList = chatList.map((el) => {
-      console.log({ chatList }, "aaaaaaaaaaaaaaaaaa", "22222222222");
       if (
         el.users.find((chatUser) =>
           onlineUsers.find((onlineUser) => chatUser._id === onlineUser._id)
@@ -48,8 +45,6 @@ const ChatWindow = () => {
 
     //      check if the selectedChat user is present in onlineUsers array. Then conditionally update the selected chat active status
 
-    console.log({ selectedChat }, "88888888888888888888");
-
     const selectedChatHasOnlineUser = !!selectedChat?.users?.find(
       (selectedChatUser) =>
         onlineUsers.find(
@@ -62,14 +57,13 @@ const ChatWindow = () => {
         actions.setSelectedChat({
           ...selectedChat,
           active: selectedChatHasOnlineUser,
-          // dontReloadMessages: true,
         })
       );
-    console.log({ selectedChatHasOnlineUser });
   }, [chatListLoader, onlineUsers]);
 
   const handlers = useSwipeable({
     onSwipedLeft: () => dispatch(actions.setSideSearch(false)),
+
     swipeDuration: 500,
     preventScrollOnSwipe: true,
     trackMouse: true,
@@ -102,43 +96,6 @@ const ChatWindow = () => {
       );
 
       dispatch(actions.setOnlineUsers(otherOnlineUsers));
-
-      // console.log({ otherOnlineUsers });
-      // console.log({ chatList }, "aaaaaaaaaaaaaaaaaa", "11111111111");
-      // const updatedOnlineChatList = chatList.map((el) => {
-      //   console.log({ chatList }, "aaaaaaaaaaaaaaaaaa", "22222222222");
-      //   if (
-      //     el.users.find((chatUser) =>
-      //       otherOnlineUsers.find(
-      //         (onlineUser) => chatUser._id === onlineUser._id
-      //       )
-      //     )
-      //   ) {
-      //     return { ...el, active: true };
-      //   } else return { ...el, active: false };
-      // });
-
-      // dispatch(actions.updateOnlineChatList(updatedOnlineChatList));
-
-      // // update selectedChat active status because if the selectedChat gets online from offline then it must reflect in the selectedChat state.
-
-      // //      check if the selectedChat user is present in onlineUsers array. Then conditionally update the selected chat active status
-
-      // const selectedChatHasOnlineUser = !!selectedChat?.users?.find(
-      //   (selectedChatUser) =>
-      //     otherOnlineUsers.find(
-      //       (otherOnlineUser) => otherOnlineUser._id === selectedChatUser._id
-      //     )
-      // );
-
-      // selectedChat &&
-      //   dispatch(
-      //     actions.setSelectedChat({
-      //       ...selectedChat,
-      //       active: selectedChatHasOnlineUser,
-      //     })
-      //   );
-      // console.log({ selectedChatHasOnlineUser });
     });
     return () => {
       socket.off("onlinUsersList");
@@ -148,8 +105,9 @@ const ChatWindow = () => {
   return (
     <div
       {...handlers}
-      className="flex rounded-r-2xl overflow-hidden justify-start flex-col items-center h-full w-full"
+      className="flex relative md:rounded-r-2xl overflow-hidden justify-start flex-col items-center h-full w-full"
     >
+      <ImageSlides />
       <ChatHeader />
       {chatLoader ? (
         <div className="chat-loader">

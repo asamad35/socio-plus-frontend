@@ -142,7 +142,10 @@ const ChatList = ({ searchList }) => {
                         wordBreak: "break-word",
                       }}
                     >
-                      {textOverflow(el?.latestMessage?.content)}
+                      {el?.latestMessage?.files?.length !== 0 &&
+                      el?.latestMessage?.content === ""
+                        ? "Document"
+                        : textOverflow(el?.latestMessage?.content)}
                     </Typography>
                   </Stack>
                   {el.unreadCount !== 0 && el.unreadUser === loggedUser._id && (

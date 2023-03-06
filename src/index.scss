@@ -659,3 +659,35 @@ overflow: hidden;
 
   }
 }
+
+.image-gallery{
+  position: absolute !important;
+  z-index: 20;
+    width: 90%;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.image-gallery-thumbnails-wrapper.bottom.thumbnails-swipe-horizontal{
+  background: rgb(169, 192, 255,1);
+}
+.image-gallery-image{
+  max-height: 100% !important;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: black;
+}
+.image-gallery-thumbnail-image{
+  height: 100px;
+  object-fit: contain;
+}
+.image-gallery-svg{
+  height: 60px !important;
+}
+.image-gallery-slide{
+  height: 300px;
+}
+.image-gallery-thumbnail.active, .image-gallery-thumbnail:focus button{
+  border-color:#2962ff !important;
+}

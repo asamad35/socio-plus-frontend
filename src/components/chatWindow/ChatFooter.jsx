@@ -69,11 +69,6 @@ const ChatFooter = ({ socket, selectedFiles, setSelectedFiles }) => {
     // update chats
 
     socket.on("updateLatestMessage", (message) => {
-      console.log(
-        { updateLatestMessage: message },
-        message._id,
-        selectedChat?._id
-      );
       if (message._id === selectedChat?._id) return;
 
       dispatch(actions.prependInChatList(message));
@@ -173,7 +168,6 @@ const ChatFooter = ({ socket, selectedFiles, setSelectedFiles }) => {
       selectedChat,
       files: [],
     });
-    console.log("click is triggered");
   };
 
   const defaultOptions = {
@@ -215,12 +209,11 @@ const ChatFooter = ({ socket, selectedFiles, setSelectedFiles }) => {
             }
           }}
           onChange={(e) => {
-            console.log("qqqq", e.target.value, e.shiftKey);
             if (!selectedChat || e.target.value.toString() == "\n") return;
             setText(e.target.value);
-            if (status === null) {
-              selectedChat && socket.emit("typing", selectedChat);
-            }
+            // if (status === null) {
+            selectedChat && socket.emit("typing", selectedChat);
+            // }
             debounceClosure(selectedChat, socket);
           }}
           value={text}

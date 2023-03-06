@@ -5,10 +5,46 @@ import { postSendMessage } from "../../thunks";
 import { CircularProgress, Tooltip } from "@mui/material";
 import { downloadMedia, getFileIcon } from "../../helper";
 import DownloadForOfflineOutlinedIcon from "@mui/icons-material/DownloadForOfflineOutlined";
+import { setImageGallery } from "../../redux/actions";
+
 const ImageMessage = ({ messageObj }) => {
+  console.log({ messageObj });
   const dispatch = useDispatch();
+
+  function setImageGalleryArr(targetIdx) {
+    const res = [];
+    const filesLen = messageObj.files.length;
+
+    messageObj.files.forEach((el, idx) => {
+      if (el.isImage && idx < targetIdx) {
+        res.push({
+          original: el.url,
+          thumbnail: el.url,
+          idx,
+        });
+      }
+    });
+
+    messageObj.files.forEach((el, idx, arr) => {
+      if (arr[filesLen - 1 - idx].isImage && targetIdx <= filesLen - 1 - idx) {
+        res.unshift({
+          original: arr[filesLen - 1 - idx].url,
+          thumbnail: arr[filesLen - 1 - idx].url,
+          idx,
+        });
+      }
+    });
+
+    console.log({ messageObj, res });
+    dispatch(setImageGallery(res));
+  }
+
   return (
     <div
+      onClick={() => {
+        console.log("aaaaaaaaaaaddddddddddddd");
+        // setImageGalleryArr();
+      }}
       className={`flex gap-2 m-4 items-end ${
         messageObj.sendOrReceived === "received"
           ? "justify-start flex-row"
@@ -26,7 +62,7 @@ const ImageMessage = ({ messageObj }) => {
           messageObj.sendOrReceived === "received" ? "items-start" : "items-end"
         }  gap-1`}
       >
-        {messageObj.files.map((file) =>
+        {messageObj.files.map((file, idx) =>
           file.isImage ? (
             <div className="relative">
               {messageObj.sendOrReceived === "received" && (
@@ -34,14 +70,16 @@ const ImageMessage = ({ messageObj }) => {
                   <DownloadForOfflineOutlinedIcon
                     fontSize="medium"
                     className="absolute bottom-2 right-2 bg-white rounded-full text-2xl cursor-pointer text-primary"
-                    onClick={(e) => {
-                      console.log("hiiiiiiii");
-                      downloadMedia(e, file.url);
+                    onClick={() => {
+                      downloadMedia(file.url);
                     }}
                   />
                 </Tooltip>
               )}
               <img
+                onClick={() => {
+                  setImageGalleryArr(idx);
+                }}
                 className="rounded-lg object-cover object-top w-[200px] min-h-[100px] h-fit max-h-[200px] cursor-pointer bg-secondary border-4 rounded-lg border-primary sm:w-[250px] sm:max-h-[250px]  "
                 src={file.url}
                 alt={file.name}
@@ -55,8 +93,7 @@ const ImageMessage = ({ messageObj }) => {
                     fontSize="medium"
                     className="absolute bottom-2 right-2 bg-white rounded-full text-2xl cursor-pointer text-primary"
                     onClick={() => {
-                      console.log("hiiiiiiii", file.url);
-                      downloadMedia(e, file.url);
+                      downloadMedia(file.url);
                     }}
                   />
                 </Tooltip>
@@ -69,7 +106,6 @@ const ImageMessage = ({ messageObj }) => {
               />
 
               <div className="break-all">{file.name}</div>
-              {console.log({ file }, "hhhhhhhhhhhhhh")}
             </div>
           )
         )}
@@ -86,20 +122,9 @@ const ImageMessage = ({ messageObj }) => {
         )}
       </div>
       {messageObj.messageStatus === "error" && (
-        <ReplayOutlinedIcon
-          sx={{ fill: "red" }}
-          onClick={() => {
-            dispatch(
-              postSendMessage({
-                content: content,
-                chatID: selectedChat._id,
-                messageStatus: "sending",
-                uuid: messageObj.uuid,
-                sender: { ...loggedUser },
-              })
-            );
-          }}
-        />
+        <p className="text-white bg-red-600 px-4 rounded-full text-sm py-1 self-center ">
+          Failed
+        </p>
       )}
       {messageObj.messageStatus === "sending" && <CircularProgress size={20} />}
     </div>

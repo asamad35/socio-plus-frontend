@@ -32,7 +32,6 @@ export function getFormData(obj = {}, fileArr, propertyName) {
   }
   if (fileArr) {
     fileArr.forEach((el) => {
-      console.log({ aaa: el, bbb: el[0] });
       result.append(propertyName, el);
     });
   }
@@ -99,30 +98,31 @@ export function getFileIcon(fileName) {
   return icon;
 }
 
-
-export const downloadMedia = async (e, originalurl) => {
-  e.preventDefault();
+export const downloadMedia = async (originalurl) => {
   try {
-      fetch(originalurl)
-      .then(resp => resp.blob())
-      .then(blob => {
-          const url = window.URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.style.display = 'none';
-          a.href = url;
-
-          const nameSplit = originalurl.split("/");
-          const duplicateName = nameSplit.pop();
-
-          // the filename you want
-          a.download = "" + duplicateName + "";
-          document.body.appendChild(a);
-          a.click();
-          window.URL.revokeObjectURL(url);
+    fetch(originalurl)
+      .then((resp) => {
+        return resp.blob();
       })
-      .catch((error) => console.log('Error while downloading the image ', error))
+      .then((blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.style.display = "none";
+        a.href = url;
 
+        const nameSplit = originalurl.split("/");
+        const duplicateName = nameSplit.pop();
+
+        // the filename you want
+        a.download = "" + duplicateName + "";
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+      })
+      .catch((error) =>
+        console.log("Error while downloading the image ", error)
+      );
   } catch (error) {
-      console.log('Error while downloading the image ', error);
+    console.log("Error while downloading the image ", error);
   }
-}
+};

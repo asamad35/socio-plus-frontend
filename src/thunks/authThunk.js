@@ -63,28 +63,6 @@ export const getLoginWithGoogle = createAsyncThunk(
     return data;
   }
 );
-// email: "samad.abdus3535@gmail.com";
-// email_verified: true;
-// family_name: "Samad 03";
-// given_name: "Abdus";
-// locale: "en";
-// name: "Abdus Samad 03";
-// picture: "https://lh3.googleusercontent.com/a/AGNmyxbyLVXhSCvOTNe6mZaqdIpS4PlStuEObsF4MayN=s96-c";
-// sub: "106328584180974737963";
-
-export const postLogoutWithGoogle = createAsyncThunk(
-  "postLogoutWithGoogle",
-  async () => {
-    const data = await services.postLogoutWithGoogle();
-    if (data.data) {
-      toast.success(data.message);
-    } else {
-      toast.error(data.message);
-      throw new Error();
-    }
-    return data;
-  }
-);
 
 export const postUpdateStatus = createAsyncThunk(
   "postUpdateStatus",

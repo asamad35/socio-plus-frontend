@@ -43,6 +43,13 @@ const Signup = () => {
     formState: { errors },
   } = useForm({
     resolver: yupResolver(validationSchema),
+    defaultValues: {
+      firstName: import.meta.env.PROD ? "" : "abdus",
+      lastName: import.meta.env.PROD ? "" : "local",
+      email: import.meta.env.PROD ? "" : "abdus@gmail.com",
+      password: import.meta.env.PROD ? "" : "123456",
+      confirmPassword: import.meta.env.PROD ? "" : "123456",
+    },
   });
 
   useEffect(() => {

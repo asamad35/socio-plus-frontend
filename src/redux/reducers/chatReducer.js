@@ -33,13 +33,18 @@ const initialState = {
   allMessages: [],
   chatLoader: false,
   onlineUsers: [],
+  imageGallery: [],
 };
 const chatReducer = createSlice({
   name: "chatReducer",
   initialState,
   reducers: {
+    resetChatReducer: () => initialState,
     setOnlineUsers(state, action) {
       state.onlineUsers = action.payload;
+    },
+    setImageGallery(state, action) {
+      state.imageGallery = action.payload;
     },
 
     setAudioPreviewUrl(state, action) {
@@ -247,10 +252,12 @@ export const {
   setInfoDrawer,
   setIsUserProfile,
   setSearchUserListLoader,
+  setImageGallery,
   setSelectedChat,
   pushSendMessage,
   updateOnlineChatList,
   prependInChatList,
   setOnlineUsers,
+  resetChatReducer,
 } = chatReducer.actions;
 export default chatReducer.reducer;

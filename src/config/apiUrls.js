@@ -22,7 +22,6 @@ export const API_URLS = {
   getAllMessages: "message/fetch-all-messages",
   postSendMessage: "message/send-message",
   postAccessChat: "chat/access-chat",
-  postLogoutWithGoogle: "/google-logout",
 };
 
 export const googleUserInfoData =

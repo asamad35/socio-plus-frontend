@@ -3,7 +3,7 @@ import VideocamOutlinedIcon from "@mui/icons-material/VideocamOutlined";
 import CallOutlinedIcon from "@mui/icons-material/CallOutlined";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import { Badge, Box, Tooltip, Typography } from "@mui/material";
+import { Avatar, Badge, Box, Tooltip, Typography } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import * as actions from "../../redux/actions";
 import { useState } from "react";
@@ -14,7 +14,7 @@ import { getOtherUserInfo } from "../../helper";
 import { useMemo } from "react";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import { useCallback } from "react";
-import { postLogoutWithGoogle } from "../../thunks/index";
+import { styled } from "@mui/material/styles";
 
 const ChatHeader = () => {
   const dispatch = useDispatch();
@@ -30,13 +30,40 @@ const ChatHeader = () => {
     [selectedChat]
   );
 
+  const StyledBadge = styled(Badge)(({ theme }) => ({
+    "& .MuiBadge-badge": {
+      backgroundColor: "#44b700",
+      color: "#44b700",
+      boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
+      "&::after": {
+        position: "absolute",
+        top: 0,
+        left: 0,
+        width: "100%",
+        height: "100%",
+        borderRadius: "50%",
+        animation: "ripple 1.2s infinite ease-in-out",
+        border: "1px solid currentColor",
+        content: '""',
+      },
+    },
+    "@keyframes ripple": {
+      "0%": {
+        transform: "scale(.8)",
+        opacity: 1,
+      },
+      "100%": {
+        transform: "scale(2.4)",
+        opacity: 0,
+      },
+    },
+  }));
+
   const checkOtherUserActive = useCallback(() => {
     return !!chatList.find((el) => {
       return el?._id === selectedChat?._id;
     })?.active;
   }, [selectedChat, chatList]);
-
-  console.log({ checkOtherUserActive: checkOtherUserActive() });
 
   // hide menu on outside click
   useEffect(() => {
@@ -51,7 +78,7 @@ const ChatHeader = () => {
   return (
     <section className="flex w-full justify-center items-center p-6 shadow-xl">
       <h2
-        className="block mr-4 md:hidden"
+        className="block mr-4 cursor-pointer md:hidden"
         onClick={() => {
           dispatch(actions.setSideSearch(!sideSearch));
         }}
@@ -60,7 +87,11 @@ const ChatHeader = () => {
       </h2>
 
       {checkOtherUserActive() && (
-        <span className="w-2 h-2 rounded full bg-lime-700 mr-2"></span>
+        <StyledBadge
+          overlap="circular"
+          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+          variant="dot"
+        ></StyledBadge>
       )}
 
       <h1
@@ -68,7 +99,7 @@ const ChatHeader = () => {
           dispatch(actions.setIsUserProfile(false));
           dispatch(actions.setInfoDrawer(true));
         }}
-        className="text-lg cursor-pointer relative leading-none font-medium text-[#333333] mr-4 md:text-2xl"
+        className="text-lg cursor-pointer relative leading-none font-medium text-[#333333] mx-4 md:text-2xl"
       >
         {otherUser
           ? otherUser.firstName + " " + otherUser.lastName
@@ -204,8 +235,9 @@ const ChatHeader = () => {
             <p
               onClick={() => {
                 dispatch(actions.setSelectedChat(null));
-                dispatch(postLogoutWithGoogle());
-                if (!loggedUser.loggedInWithGoogle) dispatch(actions.logout());
+                dispatch(actions.logout());
+                dispatch(actions.resetAuthReducer());
+                dispatch(actions.resetChatReducer());
               }}
               className="menu-items"
             >

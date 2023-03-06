@@ -39,7 +39,7 @@ const SideSearch = () => {
       <div className="mb-6 px-4 md:px-8">
         <h1 className="text-2xl text-white font-medium">
           <span
-            className="md:hidden"
+            className="md:hidden cursor-pointer"
             onClick={() => {
               dispatch(actions.setSideSearch(!sideSearch));
             }}

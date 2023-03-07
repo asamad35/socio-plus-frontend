@@ -32,7 +32,7 @@ export function getFormData(obj = {}, fileArr, propertyName) {
   }
   if (fileArr) {
     fileArr.forEach((el) => {
-      result.append(propertyName, el);
+      result.append(propertyName, el.file);
     });
   }
   return result;

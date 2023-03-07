@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from "uuid";
 import SendOutlinedIcon from "@mui/icons-material/SendOutlined";
 import EmojiEmotionsOutlinedIcon from "@mui/icons-material/EmojiEmotionsOutlined";
 import { debounce, getFormData, getOtherUserInfo } from "../../helper";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
 // import AudioRecorder from "../AudioRecorder";
@@ -18,6 +18,7 @@ import ClickAnimation from "../ClickAnimation";
 import { postSendMessage } from "../../thunks";
 import ImageUploadButton from "../ImageUploadButton";
 import PreviewImages from "../PreviewImages";
+import FooterReplyMessage from "../sideSearch/FooterReplyMessage";
 
 const ChatFooter = ({ socket, selectedFiles, setSelectedFiles }) => {
   const dispatch = useDispatch();
@@ -35,6 +36,7 @@ const ChatFooter = ({ socket, selectedFiles, setSelectedFiles }) => {
   const loggedUser = useSelector((state) => state.authReducer.user);
   const selectedChat = useSelector((state) => state.chatReducer.selectedChat);
   const allMessages = useSelector((state) => state.chatReducer.allMessages);
+  const replyMessage = useSelector((state) => state.chatReducer.replyMessage);
 
   const emojiContainer = useRef(null);
 
@@ -109,26 +111,27 @@ const ChatFooter = ({ socket, selectedFiles, setSelectedFiles }) => {
 
   const onClick = () => {
     if (text.trim() === "" && selectedFiles.length === 0) return;
+    const uuid = uuidv4();
     const content = text.trim();
-    const fileArray = selectedFiles.map((file) => {
-      if (file.type.includes("image")) {
+    const fileArray = selectedFiles.map((el) => {
+      if (el.file.type.includes("image")) {
         return {
-          url: URL.createObjectURL(file),
+          url: URL.createObjectURL(el.file),
           isImage: true,
-          name: file.name,
+          name: el.file.name,
         };
       } else {
-        return { name: file.name, url: false, isImage: false };
+        return { name: el.file.name, url: false, isImage: false };
       }
     });
 
-    const uuid = uuidv4();
     let payload = { content, chatID: selectedChat._id, uuid };
     if (selectedFiles.length) {
       payload = getFormData(
         {
           content,
           chatID: selectedChat._id,
+          uuids: selectedFiles.map((el) => el.uuid),
           uuid,
         },
         selectedFiles,
@@ -178,66 +181,49 @@ const ChatFooter = ({ socket, selectedFiles, setSelectedFiles }) => {
   ////////////////////////////////////////////////////// long press code ends
 
   return (
-    <Box
-      sx={{
-        backgroundColor: "#dcdddc",
-        width: "100%",
-        minHeight: "4rem",
-        marginTop: "auto",
-        display: "flex",
-        justifyContent: "flex-start",
-        alignItems: "center",
-        boxShadow: "0px 1px 7px rgb(50 50 50 / 56%);",
-        position: "relative",
-      }}
+    <div
+      className="bg-[#dcdddc] w-full flex justify-start items-center relative mt-auto "
+      style={{ boxShadow: "0px 1px 7px rgb(50 50 50 / 56%)" }}
     >
       <PreviewImages
         selectedFiles={selectedFiles}
         setSelectedFiles={setSelectedFiles}
       />
-
-      {!showKeyboard && <AudioMessagePreview />}
-      {showKeyboard && (
-        <textarea
-          onKeyPress={(e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
-              onClick();
-              return;
-            }
-            if (e.key === "Enter" && e.shiftKey) {
+      <div className="flex flex-col items-start w-[70%] ml-6">
+        <AnimatePresence>
+          {replyMessage?.uuid && <FooterReplyMessage />}
+        </AnimatePresence>
+        {!showKeyboard && <AudioMessagePreview />}
+        {showKeyboard && (
+          <textarea
+            onKeyPress={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                onClick();
+                return;
+              }
+              if (e.key === "Enter" && e.shiftKey) {
+                setText(e.target.value);
+              }
+            }}
+            onChange={(e) => {
+              if (!selectedChat || e.target.value.toString() == "\n") return;
               setText(e.target.value);
-            }
-          }}
-          onChange={(e) => {
-            if (!selectedChat || e.target.value.toString() == "\n") return;
-            setText(e.target.value);
-            // if (status === null) {
-            selectedChat && socket.emit("typing", selectedChat);
-            // }
-            debounceClosure(selectedChat, socket);
-          }}
-          value={text}
-          id="textbox"
-          style={{
-            marginLeft: "1.5rem",
-            width: "70%",
-            outline: "none",
-            border: "none",
-            backgroundColor: "inherit",
-            fontSize: "1rem",
-            resize: "none",
-          }}
-          placeholder="Type your message here..."
-        />
-      )}
-      <Box
+              // if (status === null) {
+              selectedChat && socket.emit("typing", selectedChat);
+              // }
+              debounceClosure(selectedChat, socket);
+            }}
+            value={text}
+            id="textbox"
+            className="outline-0 border-0 bg-inherit text-base resize-none h-16 my-2 w-full"
+            placeholder="Type your message here..."
+          />
+        )}
+      </div>
+      <div
+        className="flex relative justify-center items-center gap-2 mt-0 mr-4 mb-0 ml-auto"
         sx={{
-          display: "flex",
-          position: "relative",
-          justifyContent: "center",
-          alignItems: "center",
           margin: "0 1rem 0 auto",
-          gap: "0.8rem",
         }}
       >
         <div
@@ -379,8 +365,8 @@ const ChatFooter = ({ socket, selectedFiles, setSelectedFiles }) => {
             </Box>
           </Tooltip>
         </ClickAnimation>
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 };
 

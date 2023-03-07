@@ -11,6 +11,8 @@ const ChatBody = ({
 }) => {
   const allMessages = useSelector((state) => state.chatReducer.allMessages);
   const bottomRef = useRef(null);
+  const replyMessage = useSelector((state) => state.chatReducer.replyMessage);
+
   useEffect(() => {
     if (smoothScroll) {
       console.log("hiii upar", smoothScroll);
@@ -21,7 +23,7 @@ const ChatBody = ({
     } else {
       bottomRef.current?.scrollIntoView({ behavior: "auto" });
     }
-  }, [allMessages, selectedFiles]);
+  }, [allMessages, selectedFiles, replyMessage]);
   return (
     <div className="chatBody relative">
       <Message />

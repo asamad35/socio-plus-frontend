@@ -3,11 +3,15 @@ import HighlightOffOutlinedIcon from "@mui/icons-material/HighlightOffOutlined";
 import ClickAnimation from "./ClickAnimation";
 import { getFileIcon } from "../helper";
 const PreviewImages = ({ selectedFiles, setSelectedFiles }) => {
-  const filesArray = selectedFiles.map((file) => {
-    if (file.type.includes("image")) {
-      return { url: URL.createObjectURL(file), isImage: true, name: file.name };
+  const filesArray = selectedFiles.map((el) => {
+    if (el.file.type.includes("image")) {
+      return {
+        url: URL.createObjectURL(el.file),
+        isImage: true,
+        name: el.file.name,
+      };
     } else {
-      return { name: file.name, url: false, isImage: false };
+      return { name: el.file.name, url: false, isImage: false };
     }
   });
 

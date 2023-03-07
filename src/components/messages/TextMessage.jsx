@@ -1,16 +1,48 @@
-import React from "react";
+import React, { useState } from "react";
 import ReplayOutlinedIcon from "@mui/icons-material/ReplayOutlined";
 import { useDispatch, useSelector } from "react-redux";
 import { postSendMessage } from "../../thunks";
 import { CircularProgress } from "@mui/material";
+import { motion, AnimatePresence } from "framer-motion";
+import ReplyOutlinedIcon from "@mui/icons-material/ReplyOutlined";
+import { setReplyMessage } from "../../redux/actions";
 
 const TextMessage = ({ messageObj }) => {
   const dispatch = useDispatch();
   const selectedChat = useSelector((state) => state.chatReducer.selectedChat);
   const loggedUser = useSelector((state) => state.authReducer.user);
+  const [replyIcon, setReplyIcon] = useState(false);
+  const [dragStartCoords, setDragStartCoords] = useState(0);
 
   return (
-    <div
+    <motion.div
+      drag="x"
+      onDragStart={(event, info) => {
+        setReplyIcon(true);
+        setDragStartCoords(info.point.x);
+        console.log(
+          info.point.x,
+          info.point.y,
+          info,
+          "start lllllllllllllllllll"
+        );
+      }}
+      onDragEnd={(event, info) => {
+        setReplyIcon(false);
+        if (Math.abs(Math.round(dragStartCoords - info.point.x)) >= 100) {
+          console.log("message reply successful");
+          dispatch(
+            setReplyMessage({
+              uuid: messageObj.uuid,
+              content: messageObj.content,
+              image: false,
+            })
+          );
+        }
+        console.log(info.point.x, info.point.y, "end lllllllllllllllllll");
+      }}
+      dragConstraints={{ left: 0, right: 0 }}
+      style={{ touchAction: "none" }}
       className={`flex gap-2 m-4 items-center ${
         messageObj.sendOrReceived === "received"
           ? "justify-start flex-row"
@@ -28,11 +60,24 @@ const TextMessage = ({ messageObj }) => {
           messageObj.sendOrReceived === "received"
             ? ""
             : "bg-primary text-white"
-        } text-base whitespace-pre-wrap p-2 rounded-2xl break-words w-fit bg-[#dcdddc] max-w-[200px] sm:max-w-[250px] md:max-w-[300px]`}
+        } text-base whitespace-pre-wrap p-2 cursor-pointer rounded-2xl break-words w-fit bg-[#dcdddc] max-w-[200px] sm:max-w-[250px] md:max-w-[300px]`}
       >
         {messageObj.content ?? " no text"}
       </p>
-
+      <AnimatePresence>
+        {replyIcon && (
+          <motion.div
+            className="text-primary"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <ReplyOutlinedIcon />
+          </motion.div>
+        )}
+      </AnimatePresence>
+      <div className="reply"></div>
       {messageObj.messageStatus === "error" && (
         <ReplayOutlinedIcon
           sx={{ fill: "red" }}
@@ -50,7 +95,7 @@ const TextMessage = ({ messageObj }) => {
         />
       )}
       {messageObj.messageStatus === "sending" && <CircularProgress size={20} />}
-    </div>
+    </motion.div>
   );
 };
 

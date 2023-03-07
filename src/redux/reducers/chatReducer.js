@@ -34,12 +34,18 @@ const initialState = {
   chatLoader: false,
   onlineUsers: [],
   imageGallery: [],
+  replyMessage: { content: "", id: "", image: false },
 };
 const chatReducer = createSlice({
   name: "chatReducer",
   initialState,
   reducers: {
     resetChatReducer: () => initialState,
+
+    setReplyMessage(state, action) {
+      state.replyMessage = action.payload;
+    },
+
     setOnlineUsers(state, action) {
       state.onlineUsers = action.payload;
     },
@@ -258,6 +264,7 @@ export const {
   updateOnlineChatList,
   prependInChatList,
   setOnlineUsers,
+  setReplyMessage,
   resetChatReducer,
 } = chatReducer.actions;
 export default chatReducer.reducer;

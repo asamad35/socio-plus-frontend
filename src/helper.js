@@ -126,3 +126,15 @@ export const downloadMedia = async (originalurl) => {
     console.log("Error while downloading the image ", error);
   }
 };
+
+export function isInViewport(id) {
+  const element = document.getElementById(id);
+  const rect = element.getBoundingClientRect();
+  return (
+    rect.top >= 0 &&
+    rect.left >= 0 &&
+    rect.bottom <=
+      (window.innerHeight || document.documentElement.clientHeight) &&
+    rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+  );
+}

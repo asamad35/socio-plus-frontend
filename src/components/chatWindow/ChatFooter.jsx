@@ -119,9 +119,15 @@ const ChatFooter = ({ socket, selectedFiles, setSelectedFiles }) => {
           url: URL.createObjectURL(el.file),
           isImage: true,
           name: el.file.name,
+          uuid: el.uuid,
         };
       } else {
-        return { name: el.file.name, url: false, isImage: false };
+        return {
+          name: el.file.name,
+          url: false,
+          isImage: false,
+          uuid: el.uuid,
+        };
       }
     });
 

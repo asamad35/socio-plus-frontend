@@ -89,6 +89,7 @@ const ChatWindow = () => {
 
   useEffect(() => {
     dispatch(actions.setSelectedChat(null));
+    dispatch(actions.setReplyMessage({}));
 
     socket.on("onlinUsersList", (onlineUsers) => {
       const otherOnlineUsers = onlineUsers.filter(

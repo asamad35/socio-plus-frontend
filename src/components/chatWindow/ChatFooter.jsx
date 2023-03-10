@@ -1,11 +1,16 @@
 import { useState, useCallback, useRef, useEffect, useMemo } from "react";
 
-import { Box, Tooltip } from "@mui/material";
+import { Box, CircularProgress, Tooltip } from "@mui/material";
 import { v4 as uuidv4 } from "uuid";
 
 import SendOutlinedIcon from "@mui/icons-material/SendOutlined";
 import EmojiEmotionsOutlinedIcon from "@mui/icons-material/EmojiEmotionsOutlined";
-import { debounce, getFormData, getOtherUserInfo } from "../../helper";
+import {
+  convertUrlToBase64,
+  debounce,
+  getFormData,
+  getOtherUserInfo,
+} from "../../helper";
 import { motion, AnimatePresence } from "framer-motion";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
@@ -36,7 +41,13 @@ const ChatFooter = ({ socket, selectedFiles, setSelectedFiles }) => {
   const loggedUser = useSelector((state) => state.authReducer.user);
   const selectedChat = useSelector((state) => state.chatReducer.selectedChat);
   const allMessages = useSelector((state) => state.chatReducer.allMessages);
-  const replyMessage = useSelector((state) => state.chatReducer.replyMessage);
+  const replyMessageOriginal = useSelector(
+    (state) => state.chatReducer.replyMessage
+  );
+
+  const [convertingToBase64, setConvertingToBase64] = useState(false);
+
+  const textBoxRef = useRef(null);
 
   const emojiContainer = useRef(null);
 
@@ -95,6 +106,10 @@ const ChatFooter = ({ socket, selectedFiles, setSelectedFiles }) => {
     };
   });
 
+  useEffect(() => {
+    textBoxRef.current.focus();
+  }, [replyMessageOriginal]);
+
   const callbackFn = useCallback((args) => {
     args[1].emit("stoppedTyping", args[0]);
     dispatch(actions.setStatus(null));
@@ -109,62 +124,117 @@ const ChatFooter = ({ socket, selectedFiles, setSelectedFiles }) => {
     }
   };
 
-  const onClick = () => {
+  const onClick = async () => {
     if (text.trim() === "" && selectedFiles.length === 0) return;
     const uuid = uuidv4();
     const content = text.trim();
-    const fileArray = selectedFiles.map((el) => {
+
+    const replyMessage = JSON.parse(JSON.stringify(replyMessageOriginal));
+
+    const fileArray = [];
+
+    for (const el of selectedFiles) {
       if (el.file.type.includes("image")) {
-        return {
+        const compressedImageBase64 = await convertUrlToBase64(el.file);
+        fileArray.push({
           url: URL.createObjectURL(el.file),
           isImage: true,
           name: el.file.name,
           uuid: el.uuid,
-        };
+          compressedImageBase64,
+        });
       } else {
-        return {
+        fileArray.push({
           name: el.file.name,
           url: false,
           isImage: false,
           uuid: el.uuid,
-        };
+        });
       }
-    });
+    }
 
-    let payload = { content, chatID: selectedChat._id, uuid };
+    console.log(
+      fileArray
+        .filter((el) => !!el.compressedImageBase64)
+        .map((el) => el.compressedImageBase64),
+      "aaaaaaaaaaaa"
+    );
+
+    // selectedFiles.map((el) => {
+    //   if (el.file.type.includes("image")) {
+    //     return {
+    //       url: URL.createObjectURL(el.file),
+    //       isImage: true,
+    //       name: el.file.name,
+    //       uuid: el.uuid,
+    //     };
+    //   } else {
+    //     return {
+    //       name: el.file.name,
+    //       url: false,
+    //       isImage: false,
+    //       uuid: el.uuid,
+    //     };
+    //   }
+    // });
+
+    // if the reply message contains local image url then covert it into base 64
+    // if (replyMessage.imageUrl && replyMessage.isImageLocal) {
+    //   setConvertingToBase64(true);
+    //   const base64Img = await convertUrlToBase64(replyMessage.imageUrl);
+    //   setConvertingToBase64(false);
+    //   console.log("i am sizeeee");
+    //   replyMessage.imageUrl = base64Img;
+    // }
+
+    // create payload
+
+    let payload = {
+      content,
+      chatID: selectedChat._id,
+      uuid,
+      replyMessage: replyMessage,
+    };
+
+    // adding files if it is a image message
     if (selectedFiles.length) {
       payload = getFormData(
         {
-          content,
-          chatID: selectedChat._id,
+          ...payload,
           uuids: selectedFiles.map((el) => el.uuid),
-          uuid,
+          compressedImageArr: fileArray
+            .filter((el) => !!el.compressedImageBase64)
+            .map((el) => el.compressedImageBase64),
         },
         selectedFiles,
         "filesToUpload"
       );
     }
+
     dispatch(
       postSendMessage({
         payload,
         socket,
-        sender: { ...loggedUser },
+        sender: loggedUser,
         otherUserId: otherUser._id,
         selectedChat,
+        replyMessage: replyMessage,
       })
     );
     dispatch(
       actions.pushSendMessage({
         chat: selectedChat._id,
         content,
-        sender: { ...loggedUser },
+        sender: loggedUser,
         messageStatus: "sending",
         otherUserId: otherUser._id,
         files: fileArray,
         uuid,
+        replyMessage: replyMessage,
       })
     );
     setText("");
+    dispatch(actions.setReplyMessage({ senderName: replyMessage.senderName }));
     setSelectedFiles([]);
 
     if (payload instanceof FormData) return;
@@ -175,7 +245,9 @@ const ChatFooter = ({ socket, selectedFiles, setSelectedFiles }) => {
       sender: { ...loggedUser },
       otherUserId: otherUser._id,
       selectedChat,
+      replyMessage: replyMessage,
       files: [],
+      uuid,
     });
   };
 
@@ -197,7 +269,7 @@ const ChatFooter = ({ socket, selectedFiles, setSelectedFiles }) => {
       />
       <div className="flex flex-col items-start w-[70%] ml-6">
         <AnimatePresence>
-          {replyMessage?.uuid && <FooterReplyMessage />}
+          {replyMessageOriginal?.uuid && <FooterReplyMessage />}
         </AnimatePresence>
         {!showKeyboard && <AudioMessagePreview />}
         {showKeyboard && (
@@ -223,6 +295,7 @@ const ChatFooter = ({ socket, selectedFiles, setSelectedFiles }) => {
             id="textbox"
             className="outline-0 border-0 bg-inherit text-base resize-none h-16 my-2 w-full"
             placeholder="Type your message here..."
+            ref={textBoxRef}
           />
         )}
       </div>
@@ -364,7 +437,11 @@ const ChatFooter = ({ socket, selectedFiles, setSelectedFiles }) => {
                 transition={{ duration: 0.3 }}
                 style={{ display: "flex", translateX: "5%" }}
               >
-                <SendOutlinedIcon fontSize="small" />
+                {convertingToBase64 ? (
+                  <CircularProgress size={20} sx={{ color: "white" }} />
+                ) : (
+                  <SendOutlinedIcon fontSize="small" />
+                )}
               </motion.div>
 
               {/* <AudioRecorder /> */}

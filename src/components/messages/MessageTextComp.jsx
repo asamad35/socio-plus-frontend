@@ -3,14 +3,15 @@ import { motion, AnimatePresence } from "framer-motion";
 import { setReplyMessage } from "../../redux/actions";
 import ReplyOutlinedIcon from "@mui/icons-material/ReplyOutlined";
 import { useDispatch, useSelector } from "react-redux";
-import { isInViewport } from "../../helper";
+import { getFullName, isInViewport } from "../../helper";
+import ReplyMessageAttachment from "./ReplyMessageAttachment";
 
 const MessageTextComp = ({ messageObj }) => {
   const dispatch = useDispatch();
-
+  console.log({ messageObj });
   const [dragStartCoords, setDragStartCoords] = useState(0);
   const [replyIcon, setReplyIcon] = useState(false);
-  const selectedChat = useSelector((state) => state.chatReducer.selectedChat);
+  // const selectedChat = useSelector((state) => state.chatReducer.selectedChat);
   const loggedUser = useSelector((state) => state.authReducer.user);
 
   return (
@@ -22,13 +23,21 @@ const MessageTextComp = ({ messageObj }) => {
       }}
       onDragEnd={(event, info) => {
         setReplyIcon(false);
-        if (Math.abs(Math.round(dragStartCoords - info.point.x)) >= 100) {
-          console.log("message reply successful");
+        console.log(
+          { dragStartCoords, end: info.point.x },
+          "message reply successful"
+        );
+        if (info.point.x === 0) return;
+        if (Math.abs(Math.round(dragStartCoords - info.point.x)) >= 50) {
           dispatch(
             setReplyMessage({
               uuid: messageObj.uuid,
               content: messageObj.content,
               image: false,
+              senderName:
+                messageObj.sendOrReceived === "received"
+                  ? getFullName(messageObj.sender)
+                  : getFullName(loggedUser),
               isBottomDivVisible: isInViewport("bottomDiv"),
             })
           );
@@ -44,13 +53,24 @@ const MessageTextComp = ({ messageObj }) => {
     >
       {!!messageObj.content && (
         <div
-          className={` ${
+          className={`flex flex-col rounded-2xl ${
             messageObj.sendOrReceived === "received"
-              ? ""
-              : "bg-primary text-white"
-          } text-base p-2 whitespace-pre-wrap cursor-pointer rounded-2xl break-words w-fit bg-[#dcdddc] max-w-[200px] sm:max-w-[250px] md:max-w-[300px]`}
+              ? "items-start bg-[#dcdddc]"
+              : "items-end  bg-primary"
+          }`}
         >
-          {messageObj.content}
+          {messageObj.replyMessage?.uuid && (
+            <ReplyMessageAttachment messageObj={messageObj} />
+          )}
+          <p
+            className={` ${
+              messageObj.sendOrReceived === "received"
+                ? ""
+                : "bg-primary text-white"
+            } text-base p-2 whitespace-pre-wrap cursor-pointer rounded-2xl break-words w-fit bg-[#dcdddc] max-w-[200px] sm:max-w-[250px] md:max-w-[300px]`}
+          >
+            {messageObj.content}
+          </p>
         </div>
       )}
       <AnimatePresence>

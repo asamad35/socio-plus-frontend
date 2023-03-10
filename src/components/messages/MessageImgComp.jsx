@@ -1,14 +1,20 @@
 import React, { useState } from "react";
-import { downloadMedia, getFileIcon, isInViewport } from "../../helper";
+import {
+  downloadMedia,
+  getFileIcon,
+  getFullName,
+  isInViewport,
+} from "../../helper";
 import DownloadForOfflineOutlinedIcon from "@mui/icons-material/DownloadForOfflineOutlined";
 import { Tooltip } from "@mui/material";
 import { motion, AnimatePresence } from "framer-motion";
 import { setImageGallery, setReplyMessage } from "../../redux/actions/index";
 import ReplyOutlinedIcon from "@mui/icons-material/ReplyOutlined";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 const MessageImgComp = ({ messageObj }) => {
   const dispatch = useDispatch();
+  const loggedUser = useSelector((state) => state.authReducer.user);
   const [dragStartCoords, setDragStartCoords] = useState(0);
   const [replyIconArr, setReplyIconArr] = useState(
     Array(messageObj.files.length).fill(false)
@@ -60,18 +66,28 @@ const MessageImgComp = ({ messageObj }) => {
             }}
             onDragEnd={(event, info) => {
               updateReplyIconArr(idx, false);
-
+              if (info.point.x === 0) return;
               if (Math.abs(Math.round(dragStartCoords - info.point.x)) >= 100) {
                 console.log("message reply successful");
                 dispatch(
                   setReplyMessage({
                     uuid: file.uuid,
-                    imageUrl: file.url,
+                    compressedImageBase64: file.compressedImageBase64,
+                    isImageLocal: file.url.startsWith("blob:"),
+                    parentUuid: messageObj.uuid,
                     image: true,
+                    senderName:
+                      messageObj.sendOrReceived === "received"
+                        ? getFullName(messageObj.sender)
+                        : getFullName(loggedUser),
                     isBottomDivVisible: isInViewport("bottomDiv"),
                   })
                 );
               }
+            }}
+            onClick={() => {
+              setImageGalleryArr(idx);
+              console.log("divvvvvvvvvvv");
             }}
             dragConstraints={{ left: 0, right: 0 }}
             style={{ touchAction: "none" }}
@@ -86,8 +102,10 @@ const MessageImgComp = ({ messageObj }) => {
                 <DownloadForOfflineOutlinedIcon
                   fontSize="medium"
                   className="absolute bottom-2 right-2 bg-white rounded-full text-2xl cursor-pointer text-primary"
-                  onClick={() => {
+                  onClick={(e) => {
                     downloadMedia(file.url);
+                    console.log("downloadddddd");
+                    e.stopPropagation();
                   }}
                 />
               </Tooltip>
@@ -122,14 +140,23 @@ const MessageImgComp = ({ messageObj }) => {
             }}
             onDragEnd={(event, info) => {
               updateReplyIconArr(idx, false);
+              if (info.point.x === 0) return;
 
               if (Math.abs(Math.round(dragStartCoords - info.point.x)) >= 100) {
                 console.log("message reply successful");
                 dispatch(
                   setReplyMessage({
                     uuid: file.uuid,
+                    parentUuid: messageObj.uuid,
                     docName: file.name,
                     image: false,
+                    sendOrReceived: messageObj.sendOrReceived,
+                    senderName:
+                      messageObj.sendOrReceived === "received"
+                        ? messageObj.sender.firstName +
+                          " " +
+                          messageObj.sender.lastName
+                        : "You",
                     isBottomDivVisible: isInViewport("bottomDiv"),
                   })
                 );

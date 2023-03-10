@@ -204,6 +204,7 @@ const chatReducer = createSlice({
             otherUserId: action.meta.arg.otherUserId,
             selectedChat: action.meta.arg.selectedChat,
             files: action.payload.files,
+            replyMessage: action.payload.replyMessage,
           };
           console.log(socketPayload, "zzzzzzzzzzzzzz");
 

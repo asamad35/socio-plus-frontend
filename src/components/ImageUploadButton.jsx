@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import ClickAnimation from "./ClickAnimation";
 import AttachFileOutlinedIcon from "@mui/icons-material/AttachFileOutlined";
 import { v4 as uuidv4 } from "uuid";
+import { toast } from "react-toastify";
 
 const ImageUploadButton = ({ selectedFiles, setSelectedFiles }) => {
   const onSelectFile = (event) => {
@@ -11,8 +12,36 @@ const ImageUploadButton = ({ selectedFiles, setSelectedFiles }) => {
       uuid: uuidv4(),
       file: el,
     }));
-    console.log({ selectedFilesArray });
+    if (
+      selectedFilesArray.some((el) => {
+        console.log(el.file, "aaaaaaaaaaaabvbv");
+        return el.file.type.includes("image") && el.file.size > 8000000;
+      })
+    ) {
+      toast.error(`Images cannot be larger than 8MB`);
+      return;
+    }
     setSelectedFiles([...selectedFilesArray, ...selectedFiles]);
+
+    // ! tried optimizing images before sending but it was taking a lot of time to optmize
+
+    // for (const el of Array.from(userSelectedFiles)) {
+    //   if (el.type.includes("image") && el.size > 8000000) {
+    //     toast.error(`${el.name} is larger than 8MB`);
+    //     break;
+    //   } else if (el.type.includes("image") && el.size < 8000000) {
+    //     const compressedImage = await reduceImageSize(el);
+    //     selectedFilesArray.push({
+    //       uuid: uuidv4(),
+    //       file: compressedImage,
+    //     });
+    //   } else {
+    //     selectedFilesArray.push({
+    //       uuid: uuidv4(),
+    //       file: el,
+    //     });
+    //   }
+    // }
 
     // FOR BUG IN CHROME
     event.target.value = "";

@@ -691,3 +691,6 @@ overflow: hidden;
 .image-gallery-thumbnail.active, .image-gallery-thumbnail:focus button{
   border-color:#2962ff !important;
 }
+.fillSpace{
+  width: -webkit-fill-available;
+}

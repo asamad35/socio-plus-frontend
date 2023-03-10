@@ -22,10 +22,10 @@ const Message = ({ messageObj }) => {
           messageObj.sendOrReceived === "received" ? "items-start" : "items-end"
         }  gap-1`}
       >
-        <MessageTextComp messageObj={messageObj} />
         {messageObj.files.length > 0 && (
           <MessageImgComp messageObj={messageObj} />
         )}
+        <MessageTextComp messageObj={messageObj} />
         <MessageErrorComp messageObj={messageObj} />
       </div>
 

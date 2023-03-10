@@ -3,6 +3,7 @@ import otherFile from "./assets/other-file-icon.png";
 import pptIcon from "./assets/ppt-icon.png";
 import wordIcon from "./assets/word-icon.webp";
 import excelIcon from "./assets/excel-icon.png";
+import imageCompression from "browser-image-compression";
 
 export function debounce(callbackFn, sec = 2000) {
   let timer;
@@ -137,4 +138,43 @@ export function isInViewport(id) {
       (window.innerHeight || document.documentElement.clientHeight) &&
     rect.right <= (window.innerWidth || document.documentElement.clientWidth)
   );
+}
+
+export function getFullName(userObj) {
+  return userObj.firstName + " " + userObj.lastName;
+}
+
+export async function convertUrlToBase64(imageFile) {
+  // const res = await fetch(imgUrl);
+  // const imgBlob = await res.blob();
+
+  console.log(imageFile.size, "before sizeeeeeee");
+  const compressesImageFile = await imageCompression(imageFile, {
+    maxSizeMB: 0.05,
+    maxIteration: 20,
+  });
+  console.log(compressesImageFile.size, "after sizeeeeeee");
+
+  const base64Img = await new Promise((resolve, reject) => {
+    const fr = new FileReader();
+    fr.readAsDataURL(compressesImageFile);
+
+    fr.addEventListener("load", () => {
+      // console.log(fr.result, " sizeeeeeee");
+
+      resolve(fr.result);
+    });
+  });
+
+  return base64Img;
+}
+export async function reduceImageSize(imageFile, thumbnail) {
+  console.log(imageFile.size, "before sizeeeeeee");
+  const compressesImageFile = await imageCompression(imageFile, {
+    maxSizeMB: 0.05,
+    maxIteration: thumbnail ? 20 : 10,
+  });
+  console.log(compressesImageFile.size, "after sizeeeeeee");
+
+  return compressesImageFile;
 }

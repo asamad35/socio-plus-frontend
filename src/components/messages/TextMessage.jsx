@@ -30,12 +30,16 @@ const TextMessage = ({ messageObj }) => {
       onDragEnd={(event, info) => {
         setReplyIcon(false);
         if (Math.abs(Math.round(dragStartCoords - info.point.x)) >= 100) {
-          console.log("message reply successful");
+          console.log(
+            { dragStartCoords, end: info.point.x },
+            "message reply successful"
+          );
           dispatch(
             setReplyMessage({
               uuid: messageObj.uuid,
               content: messageObj.content,
               image: false,
+              sendOrReceived: messageObj.sendOrReceived,
             })
           );
         }

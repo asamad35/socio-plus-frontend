@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import * as actions from "../redux/actions";
 import ModeEditOutlineOutlinedIcon from "@mui/icons-material/ModeEditOutlineOutlined";
@@ -12,7 +12,6 @@ import ScaleDivsAnimation from "./ScaleDivsAnimation";
 import { postUpdateName, postUpdatePhoto, postUpdateStatus } from "../thunks";
 import { getFormData, getOtherUserInfo } from "../helper";
 import { CircularProgress } from "@mui/material";
-import { useSwipeable } from "react-swipeable";
 import { setImageGallery } from "../redux/actions";
 import { toast } from "react-toastify";
 
@@ -25,13 +24,6 @@ const InfoDrawer = () => {
   const loggedUser = useSelector((state) => state.authReducer.user);
   const authReducer = useSelector((state) => state.authReducer);
   const selectedChat = useSelector((state) => state.chatReducer.selectedChat);
-
-  const handlers = useSwipeable({
-    onSwipedRight: () => dispatch(actions.setInfoDrawer(false)),
-    swipeDuration: 500,
-    preventScrollOnSwipe: true,
-    trackMouse: true,
-  });
 
   const otherUser = useMemo(
     () => getOtherUserInfo(selectedChat?.users, loggedUser),
@@ -48,9 +40,10 @@ const InfoDrawer = () => {
   return (
     <>
       <div
-        {...handlers}
-        onClick={(e) => {}}
-        className={`info-drawer w-[90%] md:w-1/3 rounded-r-2xl overflow-hidden ${
+        onClick={(e) => {
+          console.log("dwmdowmodmo");
+        }}
+        className={`info-drawer w-[90%] md:w-[50%]  overflow-hidden ${
           infoDrawer === true ? "active" : ""
         }`}
       >
@@ -255,11 +248,10 @@ const InfoDrawer = () => {
       </div>
 
       <div
-        {...handlers}
         onClick={(e) => {
           dispatch(actions.setInfoDrawer(false));
         }}
-        className={`back-drop md:rounded-2xl  overflow-hidden ${
+        className={`back-drop overflow-hidden ${
           infoDrawer === true ? "active" : ""
         } `}
       ></div>

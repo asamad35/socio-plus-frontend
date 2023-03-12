@@ -29,7 +29,6 @@ export default function App() {
                 <div className="flex w-full h-full md:rounded-2xl">
                   <SideSearch />
                   <ChatWindow />
-                  <InfoDrawer />
                 </div>
               </>
             }

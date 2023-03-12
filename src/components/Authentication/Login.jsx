@@ -38,7 +38,9 @@ const Login = () => {
   });
 
   useEffect(() => {
-    if (token) navigate("/chatUI");
+    if (token) {
+      navigate("/chatUI");
+    }
   }, [token]);
 
   const onSubmit = (data) => {

@@ -41,9 +41,7 @@ const ChatFooter = ({ socket, selectedFiles, setSelectedFiles }) => {
   const loggedUser = useSelector((state) => state.authReducer.user);
   const selectedChat = useSelector((state) => state.chatReducer.selectedChat);
   const allMessages = useSelector((state) => state.chatReducer.allMessages);
-  const replyMessageOriginal = useSelector(
-    (state) => state.chatReducer.replyMessage
-  );
+  const replyMessage = useSelector((state) => state.chatReducer.replyMessage);
 
   const [convertingToBase64, setConvertingToBase64] = useState(false);
 
@@ -104,11 +102,11 @@ const ChatFooter = ({ socket, selectedFiles, setSelectedFiles }) => {
       socket.off("userIsTyping");
       socket.off("userStoppedTyping");
     };
-  });
+  },[status]);
 
   useEffect(() => {
     textBoxRef.current.focus();
-  }, [replyMessageOriginal]);
+  }, [replyMessage]);
 
   const callbackFn = useCallback((args) => {
     args[1].emit("stoppedTyping", args[0]);
@@ -129,63 +127,23 @@ const ChatFooter = ({ socket, selectedFiles, setSelectedFiles }) => {
     const uuid = uuidv4();
     const content = text.trim();
 
-    const replyMessage = JSON.parse(JSON.stringify(replyMessageOriginal));
-
-    const fileArray = [];
-
-    for (const el of selectedFiles) {
+    const fileArray = selectedFiles.map((el) => {
       if (el.file.type.includes("image")) {
-        const compressedImageBase64 = await convertUrlToBase64(el.file);
-        fileArray.push({
+        return {
           url: URL.createObjectURL(el.file),
           isImage: true,
           name: el.file.name,
           uuid: el.uuid,
-          compressedImageBase64,
-        });
+        };
       } else {
-        fileArray.push({
+        return {
           name: el.file.name,
           url: false,
           isImage: false,
           uuid: el.uuid,
-        });
+        };
       }
-    }
-
-    console.log(
-      fileArray
-        .filter((el) => !!el.compressedImageBase64)
-        .map((el) => el.compressedImageBase64),
-      "aaaaaaaaaaaa"
-    );
-
-    // selectedFiles.map((el) => {
-    //   if (el.file.type.includes("image")) {
-    //     return {
-    //       url: URL.createObjectURL(el.file),
-    //       isImage: true,
-    //       name: el.file.name,
-    //       uuid: el.uuid,
-    //     };
-    //   } else {
-    //     return {
-    //       name: el.file.name,
-    //       url: false,
-    //       isImage: false,
-    //       uuid: el.uuid,
-    //     };
-    //   }
-    // });
-
-    // if the reply message contains local image url then covert it into base 64
-    // if (replyMessage.imageUrl && replyMessage.isImageLocal) {
-    //   setConvertingToBase64(true);
-    //   const base64Img = await convertUrlToBase64(replyMessage.imageUrl);
-    //   setConvertingToBase64(false);
-    //   console.log("i am sizeeee");
-    //   replyMessage.imageUrl = base64Img;
-    // }
+    });
 
     // create payload
 
@@ -193,7 +151,7 @@ const ChatFooter = ({ socket, selectedFiles, setSelectedFiles }) => {
       content,
       chatID: selectedChat._id,
       uuid,
-      replyMessage: replyMessage,
+      replyMessage,
     };
 
     // adding files if it is a image message
@@ -202,14 +160,13 @@ const ChatFooter = ({ socket, selectedFiles, setSelectedFiles }) => {
         {
           ...payload,
           uuids: selectedFiles.map((el) => el.uuid),
-          compressedImageArr: fileArray
-            .filter((el) => !!el.compressedImageBase64)
-            .map((el) => el.compressedImageBase64),
         },
         selectedFiles,
         "filesToUpload"
       );
     }
+
+    console.log(replyMessage, "aaaaaxxx");
 
     dispatch(
       postSendMessage({
@@ -218,7 +175,7 @@ const ChatFooter = ({ socket, selectedFiles, setSelectedFiles }) => {
         sender: loggedUser,
         otherUserId: otherUser._id,
         selectedChat,
-        replyMessage: replyMessage,
+        replyMessage,
       })
     );
     dispatch(
@@ -230,7 +187,7 @@ const ChatFooter = ({ socket, selectedFiles, setSelectedFiles }) => {
         otherUserId: otherUser._id,
         files: fileArray,
         uuid,
-        replyMessage: replyMessage,
+        replyMessage,
       })
     );
     setText("");
@@ -263,13 +220,14 @@ const ChatFooter = ({ socket, selectedFiles, setSelectedFiles }) => {
       className="bg-[#dcdddc] w-full flex justify-start items-center relative mt-auto "
       style={{ boxShadow: "0px 1px 7px rgb(50 50 50 / 56%)" }}
     >
+      {console.log("chat footer rendering")}
       <PreviewImages
         selectedFiles={selectedFiles}
         setSelectedFiles={setSelectedFiles}
       />
       <div className="flex flex-col items-start w-[70%] ml-6">
         <AnimatePresence>
-          {replyMessageOriginal?.uuid && <FooterReplyMessage />}
+          {replyMessage?.uuid && <FooterReplyMessage />}
         </AnimatePresence>
         {!showKeyboard && <AudioMessagePreview />}
         {showKeyboard && (

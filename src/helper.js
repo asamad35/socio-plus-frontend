@@ -66,6 +66,7 @@ export function showMessagePic(allMessages) {
 }
 
 export function getFileIcon(fileName) {
+  console.log({ fileName });
   const nameSplit = fileName.split(".");
   const extName = nameSplit[nameSplit.length - 1];
 
@@ -171,8 +172,10 @@ export async function convertUrlToBase64(imageFile) {
 export async function reduceImageSize(imageFile, thumbnail) {
   console.log(imageFile.size, "before sizeeeeeee");
   const compressesImageFile = await imageCompression(imageFile, {
-    maxSizeMB: 0.05,
-    maxIteration: thumbnail ? 20 : 10,
+    maxSizeMB: 0.2,
+    useWebWorker: true,
+    fileType: "image/jpeg",
+    maxWidthOrHeight: 600,
   });
   console.log(compressesImageFile.size, "after sizeeeeeee");
 

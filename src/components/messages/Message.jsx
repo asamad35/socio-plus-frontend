@@ -6,11 +6,24 @@ import MessageImgComp from "../messages/MessageImgComp";
 import MessageTextComp from "../messages/MessageTextComp";
 import MessageErrorComp from "../messages/MessageErrorComp";
 import MessageProfilePicComp from "../messages/MessageProfilePicComp";
+import { useCallback } from "react";
 
-const Message = ({ messageObj }) => {
+const Message = ({ message }) => {
+  const loggedUser = useSelector((state) => state.authReducer.user);
+
+  const getMessageUserInfo = useCallback((message, loggedUser) => {
+    return {
+      ...message,
+      sendOrReceived:
+        message.sender._id === loggedUser._id ? "send" : "received",
+    };
+  }, []);
+
+  let messageObj = getMessageUserInfo(message, loggedUser);
+  console.log(messageObj.content, "                " + "message is rendering");
   return (
     <div
-      className={`flex gap-2 m-4 items-end ${
+      className={`flex gap-2 w-full p-4 items-end ${
         messageObj.sendOrReceived === "received"
           ? "justify-start flex-row"
           : "flex-row-reverse"
@@ -18,7 +31,7 @@ const Message = ({ messageObj }) => {
     >
       <MessageProfilePicComp messageObj={messageObj} />
       <div
-        className={`flex flex-col ${
+        className={`flex w-full flex-col ${
           messageObj.sendOrReceived === "received" ? "items-start" : "items-end"
         }  gap-1`}
       >
@@ -34,4 +47,4 @@ const Message = ({ messageObj }) => {
   );
 };
 
-export default Message;
+export default React.memo(Message);

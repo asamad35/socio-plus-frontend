@@ -1,22 +1,24 @@
 import React from "react";
 import { useSelector } from "react-redux";
-import { getFullName } from "../../helper";
+import { getFileIcon, getFullName } from "../../helper";
 
 const ReplyMessageAttachment = ({ messageObj }) => {
   const loggedUser = useSelector((state) => state.authReducer.user);
+
   function getSenderName() {
     return messageObj.replyMessage.senderName === getFullName(loggedUser)
       ? "You"
       : messageObj.replyMessage.senderName;
   }
 
-  function getColour() {
-    return messageObj.replyMessage.senderName === getFullName(loggedUser)
-      ? "lime-600"
-      : "fuchsia-600";
-  }
   return (
     <div
+      onClick={() => {
+        const targetEl = document.getElementById(messageObj.replyMessage.uuid);
+        console.log(targetEl);
+        targetEl.classList.add("bg-secondary");
+        targetEl.scrollIntoView({ behavior: "smooth", block: "center" });
+      }}
       className={`bg-secondary fillSpace cursor-pointer ${
         messageObj.sendOrReceived === "received" ? "self-end" : "self-start"
       }  rounded-2xl m-2 mb-0`}
@@ -50,9 +52,16 @@ const ReplyMessageAttachment = ({ messageObj }) => {
       {/* image */}
       {messageObj.replyMessage?.image && (
         <img
-          src={messageObj.replyMessage.compressedImageBase64}
+          src={messageObj.replyMessage.url}
           alt="image"
-          className="w-[100px] h-[100px] p-2 rounded-2xl object-cover object-top"
+          className="w-[80px] h-[80px] p-2 rounded-2xl object-cover object-top pointer-events-none"
+        />
+      )}
+      {messageObj.replyMessage?.docName && (
+        <img
+          src={getFileIcon(messageObj.replyMessage?.docName)}
+          alt="image"
+          className="w-[80px] h-[80px] p-2 rounded-2xl object-cover object-top pointer-events-none"
         />
       )}
     </div>

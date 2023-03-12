@@ -10,6 +10,7 @@ import * as actions from "../../redux/actions/index";
 import { useSwipeable } from "react-swipeable";
 import { SOCKET_CONNECTION_URL } from "../../config/apiUrls";
 import ImageSlides from "../ImageSlides";
+import InfoDrawer from "../InfoDrawer";
 
 var socket = null;
 const ChatWindow = () => {
@@ -19,6 +20,7 @@ const ChatWindow = () => {
   const loggedUser = useSelector((state) => state.authReducer.user);
   const chatLoader = useSelector((state) => state.chatReducer.chatLoader);
   const selectedChat = useSelector((state) => state.chatReducer.selectedChat);
+  const sideSearch = useSelector((state) => state.authReducer.sideSearch);
   const chatList = useSelector((state) => state.chatReducer.chatList);
   const [smoothScroll, setSmoothScroll] = useState(true);
   const [selectedFiles, setSelectedFiles] = useState([]);
@@ -62,7 +64,10 @@ const ChatWindow = () => {
   }, [chatListLoader, onlineUsers]);
 
   const handlers = useSwipeable({
-    onSwipedLeft: () => dispatch(actions.setSideSearch(false)),
+    onSwipedLeft: () => {
+      sideSearch && dispatch(actions.setSideSearch(false));
+    },
+    onSwipedRight: () => dispatch(actions.setInfoDrawer(false)),
 
     swipeDuration: 500,
     preventScrollOnSwipe: true,
@@ -125,13 +130,14 @@ const ChatWindow = () => {
         <div></div>
       )}
 
-      {socket && (
+      {socket && selectedChat && (
         <ChatFooter
           selectedFiles={selectedFiles}
           setSelectedFiles={setSelectedFiles}
           socket={socket}
         />
       )}
+      <InfoDrawer />
     </div>
   );
 };

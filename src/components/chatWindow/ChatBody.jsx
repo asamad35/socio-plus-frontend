@@ -16,18 +16,18 @@ const ChatBody = ({
   const bottomRef = useRef(null);
   const replyMessage = useSelector((state) => state.chatReducer.replyMessage);
 
-  console.log(useOnScreen(bottomRef), "axxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+  console.log("chat body is rendering");
 
   useEffect(() => {
-    if (smoothScroll) {
-      setTimeout(() => {
-        bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-        setSmoothScroll(false);
-      }, 1000);
-    } else {
-      bottomRef.current?.scrollIntoView({ behavior: "auto" });
-    }
-  }, [allMessages, selectedFiles]);
+    // if (smoothScroll) {
+    //   setTimeout(() => {
+    //     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    //     setSmoothScroll(false);
+    //   }, 1000);
+    // } else {
+    bottomRef.current?.scrollIntoView({ behavior: "auto" });
+    // }
+  }, [selectedFiles, allMessages]);
 
   useEffect(() => {
     if (replyMessage.isBottomDivVisible)
@@ -42,7 +42,7 @@ const ChatBody = ({
             onClick={() =>
               bottomRef.current?.scrollIntoView({ behavior: "auto" })
             }
-            className="text-white bg-primary rounded-full w-[26px] h-[26px] justify-center items-center absolute bottom-4 right-4 cursor-pointer"
+            className="text-white z-50 bg-primary rounded-full w-[26px] h-[26px] justify-center items-center absolute bottom-4 right-4 cursor-pointer"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -52,14 +52,7 @@ const ChatBody = ({
           </motion.div>
         )}
       </AnimatePresence>
-      <div
-        className="chatBody"
-        // onScroll={() => {
-        //   if (isInViewport("bottomDiv") && scrollToBottom)
-        //     setScrollToBottom(false);
-        //   else if (!scrollToBottom) setScrollToBottom(true);
-        // }}
-      >
+      <div className="chatBody">
         <AllMessages />
         <div ref={bottomRef} id="bottomDiv" className="bottomDiv h-[2px]"></div>
       </div>
@@ -67,5 +60,4 @@ const ChatBody = ({
   );
 };
 
-export default React.memo(ChatBody);
-// export default ChatBody;
+export default ChatBody;

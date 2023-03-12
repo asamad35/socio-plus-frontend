@@ -192,6 +192,13 @@ const chatReducer = createSlice({
         const payload = action.meta.arg.payload;
         const messageIdx = getMessageIdxByUUID(state, payload);
         state.allMessages[messageIdx].messageStatus = "successful";
+        console.log(action.payload, "aaaaaaaaaaaaaaaaaa");
+
+        // adding server image url to message object
+        action.payload.files.length > 0 &&
+          action.payload.files.forEach((el, idx) => {
+            state.allMessages[messageIdx].files[idx].serverImageUrl = el.url;
+          });
 
         const isPayloadFormData = payload instanceof FormData;
 
@@ -216,6 +223,7 @@ const chatReducer = createSlice({
       .addCase(thunks.postSendMessage.rejected, (state, action) => {
         const payload = action.meta.arg.payload;
         const messageIdx = getMessageIdxByUUID(state, payload);
+
         state.allMessages[messageIdx].messageStatus = "error";
       })
       .addCase(thunks.postAccessChat.pending, (state, action) => {

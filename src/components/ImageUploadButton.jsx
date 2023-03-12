@@ -4,44 +4,42 @@ import ClickAnimation from "./ClickAnimation";
 import AttachFileOutlinedIcon from "@mui/icons-material/AttachFileOutlined";
 import { v4 as uuidv4 } from "uuid";
 import { toast } from "react-toastify";
+import { reduceImageSize } from "../helper";
 
 const ImageUploadButton = ({ selectedFiles, setSelectedFiles }) => {
-  const onSelectFile = (event) => {
+  const onSelectFile = async (event) => {
     const userSelectedFiles = event.target.files;
-    const selectedFilesArray = Array.from(userSelectedFiles).map((el) => ({
-      uuid: uuidv4(),
-      file: el,
-    }));
-    if (
-      selectedFilesArray.some((el) => {
-        console.log(el.file, "aaaaaaaaaaaabvbv");
-        return el.file.type.includes("image") && el.file.size > 8000000;
-      })
-    ) {
-      toast.error(`Images cannot be larger than 8MB`);
-      return;
+    let selectedFilesArray = [];
+    let selectedImagesArray = [];
+
+    for (const item of userSelectedFiles) {
+      if (item.type.includes("image")) {
+        selectedImagesArray.push(item);
+      } else {
+        selectedFilesArray.push({
+          uuid: uuidv4(),
+          file: item,
+        });
+      }
     }
-    setSelectedFiles([...selectedFilesArray, ...selectedFiles]);
 
-    // ! tried optimizing images before sending but it was taking a lot of time to optmize
+    selectedImagesArray = await Promise.all(
+      selectedImagesArray.map(async (item) => {
+        const compressedImage = await reduceImageSize(item);
+        return {
+          uuid: uuidv4(),
+          file: compressedImage,
+        };
+      })
+    );
 
-    // for (const el of Array.from(userSelectedFiles)) {
-    //   if (el.type.includes("image") && el.size > 8000000) {
-    //     toast.error(`${el.name} is larger than 8MB`);
-    //     break;
-    //   } else if (el.type.includes("image") && el.size < 8000000) {
-    //     const compressedImage = await reduceImageSize(el);
-    //     selectedFilesArray.push({
-    //       uuid: uuidv4(),
-    //       file: compressedImage,
-    //     });
-    //   } else {
-    //     selectedFilesArray.push({
-    //       uuid: uuidv4(),
-    //       file: el,
-    //     });
-    //   }
-    // }
+    console.log({ selectedImagesArray });
+
+    setSelectedFiles([
+      ...selectedFilesArray,
+      ...selectedImagesArray,
+      ...selectedFiles,
+    ]);
 
     // FOR BUG IN CHROME
     event.target.value = "";

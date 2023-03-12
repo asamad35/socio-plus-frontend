@@ -9,15 +9,8 @@ import Message from "./messages/Message";
 
 const AllMessages = () => {
   const allMessages = useSelector((state) => state.chatReducer.allMessages);
-  const loggedUser = useSelector((state) => state.authReducer.user);
 
-  function getMessageUserInfo(message, loggedUser) {
-    return {
-      ...message,
-      sendOrReceived:
-        message.sender._id === loggedUser._id ? "send" : "received",
-    };
-  }
+  console.log("all messages are rendering");
 
   // <>
 
@@ -41,9 +34,6 @@ const AllMessages = () => {
   //   </Typography>
   // </>
 
-  return allMessages.map((message) => (
-    <Message messageObj={getMessageUserInfo(message, loggedUser)} />
-  ));
+  return allMessages.map((message) => <Message message={message} />);
 };
-
-export default AllMessages;
+export default React.memo(AllMessages);

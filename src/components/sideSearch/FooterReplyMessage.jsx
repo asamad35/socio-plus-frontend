@@ -21,7 +21,7 @@ const FooterReplyMessage = () => {
   function getImage() {
     return (
       <img
-        src={replyMessage?.compressedImageBase64}
+        src={replyMessage?.url}
         className="h-[80px] w-[80px] ml-[5px] object-cover object-top rounded-2xl"
       />
     );

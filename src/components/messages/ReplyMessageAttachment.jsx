@@ -16,8 +16,11 @@ const ReplyMessageAttachment = ({ messageObj }) => {
       onClick={() => {
         const targetEl = document.getElementById(messageObj.replyMessage.uuid);
         console.log(targetEl);
-        targetEl.classList.add("bg-secondary");
         targetEl.scrollIntoView({ behavior: "smooth", block: "center" });
+        targetEl.classList.add("bg-secondary");
+        setTimeout(() => {
+          targetEl.classList.remove("bg-secondary");
+        }, 2000);
       }}
       className={`bg-secondary fillSpace cursor-pointer ${
         messageObj.sendOrReceived === "received" ? "self-end" : "self-start"

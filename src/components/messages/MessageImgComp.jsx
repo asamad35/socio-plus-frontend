@@ -98,12 +98,6 @@ const MessageImgComp = ({ messageObj }) => {
                   );
                 }
               }}
-              onMouseUp={(event) => {
-                // if below condition true then only trigger click event
-                if (event.pageX - dragStartCoords === 0) {
-                  setImageGalleryArr(idx);
-                }
-              }}
               dragConstraints={{ left: 0, right: 0 }}
               style={{ touchAction: "none" }}
               className={`flex gap-2 items-center cursor-pointer relative ${
@@ -112,20 +106,28 @@ const MessageImgComp = ({ messageObj }) => {
                   : "flex-row-reverse"
               }`}
             >
-              {messageObj.sendOrReceived === "received" && (
-                <Tooltip title="Download">
-                  <DownloadForOfflineOutlinedIcon
-                    fontSize="medium"
-                    className="absolute bottom-2 right-2 bg-white rounded-full text-2xl cursor-pointer text-primary"
-                    onClick={(e) => {
-                      downloadMedia(file.url);
-                      console.log("downloadddddd");
-                      e.stopPropagation();
-                    }}
-                  />
-                </Tooltip>
-              )}
-              <div>
+              <div
+                onClick={(event) => {
+                  // if below condition true then only trigger click event
+                  if (event.pageX - dragStartCoords === 0) {
+                    setImageGalleryArr(idx);
+                  }
+                }}
+                className="relative"
+              >
+                {messageObj.sendOrReceived === "received" && (
+                  <Tooltip title="Download">
+                    <DownloadForOfflineOutlinedIcon
+                      fontSize="medium"
+                      className="absolute bottom-2 right-2 bg-white rounded-full text-2xl cursor-pointer text-primary"
+                      onClick={(e) => {
+                        downloadMedia(file.url);
+                        console.log("downloadddddd");
+                        e.stopPropagation();
+                      }}
+                    />
+                  </Tooltip>
+                )}
                 <img
                   className="pointer-events-none rounded-lg object-cover object-top w-[200px] min-h-[100px] h-fit max-h-[200px] bg-secondary border-4 rounded-lg border-primary sm:w-[250px] sm:max-h-[250px]  "
                   src={file.url}
@@ -210,7 +212,7 @@ const MessageImgComp = ({ messageObj }) => {
                     className="pointer-events-none w-[50px]"
                   />
 
-                  <div className="break-all overflow-y-scroll h-full">
+                  <div className="break-all overflow-y-auto h-full">
                     {file.name}
                   </div>
                 </div>

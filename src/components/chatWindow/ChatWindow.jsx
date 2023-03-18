@@ -96,7 +96,7 @@ const ChatWindow = () => {
     dispatch(actions.setSelectedChat(null));
     dispatch(actions.setReplyMessage({}));
 
-    socket.on("onlinUsersList", (onlineUsers) => {
+    socket.on("onlineUsersList", (onlineUsers) => {
       const otherOnlineUsers = onlineUsers.filter(
         (el) => el._id !== loggedUser._id
       );
@@ -104,7 +104,7 @@ const ChatWindow = () => {
       dispatch(actions.setOnlineUsers(otherOnlineUsers));
     });
     return () => {
-      socket.off("onlinUsersList");
+      socket.off("onlineUsersList");
     };
   }, []);
 

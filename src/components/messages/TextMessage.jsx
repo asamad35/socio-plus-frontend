@@ -88,7 +88,7 @@ const TextMessage = ({ messageObj }) => {
           onClick={() => {
             dispatch(
               postSendMessage({
-                content: content,
+                content: messageObj.content,
                 chatID: selectedChat._id,
                 messageStatus: "sending",
                 uuid: messageObj.uuid,
@@ -98,7 +98,6 @@ const TextMessage = ({ messageObj }) => {
           }}
         />
       )}
-      {messageObj.messageStatus === "sending" && <CircularProgress size={20} />}
     </motion.div>
   );
 };

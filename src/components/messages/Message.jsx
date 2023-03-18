@@ -1,7 +1,6 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { postSendMessage } from "../../thunks";
-import { CircularProgress } from "@mui/material";
 import MessageImgComp from "../messages/MessageImgComp";
 import MessageTextComp from "../messages/MessageTextComp";
 import MessageErrorComp from "../messages/MessageErrorComp";
@@ -23,7 +22,7 @@ const Message = ({ message }) => {
   console.log(messageObj.content, "                " + "message is rendering");
   return (
     <div
-      className={`flex gap-2 w-full p-4 items-end ${
+      className={`flex gap-2 w-full p-2 items-end ${
         messageObj.sendOrReceived === "received"
           ? "justify-start flex-row"
           : "flex-row-reverse"
@@ -39,10 +38,7 @@ const Message = ({ message }) => {
           <MessageImgComp messageObj={messageObj} />
         )}
         <MessageTextComp messageObj={messageObj} />
-        <MessageErrorComp messageObj={messageObj} />
       </div>
-
-      {messageObj.messageStatus === "sending" && <CircularProgress size={20} />}
     </div>
   );
 };

@@ -80,6 +80,7 @@ const ChatFooter = ({ socket, selectedFiles, setSelectedFiles }) => {
     // update chats
 
     socket.on("updateLatestMessage", (message) => {
+      console.log({ message, selectedChat }, "ccccccccccccccccccccccc");
       if (message._id === selectedChat?._id) return;
 
       dispatch(actions.prependInChatList(message));
@@ -87,7 +88,7 @@ const ChatFooter = ({ socket, selectedFiles, setSelectedFiles }) => {
     return () => {
       socket.off("updateLatestMessage");
     };
-  }, [socket]);
+  }, [socket, selectedChat]);
 
   useEffect(() => {
     socket.on("userIsTyping", () => {
@@ -102,7 +103,7 @@ const ChatFooter = ({ socket, selectedFiles, setSelectedFiles }) => {
       socket.off("userIsTyping");
       socket.off("userStoppedTyping");
     };
-  },[status]);
+  }, [status]);
 
   useEffect(() => {
     textBoxRef.current.focus();
@@ -165,8 +166,6 @@ const ChatFooter = ({ socket, selectedFiles, setSelectedFiles }) => {
         "filesToUpload"
       );
     }
-
-    console.log(replyMessage, "aaaaaxxx");
 
     dispatch(
       postSendMessage({

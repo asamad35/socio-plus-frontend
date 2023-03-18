@@ -5,6 +5,8 @@ import ReplyOutlinedIcon from "@mui/icons-material/ReplyOutlined";
 import { useDispatch, useSelector } from "react-redux";
 import { getFullName, isInViewport } from "../../helper";
 import ReplyMessageAttachment from "./ReplyMessageAttachment";
+import { CircularProgress } from "@mui/material";
+import MessageErrorComp from "./MessageErrorComp";
 
 const MessageTextComp = ({ messageObj }) => {
   const dispatch = useDispatch();
@@ -75,6 +77,12 @@ const MessageTextComp = ({ messageObj }) => {
             </p>
           </div>
         )}
+        {messageObj.messageStatus === "sending" &&
+          messageObj.files.length === 0 && <CircularProgress size={20} />}
+        {messageObj.files.length === 0 && (
+          <MessageErrorComp messageObj={messageObj} />
+        )}
+
         <AnimatePresence>
           {replyIcon && (
             <motion.div

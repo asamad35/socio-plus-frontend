@@ -6,12 +6,14 @@ import {
   isInViewport,
 } from "../../helper";
 import DownloadForOfflineOutlinedIcon from "@mui/icons-material/DownloadForOfflineOutlined";
-import { Tooltip } from "@mui/material";
+import { CircularProgress, Tooltip } from "@mui/material";
 import { motion, AnimatePresence } from "framer-motion";
 import { setImageGallery, setReplyMessage } from "../../redux/actions/index";
 import ReplyOutlinedIcon from "@mui/icons-material/ReplyOutlined";
 import { useDispatch, useSelector } from "react-redux";
 import { useCallback } from "react";
+import MessageErrorComp from "./MessageErrorComp";
+import { toast } from "react-toastify";
 
 const MessageImgComp = ({ messageObj }) => {
   const dispatch = useDispatch();
@@ -69,33 +71,38 @@ const MessageImgComp = ({ messageObj }) => {
           >
             <motion.div
               drag="x"
+              onDragStart={(event, info) => {
+                updateReplyIconArr(idx, true);
+                setDragStartCoords(info.point.x);
+              }}
               onMouseDown={(event, info) => {
-                console.log(event.pageX, "start", "dddddddd");
                 setDragStartCoords(event.pageX);
               }}
               onDragEnd={(event, info) => {
                 updateReplyIconArr(idx, false);
-                console.log(info.point.x, "end", "dddddd");
 
                 if (
                   Math.abs(Math.round(dragStartCoords - info.point.x)) >= 100
                 ) {
-                  console.log("message reply successful");
-                  dispatch(
-                    setReplyMessage({
-                      uuid: file.uuid,
-                      url: file.url.startsWith("blob:")
-                        ? file.serverImageUrl
-                        : file.url,
-                      parentUuid: messageObj.uuid,
-                      image: true,
-                      senderName:
-                        messageObj.sendOrReceived === "received"
-                          ? getFullName(messageObj.sender)
-                          : getFullName(loggedUser),
-                      isBottomDivVisible: isInViewport("bottomDiv"),
-                    })
-                  );
+                  if (file.url.startsWith("blob:") && file.serverImageUrl) {
+                    dispatch(
+                      setReplyMessage({
+                        uuid: file.uuid,
+                        url: file.url.startsWith("blob:")
+                          ? file.serverImageUrl
+                          : file.url,
+                        parentUuid: messageObj.uuid,
+                        image: true,
+                        senderName:
+                          messageObj.sendOrReceived === "received"
+                            ? getFullName(messageObj.sender)
+                            : getFullName(loggedUser),
+                        isBottomDivVisible: isInViewport("bottomDiv"),
+                      })
+                    );
+                  }else{
+                    toast.error("Cannot reply till image uploads successfully.")
+                  }
                 }
               }}
               dragConstraints={{ left: 0, right: 0 }}
@@ -134,6 +141,9 @@ const MessageImgComp = ({ messageObj }) => {
                   alt={file.name}
                 />
               </div>
+              {messageObj.messageStatus === "sending" && (
+                <CircularProgress size={20} />
+              )}
               <AnimatePresence>
                 {replyIconArr[idx] && (
                   <motion.div
@@ -147,6 +157,7 @@ const MessageImgComp = ({ messageObj }) => {
                   </motion.div>
                 )}
               </AnimatePresence>
+              <MessageErrorComp messageObj={messageObj} />
             </motion.div>
           </div>
         ) : (
@@ -212,11 +223,14 @@ const MessageImgComp = ({ messageObj }) => {
                     className="pointer-events-none w-[50px]"
                   />
 
-                  <div className="break-all overflow-y-auto h-full">
+                  <div className="break-all grid place-items-center overflow-y-auto h-full">
                     {file.name}
                   </div>
                 </div>
               </div>
+              {messageObj.messageStatus === "sending" && (
+                <CircularProgress size={20} />
+              )}
               <AnimatePresence>
                 {replyIconArr[idx] && (
                   <motion.div
@@ -230,6 +244,7 @@ const MessageImgComp = ({ messageObj }) => {
                   </motion.div>
                 )}
               </AnimatePresence>
+              <MessageErrorComp messageObj={messageObj} />
             </motion.div>
           </div>
         )

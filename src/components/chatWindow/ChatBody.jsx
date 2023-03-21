@@ -5,12 +5,17 @@ import AllMessages from "../AllMessage";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { AnimatePresence, motion } from "framer-motion";
 import useOnScreen from "../../customHooks/useOnScreen";
+import Calling from "./Calling";
 
 const ChatBody = ({
-  smoothScroll,
-  setSmoothScroll,
+  myStream,
+  setMyStream,
   selectedFiles,
-  setSelectedFiles,
+  myVideoRef,
+  partnerVideoRef,
+  setCallingScreen,
+  socket,
+  callingScreen,
 }) => {
   const allMessages = useSelector((state) => state.chatReducer.allMessages);
   const bottomRef = useRef(null);
@@ -19,14 +24,7 @@ const ChatBody = ({
   console.log("chat body is rendering");
 
   useEffect(() => {
-    // if (smoothScroll) {
-    //   setTimeout(() => {
-    //     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-    //     setSmoothScroll(false);
-    //   }, 1000);
-    // } else {
     bottomRef.current?.scrollIntoView({ behavior: "auto" });
-    // }
   }, [selectedFiles, allMessages]);
 
   useEffect(() => {
@@ -35,7 +33,18 @@ const ChatBody = ({
   }, [replyMessage]);
 
   return (
-    <div className=" w-full overflow-hidden relative ">
+    <div className=" w-full h-full overflow-hidden z-10 relative ">
+      {/* {callingScreen && ( */}
+      <Calling
+        myVideoRef={myVideoRef}
+        myStream={myStream}
+        setMyStream={setMyStream}
+        setCallingScreen={setCallingScreen}
+        callingScreen={callingScreen}
+        partnerVideoRef={partnerVideoRef}
+        socket={socket}
+      />
+      {/* )} */}
       <AnimatePresence>
         {!useOnScreen(bottomRef) && (
           <motion.div

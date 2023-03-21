@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext, useRef } from "react";
 import ChatHeader from "./ChatHeader";
 import ChatBody from "./ChatBody";
 import ChatFooter from "./ChatFooter";
@@ -11,9 +11,12 @@ import { useSwipeable } from "react-swipeable";
 import { SOCKET_CONNECTION_URL } from "../../config/apiUrls";
 import ImageSlides from "../ImageSlides";
 import InfoDrawer from "../InfoDrawer";
+import { SocketContext } from "../../SocketPeerContext";
 
 var socket = null;
 const ChatWindow = () => {
+  // socket = useContext(SocketContext).socket;
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const token = useSelector((state) => state.authReducer.token);
@@ -24,6 +27,9 @@ const ChatWindow = () => {
   const chatList = useSelector((state) => state.chatReducer.chatList);
   const [smoothScroll, setSmoothScroll] = useState(true);
   const [selectedFiles, setSelectedFiles] = useState([]);
+
+  const [myStream, setMyStream] = useState(null);
+  const [callingScreen, setCallingScreen] = useState(false);
 
   const chatListLoader = useSelector(
     (state) => state.chatReducer.chatListLoader
@@ -74,6 +80,9 @@ const ChatWindow = () => {
     trackMouse: true,
   });
 
+  const myVideoRef = useRef(null);
+  const partnerVideoRef = useRef(null);
+
   // socket
   useEffect(() => {
     if (!token) {
@@ -114,29 +123,46 @@ const ChatWindow = () => {
       className="flex relative md:rounded-r-2xl overflow-hidden justify-start flex-col items-center h-full w-full"
     >
       <ImageSlides />
-      <ChatHeader />
-      {chatLoader ? (
-        <div className="chat-loader">
-          <CircularProgress size={130} />
-        </div>
-      ) : selectedChat ? (
-        <ChatBody
-          selectedFiles={selectedFiles}
-          setSelectedFiles={setSelectedFiles}
-          smoothScroll={smoothScroll}
-          setSmoothScroll={setSmoothScroll}
-        />
-      ) : (
-        <div></div>
+      {socket && (
+        <>
+          <ChatHeader
+            myVideoRef={myVideoRef}
+            partnerVideoRef={partnerVideoRef}
+            myStream={myStream}
+            setMyStream={setMyStream}
+            setCallingScreen={setCallingScreen}
+            callingScreen={callingScreen}
+            socket={socket}
+          />
+          {chatLoader ? (
+            <div className="chat-loader">
+              <CircularProgress size={130} />
+            </div>
+          ) : selectedChat ? (
+            <ChatBody
+              myVideoRef={myVideoRef}
+              partnerVideoRef={partnerVideoRef}
+              selectedFiles={selectedFiles}
+              myStream={myStream}
+              setMyStream={setMyStream}
+              setCallingScreen={setCallingScreen}
+              callingScreen={callingScreen}
+              socket={socket}
+            />
+          ) : (
+            <div></div>
+          )}
+
+          {selectedChat && (
+            <ChatFooter
+              selectedFiles={selectedFiles}
+              setSelectedFiles={setSelectedFiles}
+              socket={socket}
+            />
+          )}
+        </>
       )}
 
-      {socket && selectedChat && (
-        <ChatFooter
-          selectedFiles={selectedFiles}
-          setSelectedFiles={setSelectedFiles}
-          socket={socket}
-        />
-      )}
       <InfoDrawer />
     </div>
   );

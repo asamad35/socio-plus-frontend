@@ -80,7 +80,6 @@ const ChatFooter = ({ socket, selectedFiles, setSelectedFiles }) => {
     // update chats
 
     socket.on("updateLatestMessage", (message) => {
-      console.log({ message, selectedChat }, "ccccccccccccccccccccccc");
       if (message._id === selectedChat?._id) return;
 
       dispatch(actions.prependInChatList(message));

@@ -10,20 +10,34 @@ import { useState } from "react";
 import { useEffect } from "react";
 import ClickAnimation from "../ClickAnimation";
 import { toast } from "react-toastify";
-import { getOtherUserInfo } from "../../helper";
+import { getFullName, getOtherUserInfo, getOwnVideoAudio } from "../../helper";
 import { useMemo } from "react";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import { useCallback } from "react";
 import { styled } from "@mui/material/styles";
+import Peer from "simple-peer";
 
-const ChatHeader = () => {
+const ChatHeader = ({
+  myVideoRef,
+  partnerVideoRef,
+  myStream,
+  setMyStream,
+  setCallingScreen,
+  callingScreen,
+  socket,
+}) => {
   const dispatch = useDispatch();
   const [menuOpen, setMenuOpen] = useState(false);
-  const sideSearch = useSelector((state) => state.authReducer.sideSearch);
 
+  const sideSearch = useSelector((state) => state.authReducer.sideSearch);
+  const status = useSelector((state) => state.chatReducer.status);
   const loggedUser = useSelector((state) => state.authReducer.user);
   const selectedChat = useSelector((state) => state.chatReducer.selectedChat);
   const chatList = useSelector((state) => state.chatReducer.chatList);
+
+  // calling states
+  const [showIncomingCall, setShowIncomingCall] = useState(false);
+  const [callerDetails, setCallerDetails] = useState({});
 
   const otherUser = useMemo(
     () => getOtherUserInfo(selectedChat?.users, loggedUser),
@@ -65,18 +79,116 @@ const ChatHeader = () => {
     })?.active;
   }, [selectedChat, chatList]);
 
-  // hide menu on outside click
+  // initialise peer
+  const peer = useMemo(() => {
+    return new RTCPeerConnection({
+      iceServers: [
+        {
+          urls: "stun:stun.stunprotocol.org",
+        },
+        {
+          urls: "turn:numb.viagenie.ca",
+          credential: "muazkh",
+          username: "webrtc@live.com",
+        },
+      ],
+    });
+  }, []);
+
   useEffect(() => {
+    // hide menu on outside click
     document.addEventListener("click", (e) => {
       if (!e.target.closest(".menu-parent")) {
         setMenuOpen(false);
       }
     });
+
+    peer.addEventListener("track", (e) => {
+      console.log("listening to stream");
+      const streams = e.streams;
+      // console.log(streams, streams[0], "llllllllllllllllmmmmmm");
+      if (partnerVideoRef.current)
+        partnerVideoRef.current.srcObject = streams[0];
+    });
+
+    socket.on("incomingOffer", handleIncomingOffer);
+    socket.on("incomingNegotiationOffer", (data) => {
+      setCallerDetails(data);
+      acceptOffer(data);
+    });
+    socket.on("offerAccepted", handleOfferAccepted);
   }, []);
 
-  const status = useSelector((state) => state.chatReducer.status);
+  useEffect(() => {
+    peer.addEventListener("negotiationneeded", callUserNegotiation);
+    return () => {
+      peer.removeEventListener("negotiationneeded", callUserNegotiation);
+    };
+  }, [otherUser]);
+
+  //-  webrtc part start
+
+  // define offer
+  const callUser = useCallback(async () => {
+    // create offer
+    const offer = await peer.createOffer();
+    await peer.setLocalDescription(offer);
+
+    //  send offer to another user via socket
+    socket.emit("callUser", { userToCall: otherUser, offer, from: loggedUser });
+  }, [otherUser, loggedUser]);
+
+  // call user negotiation
+  const callUserNegotiation = useCallback(async () => {
+    const offer = peer.localDescription;
+    // const offer = await peer.createOffer();
+
+    console.log(
+      {
+        userToCall: otherUser,
+        offer,
+        from: loggedUser,
+      },
+      "xxxxxxxxxxxxxxxxxxx"
+    );
+    socket.emit("callUserNegotiation", {
+      userToCall: otherUser,
+      offer,
+      from: loggedUser,
+    });
+  }, [otherUser, loggedUser]);
+
+  // handle incoming offer
+  const handleIncomingOffer = useCallback((data) => {
+    console.log(data, "incoming offer");
+    setCallerDetails(data);
+    setShowIncomingCall(true);
+  }, []);
+
+  // handle accept offer
+  const handleOfferAccepted = useCallback(async (data) => {
+    console.log(data, "accept offer");
+    // await peer.setRemoteDescription(data.answer);
+    await peer.setRemoteDescription(new RTCSessionDescription(data.answer));
+  }, []);
+
+  const acceptOffer = useCallback(
+    async (data) => {
+      // await peer.setRemoteDescription(data.offer);
+      await peer.setRemoteDescription(new RTCSessionDescription(data.offer));
+      const answer = await peer.createAnswer();
+      await peer.setLocalDescription(answer);
+      setShowIncomingCall(false);
+
+      socket.emit("callAccepted", { to: data.from, answer });
+    },
+    [callerDetails]
+  );
+
+  //-  webrtc part ends
+
   return (
-    <section className="flex w-full justify-center items-center p-6 shadow-xl">
+    <section className="flex relative w-full justify-center items-center p-6 shadow-xl">
       <h2
         className="block mr-4 cursor-pointer md:hidden"
         onClick={() => {
@@ -142,7 +254,7 @@ const ChatHeader = () => {
       </AnimatePresence>
 
       <div className="flex justify-center items-center gap-2 ml-auto md:gap-3">
-        <ClickAnimation>
+        <ClickAnimation onClick={() => {}}>
           <Tooltip title="Voice Call">
             <Box
               sx={{
@@ -162,7 +274,12 @@ const ChatHeader = () => {
           </Tooltip>
         </ClickAnimation>
 
-        <ClickAnimation>
+        <ClickAnimation
+          onClick={async () => {
+            callUser();
+            await getOwnVideoAudio(peer, myVideoRef, setMyStream);
+          }}
+        >
           <Tooltip title="Video Call">
             <Box
               sx={{
@@ -246,6 +363,18 @@ const ChatHeader = () => {
           </div>
         </div>
       </div>
+
+      {showIncomingCall && (
+        <div
+          onClick={async () => {
+            await getOwnVideoAudio(peer, myVideoRef, setMyStream);
+            acceptOffer(callerDetails);
+          }}
+          className="bg-secondary p-2 rounded-2xl absolute bottom-[-60%] cursor-pointer z-50"
+        >
+          Call from {getFullName(callerDetails.from)}
+        </div>
+      )}
     </section>
   );
 };

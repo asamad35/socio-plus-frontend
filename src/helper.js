@@ -181,3 +181,43 @@ export async function reduceImageSize(imageFile, thumbnail) {
 
   return compressesImageFile;
 }
+
+const sendMyStream = (peer, stream) => {
+  const tracks = stream.getTracks();
+  for (const track of tracks) {
+    console.log("sending stream", peer, stream);
+    peer.addTrack(track, stream);
+  }
+};
+export async function getOwnVideoAudio(
+  peer,
+  myVideoRef,
+  setMyStream,
+  video = true
+) {
+  console.log("before navigator 1 ", myVideoRef.current);
+
+  await new Promise((resolve, reject) => {
+    navigator.mediaDevices
+      .getUserMedia({
+        video: !!video,
+        audio: {
+          echoCancellation: false,
+          noiseSuppression: true,
+          autoGainControl: false,
+        },
+      })
+      .then((stream) => {
+        if (!peer) resolve();
+        sendMyStream(peer, stream);
+        setMyStream(stream);
+        if (myVideoRef.current) {
+          console.log("before navigator 2 ", myVideoRef.current);
+          myVideoRef.current.srcObject = stream;
+        }
+        resolve();
+      });
+  });
+
+  return;
+}

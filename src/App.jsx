@@ -9,6 +9,7 @@ import InfoDrawer from "./components/InfoDrawer";
 import { Route, Routes } from "react-router-dom";
 import ReactSlideRoutes from "react-slide-routes";
 import ToastMessage from "./components/ToastMessage";
+import { ContextProvider } from "./SocketPeerContext";
 
 export default function App() {
   return (
@@ -26,10 +27,12 @@ export default function App() {
             path="/chatUI"
             element={
               <>
-                <div className="flex w-full h-full md:rounded-2xl">
-                  <SideSearch />
-                  <ChatWindow />
-                </div>
+                {/* <ContextProvider> */}
+                  <div className="flex w-full h-full md:rounded-2xl">
+                    <SideSearch />
+                    <ChatWindow />
+                  </div>
+                {/* </ContextProvider> */}
               </>
             }
           />

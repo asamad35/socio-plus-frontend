@@ -16,15 +16,22 @@ import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import { useCallback } from "react";
 import { styled } from "@mui/material/styles";
 import Peer from "simple-peer";
+import {
+  setCallingScreen,
+  setIncomingCall,
+  setSelectedChat,
+} from "../../redux/actions";
 
 const ChatHeader = ({
   myVideoRef,
   partnerVideoRef,
   myStream,
   setMyStream,
-  setCallingScreen,
-  callingScreen,
   socket,
+  peer,
+  setPeer,
+  partnerDetails,
+  setPartnerDetails,
 }) => {
   const dispatch = useDispatch();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -34,10 +41,8 @@ const ChatHeader = ({
   const loggedUser = useSelector((state) => state.authReducer.user);
   const selectedChat = useSelector((state) => state.chatReducer.selectedChat);
   const chatList = useSelector((state) => state.chatReducer.chatList);
-
-  // calling states
-  const [showIncomingCall, setShowIncomingCall] = useState(false);
-  const [callerDetails, setCallerDetails] = useState({});
+  const callingScreen = useSelector((state) => state.chatReducer.callingScreen);
+  const incomingCall = useSelector((state) => state.chatReducer.incomingCall);
 
   const otherUser = useMemo(
     () => getOtherUserInfo(selectedChat?.users, loggedUser),
@@ -79,9 +84,33 @@ const ChatHeader = ({
     })?.active;
   }, [selectedChat, chatList]);
 
-  // initialise peer
-  const peer = useMemo(() => {
-    return new RTCPeerConnection({
+  useEffect(() => {
+    // hide menu on outside click
+    document.addEventListener("click", (e) => {
+      if (!e.target.closest(".menu-parent")) {
+        setMenuOpen(false);
+      }
+    });
+    socket.on("callEnded", () => {
+      dispatch(setIncomingCall(false));
+    });
+  }, []);
+
+  useEffect(() => {
+    socket.on("incomingOffer", handleIncomingOffer);
+    socket.on("offerAccepted", handleOfferAccepted);
+    socket.on("ice-candidate", handleNewICECandidateMsg);
+
+    return () => {
+      socket.off("incomingOffer", handleIncomingOffer);
+      socket.off("offerAccepted", handleOfferAccepted);
+      socket.off("ice-candidate", handleNewICECandidateMsg);
+    };
+  }, [peer]);
+
+  //-  webrtc part start
+  const createPeer = () => {
+    const peer = new RTCPeerConnection({
       iceServers: [
         {
           urls: "stun:stun.stunprotocol.org",
@@ -93,97 +122,87 @@ const ChatHeader = ({
         },
       ],
     });
-  }, []);
 
-  useEffect(() => {
-    // hide menu on outside click
-    document.addEventListener("click", (e) => {
-      if (!e.target.closest(".menu-parent")) {
-        setMenuOpen(false);
-      }
-    });
+    peer.onicecandidate = handleICECandidateEvent;
+    peer.ontrack = handleTrackEvent;
+    peer.onnegotiationneeded = async () => {
+      console.log("in negotiation");
+      // create offer
+      const offer = await peer.createOffer();
+      await peer.setLocalDescription(offer);
 
-    peer.addEventListener("track", (e) => {
-      console.log("listening to stream");
-      const streams = e.streams;
-      // console.log(streams, streams[0], "llllllllllllllllmmmmmm");
-      if (partnerVideoRef.current)
-        partnerVideoRef.current.srcObject = streams[0];
-    });
-
-    socket.on("incomingOffer", handleIncomingOffer);
-    socket.on("incomingNegotiationOffer", (data) => {
-      setCallerDetails(data);
-      acceptOffer(data);
-    });
-    socket.on("offerAccepted", handleOfferAccepted);
-  }, []);
-
-  useEffect(() => {
-    peer.addEventListener("negotiationneeded", callUserNegotiation);
-    return () => {
-      peer.removeEventListener("negotiationneeded", callUserNegotiation);
-    };
-  }, [otherUser]);
-
-  //-  webrtc part start
-
-  // define offer
-  const callUser = useCallback(async () => {
-    // create offer
-    const offer = await peer.createOffer();
-    await peer.setLocalDescription(offer);
-
-    //  send offer to another user via socket
-    socket.emit("callUser", { userToCall: otherUser, offer, from: loggedUser });
-  }, [otherUser, loggedUser]);
-
-  // call user negotiation
-  const callUserNegotiation = useCallback(async () => {
-    const offer = peer.localDescription;
-    // const offer = await peer.createOffer();
-
-    console.log(
-      {
+      // send offer to another user via socket
+      socket.emit("sendOffer", {
         userToCall: otherUser,
         offer,
         from: loggedUser,
-      },
-      "xxxxxxxxxxxxxxxxxxx"
+        selectedChat,
+      });
+    };
+    setPeer(peer);
+    return peer;
+  };
+
+  function handleICECandidateEvent(e) {
+    console.log("handleICECandidateEvent", partnerDetails);
+    if (e.candidate) {
+      const payload = {
+        target: partnerDetails?.from ?? otherUser,
+        candidate: e.candidate,
+      };
+      socket.emit("ice-candidate", payload);
+    }
+  }
+
+  function handleNewICECandidateMsg(incoming) {
+    const candidate = new RTCIceCandidate(incoming);
+    if (!peer) return;
+    peer.addIceCandidate(candidate).catch((e) => console.log(e));
+  }
+  const handleTrackEvent = (e) => {
+    console.log("listening to stream");
+    const streams = e.streams;
+    console.log(
+      streams,
+      streams[0],
+      partnerVideoRef.current,
+      "llllllllllllllllmmmmmm"
     );
-    socket.emit("callUserNegotiation", {
-      userToCall: otherUser,
-      offer,
-      from: loggedUser,
-    });
+    partnerVideoRef.current.srcObject = streams[0];
+  };
+  // define offer
+  const callUser = useCallback(async () => {
+    const peer = createPeer();
+    console.log({ peer });
+
+    await getOwnVideoAudio(peer, myVideoRef, setMyStream);
   }, [otherUser, loggedUser]);
 
   // handle incoming offer
   const handleIncomingOffer = useCallback((data) => {
     console.log(data, "incoming offer");
-    setCallerDetails(data);
-    setShowIncomingCall(true);
+    setPartnerDetails(data);
+    dispatch(setIncomingCall(true));
   }, []);
 
   // handle accept offer
-  const handleOfferAccepted = useCallback(async (data) => {
-    console.log(data, "accept offer");
-    // await peer.setRemoteDescription(data.answer);
+  const handleOfferAccepted = async (data) => {
+    console.log(data, peer, "accept offer");
     await peer.setRemoteDescription(new RTCSessionDescription(data.answer));
-  }, []);
+  };
 
-  const acceptOffer = useCallback(
-    async (data) => {
-      // await peer.setRemoteDescription(data.offer);
-      await peer.setRemoteDescription(new RTCSessionDescription(data.offer));
-      const answer = await peer.createAnswer();
-      await peer.setLocalDescription(answer);
-      setShowIncomingCall(false);
+  const acceptOffer = async (data) => {
+    // create Peer
+    const peer = createPeer();
+    // start and send tracks
+    await getOwnVideoAudio(peer, myVideoRef, setMyStream);
+    await peer.setRemoteDescription(new RTCSessionDescription(data.offer));
+    const answer = await peer.createAnswer();
+    await peer.setLocalDescription(answer);
+    dispatch(setIncomingCall(false));
 
-      socket.emit("callAccepted", { to: data.from, answer });
-    },
-    [callerDetails]
-  );
+    socket.emit("callAccepted", { to: data.from, answer });
+  };
 
   //-  webrtc part ends
 
@@ -276,8 +295,13 @@ const ChatHeader = ({
 
         <ClickAnimation
           onClick={async () => {
-            callUser();
-            await getOwnVideoAudio(peer, myVideoRef, setMyStream);
+            if (!partnerDetails) {
+              setPartnerDetails(otherUser);
+              dispatch(setCallingScreen(true));
+              callUser();
+            } else {
+              toast.error("you are already in a call");
+            }
           }}
         >
           <Tooltip title="Video Call">
@@ -338,7 +362,7 @@ const ChatHeader = ({
               </Box>
             </Tooltip>
           </ClickAnimation>
-          <div className={`menu ${menuOpen ? "active" : ""}`}>
+          <div className={`menu ${menuOpen ? "active" : ""} z-[100]`}>
             <p
               onClick={() => {
                 dispatch(actions.setIsUserProfile(true));
@@ -351,6 +375,10 @@ const ChatHeader = ({
             </p>
             <p
               onClick={() => {
+                if (callingScreen) {
+                  toast.error("Disconnect call, then logout");
+                  return;
+                }
                 dispatch(actions.setSelectedChat(null));
                 dispatch(actions.logout());
                 dispatch(actions.resetAuthReducer());
@@ -364,15 +392,19 @@ const ChatHeader = ({
         </div>
       </div>
 
-      {showIncomingCall && (
+      {incomingCall && (
         <div
           onClick={async () => {
-            await getOwnVideoAudio(peer, myVideoRef, setMyStream);
-            acceptOffer(callerDetails);
+            console.log(partnerDetails);
+            // if (selectedChat._id !== partnerDetails.selectedChat._id) {
+            //   setSelectedChat
+            // }
+            dispatch(setCallingScreen(true));
+            acceptOffer(partnerDetails);
           }}
           className="bg-secondary p-2 rounded-2xl absolute bottom-[-60%] cursor-pointer z-50"
         >
-          Call from {getFullName(callerDetails.from)}
+          Call from {partnerDetails.from && getFullName(partnerDetails.from)}
         </div>
       )}
     </section>

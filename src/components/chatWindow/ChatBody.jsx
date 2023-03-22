@@ -13,13 +13,16 @@ const ChatBody = ({
   selectedFiles,
   myVideoRef,
   partnerVideoRef,
-  setCallingScreen,
   socket,
-  callingScreen,
+  peer,
+  setPeer,
+  setPartnerDetails,
+  partnerDetails,
 }) => {
   const allMessages = useSelector((state) => state.chatReducer.allMessages);
   const bottomRef = useRef(null);
   const replyMessage = useSelector((state) => state.chatReducer.replyMessage);
+  const callingScreen = useSelector((state) => state.chatReducer.callingScreen);
 
   console.log("chat body is rendering");
 
@@ -34,17 +37,22 @@ const ChatBody = ({
 
   return (
     <div className=" w-full h-full overflow-hidden z-10 relative ">
-      {/* {callingScreen && ( */}
-      <Calling
-        myVideoRef={myVideoRef}
-        myStream={myStream}
-        setMyStream={setMyStream}
-        setCallingScreen={setCallingScreen}
-        callingScreen={callingScreen}
-        partnerVideoRef={partnerVideoRef}
-        socket={socket}
-      />
-      {/* )} */}
+      <AnimatePresence>
+        {callingScreen && (
+          <Calling
+            myVideoRef={myVideoRef}
+            myStream={myStream}
+            setMyStream={setMyStream}
+            partnerVideoRef={partnerVideoRef}
+            socket={socket}
+            peer={peer}
+            setPeer={setPeer}
+            partnerDetails={partnerDetails}
+            setPartnerDetails={setPartnerDetails}
+          />
+        )}
+      </AnimatePresence>
+
       <AnimatePresence>
         {!useOnScreen(bottomRef) && (
           <motion.div

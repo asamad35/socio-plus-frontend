@@ -22,7 +22,7 @@ const PreviewImages = ({ selectedFiles, setSelectedFiles }) => {
   }
 
   return filesArray.length > 0 ? (
-    <div className="preview-images absolute bottom-full bg-secondary w-full overflow-x-auto flex p-4">
+    <div className="preview-images absolute bottom-full bg-secondary w-full overflow-x-auto flex p-4 z-10">
       {filesArray.map((file, idx) => {
         return file.isImage ? (
           //  file div

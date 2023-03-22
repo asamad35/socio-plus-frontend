@@ -84,7 +84,10 @@ const MessageImgComp = ({ messageObj }) => {
                 if (
                   Math.abs(Math.round(dragStartCoords - info.point.x)) >= 100
                 ) {
-                  if (file.url.startsWith("blob:") && file.serverImageUrl) {
+                  if (
+                    (file.url.startsWith("blob:") && file.serverImageUrl) ||
+                    (!file.url.startsWith("blob:") && file.url)
+                  ) {
                     dispatch(
                       setReplyMessage({
                         uuid: file.uuid,
@@ -100,8 +103,10 @@ const MessageImgComp = ({ messageObj }) => {
                         isBottomDivVisible: isInViewport("bottomDiv"),
                       })
                     );
-                  }else{
-                    toast.error("Cannot reply till image uploads successfully.")
+                  } else {
+                    toast.error(
+                      "Cannot reply till image uploads successfully."
+                    );
                   }
                 }
               }}

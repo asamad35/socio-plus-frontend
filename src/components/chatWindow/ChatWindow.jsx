@@ -11,12 +11,9 @@ import { useSwipeable } from "react-swipeable";
 import { SOCKET_CONNECTION_URL } from "../../config/apiUrls";
 import ImageSlides from "../ImageSlides";
 import InfoDrawer from "../InfoDrawer";
-import { SocketContext } from "../../SocketPeerContext";
 
 var socket = null;
 const ChatWindow = () => {
-  // socket = useContext(SocketContext).socket;
-
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const token = useSelector((state) => state.authReducer.token);
@@ -27,9 +24,6 @@ const ChatWindow = () => {
   const chatList = useSelector((state) => state.chatReducer.chatList);
   const [smoothScroll, setSmoothScroll] = useState(true);
   const [selectedFiles, setSelectedFiles] = useState([]);
-
-  const [myStream, setMyStream] = useState(null);
-  const [callingScreen, setCallingScreen] = useState(false);
 
   const chatListLoader = useSelector(
     (state) => state.chatReducer.chatListLoader
@@ -82,6 +76,9 @@ const ChatWindow = () => {
 
   const myVideoRef = useRef(null);
   const partnerVideoRef = useRef(null);
+  const [peer, setPeer] = useState(null);
+  const [partnerDetails, setPartnerDetails] = useState(null);
+  const [myStream, setMyStream] = useState(null);
 
   // socket
   useEffect(() => {
@@ -104,6 +101,7 @@ const ChatWindow = () => {
   useEffect(() => {
     dispatch(actions.setSelectedChat(null));
     dispatch(actions.setReplyMessage({}));
+    dispatch(actions.setCallingScreen(false));
 
     socket.on("onlineUsersList", (onlineUsers) => {
       const otherOnlineUsers = onlineUsers.filter(
@@ -130,9 +128,11 @@ const ChatWindow = () => {
             partnerVideoRef={partnerVideoRef}
             myStream={myStream}
             setMyStream={setMyStream}
-            setCallingScreen={setCallingScreen}
-            callingScreen={callingScreen}
             socket={socket}
+            peer={peer}
+            setPeer={setPeer}
+            partnerDetails={partnerDetails}
+            setPartnerDetails={setPartnerDetails}
           />
           {chatLoader ? (
             <div className="chat-loader">
@@ -145,9 +145,11 @@ const ChatWindow = () => {
               selectedFiles={selectedFiles}
               myStream={myStream}
               setMyStream={setMyStream}
-              setCallingScreen={setCallingScreen}
-              callingScreen={callingScreen}
               socket={socket}
+              peer={peer}
+              setPeer={setPeer}
+              partnerDetails={partnerDetails}
+              setPartnerDetails={setPartnerDetails}
             />
           ) : (
             <div></div>

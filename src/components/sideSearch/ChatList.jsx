@@ -9,12 +9,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { getAllMessages, getChatList } from "../../thunks";
 import * as actions from "../../redux/actions";
 import { getOtherUserInfo } from "../../helper";
+import { toast } from "react-toastify";
 
 const ChatList = ({ searchList }) => {
   const dispatch = useDispatch();
   const loggedUser = useSelector((state) => state.authReducer.user);
   const chatList = useSelector((state) => state.chatReducer.chatList);
   const selectedChat = useSelector((state) => state.chatReducer.selectedChat);
+  const callingScreen = useSelector((state) => state.chatReducer.callingScreen);
   console.log({ chatList });
 
   useEffect(() => {
@@ -76,6 +78,10 @@ const ChatList = ({ searchList }) => {
                 key={idx}
                 style={{ cursor: "pointer" }}
                 onClick={() => {
+                  if (callingScreen) {
+                    toast.error("Disconnect call to change chat");
+                    return;
+                  }
                   dispatch(actions.setSelectedChat(el));
                   dispatch(getAllMessages({ chatID: el?._id }));
                 }}

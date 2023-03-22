@@ -35,6 +35,8 @@ const initialState = {
   onlineUsers: [],
   imageGallery: [],
   replyMessage: { content: "", id: "", image: false },
+  callingScreen: false,
+  incomingCall: false,
 };
 const chatReducer = createSlice({
   name: "chatReducer",
@@ -48,6 +50,14 @@ const chatReducer = createSlice({
 
     setOnlineUsers(state, action) {
       state.onlineUsers = action.payload;
+    },
+
+    setIncomingCall(state, action) {
+      state.incomingCall = action.payload;
+    },
+
+    setCallingScreen(state, action) {
+      state.callingScreen = action.payload;
     },
     setImageGallery(state, action) {
       state.imageGallery = action.payload;
@@ -275,5 +285,7 @@ export const {
   setOnlineUsers,
   setReplyMessage,
   resetChatReducer,
+  setCallingScreen,
+  setIncomingCall,
 } = chatReducer.actions;
 export default chatReducer.reducer;

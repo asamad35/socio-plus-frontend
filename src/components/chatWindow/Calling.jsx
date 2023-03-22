@@ -30,7 +30,7 @@ const Calling = ({
   useEffect(() => {
     socket.on("callEnded", () => {
       // revoking camera and mic access
-      console.log("in call ended");
+      console.log("in call ended zzzzzzzzzzzzz");
       myStream.getTracks().forEach((track) => {
         track.stop();
       });
@@ -53,7 +53,7 @@ const Calling = ({
       initial={{ opacity: 0, scale: 0 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0 }}
-      transition={{ duration: 0.6 }}
+      transition={{ duration: 0.4 }}
     >
       <video
         ref={partnerVideoRef}
@@ -89,6 +89,9 @@ const Calling = ({
         <button
           className=" bg-secondary rounded-full cursor-pointer p-1 z-50"
           onClick={() => {
+            console.log("call ended clicked");
+            socket.emit("callEnded", partnerDetails);
+
             // revoking camera and mic access
             myStream.getTracks().forEach((track) => {
               track.stop();
@@ -96,7 +99,6 @@ const Calling = ({
             //   stop both audio and video
             peer.close();
             setPeer(null);
-            socket.emit("callEnded", partnerDetails);
             myVideoRef.current.srcObject = null;
             partnerVideoRef.current.srcObject = null;
             setMyStream(null);

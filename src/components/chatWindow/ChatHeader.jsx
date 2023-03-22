@@ -91,8 +91,10 @@ const ChatHeader = ({
         setMenuOpen(false);
       }
     });
-    socket.on("callEnded", () => {
+    socket.on("removeCallAccept", () => {
+      console.log("call ended listened in header zzzzzzzzzzz");
       dispatch(setIncomingCall(false));
+      setPartnerDetails(null);
     });
   }, []);
 
@@ -101,10 +103,17 @@ const ChatHeader = ({
     socket.on("offerAccepted", handleOfferAccepted);
     socket.on("ice-candidate", handleNewICECandidateMsg);
 
+    // socket.on("callEnded", () => {
+    //   console.log("call ended listened cccccccccc");
+    //   dispatch(setIncomingCall(false));
+    //   setPartnerDetails(null);
+    // });
+
     return () => {
       socket.off("incomingOffer", handleIncomingOffer);
       socket.off("offerAccepted", handleOfferAccepted);
       socket.off("ice-candidate", handleNewICECandidateMsg);
+      // socket.off("callEnded");
     };
   }, [peer]);
 
@@ -404,7 +413,7 @@ const ChatHeader = ({
           }}
           className="bg-secondary p-2 rounded-2xl absolute bottom-[-60%] cursor-pointer z-50"
         >
-          Call from {partnerDetails.from && getFullName(partnerDetails.from)}
+          Call from {partnerDetails?.from && getFullName(partnerDetails.from)}
         </div>
       )}
     </section>

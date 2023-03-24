@@ -117,7 +117,7 @@ const Signup = () => {
                 </label>
                 <input
                   {...register("email")}
-                  type="text"
+                  type="email"
                   className="bg-input p-2 text-sm rounded-xl text-input border-2 border-input focus:border-input-focus outline-0 w-full"
                   id="email"
                   placeholder="Email"

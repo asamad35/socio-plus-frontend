@@ -11,6 +11,8 @@ import { useSwipeable } from "react-swipeable";
 import { SOCKET_CONNECTION_URL } from "../../config/apiUrls";
 import ImageSlides from "../ImageSlides";
 import InfoDrawer from "../InfoDrawer";
+import { AnimatePresence } from "framer-motion";
+import Calling from "./Calling";
 
 var socket = null;
 const ChatWindow = () => {
@@ -22,8 +24,8 @@ const ChatWindow = () => {
   const selectedChat = useSelector((state) => state.chatReducer.selectedChat);
   const sideSearch = useSelector((state) => state.authReducer.sideSearch);
   const chatList = useSelector((state) => state.chatReducer.chatList);
-  const [smoothScroll, setSmoothScroll] = useState(true);
   const [selectedFiles, setSelectedFiles] = useState([]);
+  const inCall = useSelector((state) => state.chatReducer.inCall);
 
   const chatListLoader = useSelector(
     (state) => state.chatReducer.chatListLoader
@@ -77,8 +79,8 @@ const ChatWindow = () => {
   // socket
   useEffect(() => {
     if (!token) {
-      setSmoothScroll(true);
       navigate("/");
+      return;
     }
 
     socket = io(SOCKET_CONNECTION_URL);
@@ -111,6 +113,9 @@ const ChatWindow = () => {
 
   return (
     <div
+      onClick={() => {
+        sideSearch && dispatch(actions.setSideSearch(false));
+      }}
       {...handlers}
       className="flex relative md:rounded-r-2xl overflow-hidden justify-start flex-col items-center h-full w-full"
     >
@@ -122,10 +127,17 @@ const ChatWindow = () => {
             <div className="chat-loader">
               <CircularProgress size={130} />
             </div>
-          ) : selectedChat ? (
-            <ChatBody selectedFiles={selectedFiles} socket={socket} />
           ) : (
-            <div></div>
+            <div className=" w-full h-full overflow-hidden z-10 relative ">
+              <AnimatePresence>
+                {inCall && <Calling socket={socket} />}
+              </AnimatePresence>
+              {selectedChat ? (
+                <ChatBody selectedFiles={selectedFiles} socket={socket} />
+              ) : (
+                <div></div>
+              )}
+            </div>
           )}
 
           {selectedChat && (

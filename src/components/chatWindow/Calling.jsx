@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import VideocamIcon from "@mui/icons-material/Videocam";
 import VideocamOffIcon from "@mui/icons-material/VideocamOff";
-
-import PhoneEnabledIcon from "@mui/icons-material/PhoneEnabled";
+import CallEndIcon from "@mui/icons-material/CallEnd";
 
 import MicOffIcon from "@mui/icons-material/MicOff";
 import MicIcon from "@mui/icons-material/Mic";
@@ -11,6 +10,7 @@ import { setCallDetails, setInCall } from "../../redux/actions";
 import { motion } from "framer-motion";
 import { useClient, useMicrophoneAndCameraTracks, config } from "../../setting";
 import { AgoraVideoPlayer } from "agora-rtc-react";
+import ClickAnimation from "../ClickAnimation";
 
 const Calling = ({ socket }) => {
   const dispatch = useDispatch();
@@ -74,6 +74,15 @@ const Calling = ({ socket }) => {
         console.log(error);
       }
     }
+
+    socket.on("leaveChannel", () => {
+      console.log("in leave channel");
+      leaveChannel();
+    });
+
+    return () => {
+      socket.off("leaveChannel");
+    };
   }, [client, ready, tracks]);
 
   const mute = async (type) => {
@@ -93,8 +102,8 @@ const Calling = ({ socket }) => {
   const leaveChannel = async () => {
     await client.leave();
     client.removeAllListeners();
-    tracks[0].close();
-    tracks[1].close();
+    tracks?.[0]?.close();
+    tracks?.[1]?.close();
     setStart(false);
     dispatch(setInCall(false));
   };
@@ -113,13 +122,6 @@ const Calling = ({ socket }) => {
             videoTrack={tracks[1]}
             className="h-full w-full absolute"
           />
-          {/* {users.length > 0 && (
-            <AgoraVideoPlayer
-              videoTrack={users[0].videoTrack}
-              key={users[0].uid}
-              style={{ height: "100%", width: "100%" }}
-            />
-          )} */}
 
           {users.length > 0 &&
             users.map((user) => {
@@ -140,8 +142,8 @@ const Calling = ({ socket }) => {
 
       <div className="flex gap-8 justify-center relative top-[85%] ">
         {/* video toggle button */}
-        <button
-          className=" bg-secondary rounded-full cursor-pointer p-1 z-50"
+        <ClickAnimation
+          className=" bg-secondary rounded-full cursor-pointer p-2 h-[40px] flex z-50"
           onClick={() => {
             mute("video");
           }}
@@ -151,11 +153,11 @@ const Calling = ({ socket }) => {
           ) : (
             <VideocamOffIcon className="text-red-600" fontSize="medium" />
           )}
-        </button>
+        </ClickAnimation>
 
         {/* end call button */}
-        <button
-          className=" bg-secondary rounded-full cursor-pointer p-1 z-50"
+        <ClickAnimation
+          className=" bg-secondary rounded-full cursor-pointer p-2 h-[40px] flex z-50"
           onClick={() => {
             leaveChannel();
             console.log(
@@ -177,12 +179,12 @@ const Calling = ({ socket }) => {
             );
           }}
         >
-          <PhoneEnabledIcon className="text-red-600" fontSize="medium" />
-        </button>
+          <CallEndIcon className="text-red-600" fontSize="medium" />
+        </ClickAnimation>
 
         {/* audio toggle button */}
-        <button
-          className=" bg-secondary rounded-full cursor-pointer p-1 z-50"
+        <ClickAnimation
+          className=" bg-secondary rounded-full cursor-pointer p-2 h-[40px] flex z-50"
           onClick={() => {
             mute("audio");
           }}
@@ -192,7 +194,7 @@ const Calling = ({ socket }) => {
           ) : (
             <MicOffIcon className="text-red-600" fontSize="medium" />
           )}
-        </button>
+        </ClickAnimation>
       </div>
     </motion.div>
   );

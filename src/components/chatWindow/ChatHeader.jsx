@@ -15,8 +15,9 @@ import { useMemo } from "react";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import { useCallback } from "react";
 import { styled } from "@mui/material/styles";
-import Peer from "simple-peer";
 import { setInCall, setCallDetails } from "../../redux/actions";
+import VideocamIcon from "@mui/icons-material/Videocam";
+import CallEndIcon from "@mui/icons-material/CallEnd";
 
 const ChatHeader = ({ socket }) => {
   const dispatch = useDispatch();
@@ -77,6 +78,7 @@ const ChatHeader = ({ socket }) => {
         setMenuOpen(false);
       }
     });
+    console.log("registering socket");
     socket.on("callInvitation", ({ selectedChatId, from, to }) => {
       console.log("listening to invitation");
       dispatch(
@@ -87,10 +89,10 @@ const ChatHeader = ({ socket }) => {
         })
       );
     });
-  }, []);
 
-  useEffect(() => {
-    socket.on("callEnded", ({ from, to }) => {
+    socket.on("cantConnect", ({ calledUser, message }) => {
+      console.log("cant connect");
+      toast.error(getFullName(calledUser) + " " + message);
       dispatch(
         setCallDetails({
           partnerDetails: null,
@@ -98,54 +100,106 @@ const ChatHeader = ({ socket }) => {
           showInvitation: false,
         })
       );
-      console.log("in call ended", callDetails.partnerDetails);
+      dispatch(setInCall(false));
+    });
+    socket.on("canConnect", () => {
+      console.log("hello");
+      dispatch(setInCall(true));
+    });
+  }, [socket]);
+
+  useEffect(() => {
+    socket.on("callEnded", ({ from, to }) => {
+      console.log("in call ended");
+      dispatch(
+        setCallDetails({
+          partnerDetails: null,
+          roomId: null,
+          showInvitation: false,
+        })
+      );
+      dispatch(setInCall(false));
 
       if (!callDetails.partnerDetails) return;
-      toast(getFullName(from) + " left the call");
+      toast(getFullName(from) + " ended the call.");
     });
+
+    socket.on("callRejected", ({ from, to }) => {
+      console.log("listening rejection");
+      toast.error(getFullName(from) + " rejected the call");
+      dispatch(
+        setCallDetails({
+          partnerDetails: null,
+          roomId: null,
+          showInvitation: false,
+        })
+      );
+      dispatch(setInCall(false));
+    });
+
     return () => {
       socket.off("callEnded");
+      socket.off("callRejected");
     };
-  }, [callDetails]);
+  }, [callDetails, socket]);
 
   return (
-    <section className="flex relative w-full justify-center items-center p-6 shadow-xl">
-      <h2
-        className="block mr-4 cursor-pointer md:hidden"
-        onClick={() => {
-          dispatch(actions.setSideSearch(!sideSearch));
-        }}
-      >
-        <SearchOutlinedIcon />
-      </h2>
+    <section className="flex relative w-full justify-center items-center  shadow-xl">
+      <div className="flex bg-white w-full justify-center z-[100] items-center p-6 shadow-xl">
+        <h2
+          className="block mr-4 cursor-pointer md:hidden"
+          onClick={() => {
+            dispatch(actions.setSideSearch(!sideSearch));
+          }}
+        >
+          <SearchOutlinedIcon />
+        </h2>
 
-      {checkOtherUserActive() && (
-        <StyledBadge
-          overlap="circular"
-          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-          variant="dot"
-        ></StyledBadge>
-      )}
+        {checkOtherUserActive() && (
+          <StyledBadge
+            overlap="circular"
+            anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+            variant="dot"
+          ></StyledBadge>
+        )}
 
-      <h1
-        onClick={() => {
-          dispatch(actions.setIsUserProfile(false));
-          dispatch(actions.setInfoDrawer(true));
-        }}
-        className="text-lg cursor-pointer relative leading-none font-medium text-[#333333] mx-4 md:text-2xl"
-      >
-        {otherUser
-          ? otherUser.firstName + " " + otherUser.lastName
-          : "Select a chat"}
+        <h1
+          onClick={() => {
+            dispatch(actions.setIsUserProfile(false));
+            dispatch(actions.setInfoDrawer(true));
+          }}
+          className="text-lg cursor-pointer relative leading-none font-medium text-[#333333] mx-4 md:text-2xl"
+        >
+          {otherUser
+            ? otherUser.firstName + " " + otherUser.lastName
+            : "Select a chat"}
+          <AnimatePresence>
+            {!!status && (
+              <motion.div
+                className=" absolute top-5 text-xs md:hidden"
+                key="modal"
+                initial={{
+                  opacity: 0,
+                  scale: 0.5,
+                }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.5 }}
+                transition={{ duration: 0.3 }}
+              >
+                {" "}
+                {status === "typing" ? "Typing..." : "Recording..."}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </h1>
+
+        {/* typing animation */}
         <AnimatePresence>
           {!!status && (
             <motion.div
-              className=" absolute top-5 text-xs md:hidden"
+              className="hidden md:flex"
               key="modal"
-              initial={{
-                opacity: 0,
-                scale: 0.5,
-              }}
+              initial={{ opacity: 0, scale: 0.5 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.5 }}
               transition={{ duration: 0.3 }}
@@ -155,108 +209,10 @@ const ChatHeader = ({ socket }) => {
             </motion.div>
           )}
         </AnimatePresence>
-      </h1>
 
-      {/* typing animation */}
-      <AnimatePresence>
-        {!!status && (
-          <motion.div
-            className="hidden md:flex"
-            key="modal"
-            initial={{ opacity: 0, scale: 0.5 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.5 }}
-            transition={{ duration: 0.3 }}
-          >
-            {" "}
-            {status === "typing" ? "Typing..." : "Recording..."}
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <div className="flex justify-center items-center gap-2 ml-auto md:gap-3">
-        <ClickAnimation onClick={() => {}}>
-          <Tooltip title="Voice Call">
-            <Box
-              sx={{
-                backgroundColor: "#2962ff",
-                borderRadius: "2rem",
-                height: "30px",
-                width: "30px",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                color: "white",
-                cursor: "pointer",
-              }}
-            >
-              <CallOutlinedIcon fontSize="small" />
-            </Box>
-          </Tooltip>
-        </ClickAnimation>
-
-        <ClickAnimation
-          onClick={async () => {
-            console.log(inCall);
-            if (!inCall) {
-              dispatch(setInCall(true));
-              dispatch(
-                setCallDetails({
-                  ...callDetails,
-                  partnerDetails: otherUser,
-                  showInvitation: false,
-                })
-              );
-              socket.emit("callInvitation", {
-                selectedChatId: selectedChat._id,
-                from: loggedUser,
-                to: otherUser,
-              });
-            } else {
-              toast.error("Already in call");
-            }
-          }}
-        >
-          <Tooltip title="Video Call">
-            <Box
-              sx={{
-                backgroundColor: "#2962ff",
-                borderRadius: "2rem",
-                height: "30px",
-                width: "30px",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                color: "white",
-                cursor: "pointer",
-              }}
-            >
-              <VideocamOutlinedIcon fontSize="small" />
-            </Box>
-          </Tooltip>
-        </ClickAnimation>
-
-        <ClickAnimation
-          className="hidden md:flex"
-          onClick={() => {
-            dispatch(actions.setIsUserProfile(false));
-            dispatch(actions.setInfoDrawer(true));
-          }}
-        >
-          <Tooltip title="Info">
-            <Box className="items-center justify-center cursor-pointer bg-primary text-white rounded-full h-[30px] w-[30px] md:flex">
-              <InfoOutlinedIcon fontSize="small" />
-            </Box>
-          </Tooltip>
-        </ClickAnimation>
-
-        <div className="menu-parent">
-          <ClickAnimation
-            onClick={() => {
-              setMenuOpen(!menuOpen);
-            }}
-          >
-            <Tooltip title="Menu">
+        <div className="flex justify-center items-center gap-2 ml-auto md:gap-3">
+          <ClickAnimation onClick={() => {}}>
+            <Tooltip title="Voice Call">
               <Box
                 sx={{
                   backgroundColor: "#2962ff",
@@ -268,59 +224,192 @@ const ChatHeader = ({ socket }) => {
                   alignItems: "center",
                   color: "white",
                   cursor: "pointer",
-                  position: "relative",
                 }}
               >
-                <MoreVertIcon fontSize="small" />
+                <CallOutlinedIcon fontSize="small" />
               </Box>
             </Tooltip>
           </ClickAnimation>
-          <div className={`menu ${menuOpen ? "active" : ""} z-[100]`}>
-            <p
+
+          <ClickAnimation
+            onClick={() => {
+              if (!selectedChat) {
+                toast.error("Select a chat");
+                return;
+              }
+              if (!inCall) {
+                dispatch(
+                  setCallDetails({
+                    ...callDetails,
+                    partnerDetails: otherUser,
+                    showInvitation: false,
+                  })
+                );
+                socket.emit("callInvitation", {
+                  selectedChatId: selectedChat._id,
+                  from: loggedUser,
+                  to: otherUser,
+                });
+              } else {
+                toast.error("Already in call");
+              }
+            }}
+          >
+            <Tooltip title="Video Call">
+              <Box
+                sx={{
+                  backgroundColor: "#2962ff",
+                  borderRadius: "2rem",
+                  height: "30px",
+                  width: "30px",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  color: "white",
+                  cursor: "pointer",
+                }}
+              >
+                <VideocamOutlinedIcon fontSize="small" />
+              </Box>
+            </Tooltip>
+          </ClickAnimation>
+
+          <ClickAnimation
+            className="hidden md:flex"
+            onClick={() => {
+              dispatch(actions.setIsUserProfile(false));
+              dispatch(actions.setInfoDrawer(true));
+            }}
+          >
+            <Tooltip title="Info">
+              <Box className="items-center justify-center cursor-pointer bg-primary text-white rounded-full h-[30px] w-[30px] md:flex">
+                <InfoOutlinedIcon fontSize="small" />
+              </Box>
+            </Tooltip>
+          </ClickAnimation>
+
+          <div className="menu-parent">
+            <ClickAnimation
               onClick={() => {
-                dispatch(actions.setIsUserProfile(true));
-                dispatch(actions.setInfoDrawer(true));
-                setMenuOpen(false);
+                setMenuOpen(!menuOpen);
               }}
-              className="menu-items"
             >
-              Profile
-            </p>
-            <p
-              onClick={() => {
-                if (inCall) {
-                  toast.error("Disconnect call, then logout");
-                  return;
-                }
-                dispatch(actions.setSelectedChat(null));
-                dispatch(actions.logout());
-                dispatch(actions.resetAuthReducer());
-                dispatch(actions.resetChatReducer());
-              }}
-              className="menu-items"
-            >
-              Logout
-            </p>
+              <Tooltip title="Menu">
+                <Box
+                  sx={{
+                    backgroundColor: "#2962ff",
+                    borderRadius: "2rem",
+                    height: "30px",
+                    width: "30px",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    color: "white",
+                    cursor: "pointer",
+                    position: "relative",
+                  }}
+                >
+                  <MoreVertIcon fontSize="small" />
+                </Box>
+              </Tooltip>
+            </ClickAnimation>
+            <div className={`menu ${menuOpen ? "active" : ""} z-[100]`}>
+              <p
+                onClick={() => {
+                  dispatch(actions.setIsUserProfile(true));
+                  dispatch(actions.setInfoDrawer(true));
+                  setMenuOpen(false);
+                }}
+                className="menu-items"
+              >
+                Profile
+              </p>
+              <p
+                onClick={() => {
+                  if (inCall) {
+                    toast.error("Disconnect call, then logout");
+                    return;
+                  }
+                  dispatch(actions.setSelectedChat(null));
+                  dispatch(actions.logout());
+                  dispatch(actions.resetAuthReducer());
+                  dispatch(actions.resetChatReducer());
+                }}
+                className="menu-items"
+              >
+                Logout
+              </p>
+            </div>
           </div>
         </div>
       </div>
+      <AnimatePresence>
+        {callDetails.partnerDetails && callDetails.showInvitation && (
+          <motion.div
+            initial={{}}
+            animate={{
+              transform: "translateY(115%)",
+            }}
+            exit={{ transform: "translateY(0%)" }}
+            transition={{ duration: 0.3 }}
+            className="bg-secondary p-2 px-4 rounded-xl absolute bottom-0 cursor-pointer flex items-center justify-center z-50"
+          >
+            <p className="mr-4">
+              Call from Abdus Samad
+              {/* {getFullName(callDetails.partnerDetails)} */}
+            </p>
 
-      {callDetails.partnerDetails && callDetails.showInvitation && (
-        <div
-          onClick={async () => {
-            dispatch(setInCall(true));
-            dispatch(
-              setCallDetails({
-                ...callDetails,
-                showInvitation: false,
-              })
-            );
-          }}
-          className="bg-secondary p-2 rounded-2xl absolute bottom-[-60%] cursor-pointer z-50"
-        >
-          Call from {getFullName(callDetails.partnerDetails)}
-        </div>
-      )}
+            <ClickAnimation
+              onClick={() => {
+                console.log("rejection", {
+                  from: loggedUser,
+                  to: callDetails.partnerDetails,
+                });
+                socket.emit("callRejected", {
+                  from: loggedUser,
+                  to: callDetails.partnerDetails,
+                });
+
+                dispatch(
+                  setCallDetails({
+                    ...callDetails,
+                    partnerDetails: null,
+                    showInvitation: false,
+                  })
+                );
+              }}
+              className="bg-red-600 text-white p-[6px] inline-flex rounded-full mr-2"
+            >
+              <CallEndIcon fontSize="small" />
+            </ClickAnimation>
+            <ClickAnimation
+              onClick={() => {
+                console.log(
+                  {
+                    from: loggedUser,
+                    to: callDetails.partnerDetails,
+                  },
+                  "kkkkkkkkkkkkkkkkk"
+                );
+                socket.emit("callAccepted", {
+                  from: loggedUser,
+                  to: callDetails.partnerDetails,
+                });
+                dispatch(setInCall(true));
+                dispatch(
+                  setCallDetails({
+                    ...callDetails,
+                    showInvitation: false,
+                  })
+                );
+              }}
+              className="bg-primary text-white p-[6px] inline-flex rounded-full"
+            >
+              <VideocamIcon fontSize="small" />
+            </ClickAnimation>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 };

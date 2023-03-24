@@ -31,7 +31,7 @@ const SideSearch = () => {
   return (
     <section
       {...handlers}
-      className={`bg-primary flex flex-col justify-start items-start absolute w-4/5 h-full z-50 pt-6 transition-all duration-300 ${
+      className={`bg-primary flex flex-col justify-start items-start absolute w-4/5 h-full z-[101] pt-6 transition-all duration-300 ${
         sideSearch ? "translate-x-0 opacity-100" : "-translate-x-full opacity-0"
       }  md:translate-x-0 md:relative md:w-1/3 md:min-w-[250px] md:opacity-100 md:rounded-l-2xl `}
     >

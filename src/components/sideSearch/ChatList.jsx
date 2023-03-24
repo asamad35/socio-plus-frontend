@@ -83,6 +83,7 @@ const ChatList = ({ searchList }) => {
                     return;
                   }
                   dispatch(actions.setSelectedChat(el));
+                  dispatch(actions.setSideSearch(false));
                   dispatch(getAllMessages({ chatID: el?._id }));
                 }}
               >

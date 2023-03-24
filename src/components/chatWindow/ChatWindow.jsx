@@ -74,12 +74,6 @@ const ChatWindow = () => {
     trackMouse: true,
   });
 
-  const myVideoRef = useRef(null);
-  const partnerVideoRef = useRef(null);
-  const [peer, setPeer] = useState(null);
-  const [partnerDetails, setPartnerDetails] = useState(null);
-  const [myStream, setMyStream] = useState(null);
-
   // socket
   useEffect(() => {
     if (!token) {
@@ -101,7 +95,7 @@ const ChatWindow = () => {
   useEffect(() => {
     dispatch(actions.setSelectedChat(null));
     dispatch(actions.setReplyMessage({}));
-    dispatch(actions.setCallingScreen(false));
+    dispatch(actions.setInCall(false));
 
     socket.on("onlineUsersList", (onlineUsers) => {
       const otherOnlineUsers = onlineUsers.filter(
@@ -123,34 +117,13 @@ const ChatWindow = () => {
       <ImageSlides />
       {socket && (
         <>
-          <ChatHeader
-            myVideoRef={myVideoRef}
-            partnerVideoRef={partnerVideoRef}
-            myStream={myStream}
-            setMyStream={setMyStream}
-            socket={socket}
-            peer={peer}
-            setPeer={setPeer}
-            partnerDetails={partnerDetails}
-            setPartnerDetails={setPartnerDetails}
-          />
+          <ChatHeader socket={socket} />
           {chatLoader ? (
             <div className="chat-loader">
               <CircularProgress size={130} />
             </div>
           ) : selectedChat ? (
-            <ChatBody
-              myVideoRef={myVideoRef}
-              partnerVideoRef={partnerVideoRef}
-              selectedFiles={selectedFiles}
-              myStream={myStream}
-              setMyStream={setMyStream}
-              socket={socket}
-              peer={peer}
-              setPeer={setPeer}
-              partnerDetails={partnerDetails}
-              setPartnerDetails={setPartnerDetails}
-            />
+            <ChatBody selectedFiles={selectedFiles} socket={socket} />
           ) : (
             <div></div>
           )}

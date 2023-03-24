@@ -7,22 +7,11 @@ import { AnimatePresence, motion } from "framer-motion";
 import useOnScreen from "../../customHooks/useOnScreen";
 import Calling from "./Calling";
 
-const ChatBody = ({
-  myStream,
-  setMyStream,
-  selectedFiles,
-  myVideoRef,
-  partnerVideoRef,
-  socket,
-  peer,
-  setPeer,
-  setPartnerDetails,
-  partnerDetails,
-}) => {
+const ChatBody = ({ selectedFiles, socket }) => {
   const allMessages = useSelector((state) => state.chatReducer.allMessages);
   const bottomRef = useRef(null);
   const replyMessage = useSelector((state) => state.chatReducer.replyMessage);
-  const callingScreen = useSelector((state) => state.chatReducer.callingScreen);
+  const inCall = useSelector((state) => state.chatReducer.inCall);
 
   console.log("chat body is rendering");
 
@@ -37,21 +26,7 @@ const ChatBody = ({
 
   return (
     <div className=" w-full h-full overflow-hidden z-10 relative ">
-      <AnimatePresence>
-        {callingScreen && (
-          <Calling
-            myVideoRef={myVideoRef}
-            myStream={myStream}
-            setMyStream={setMyStream}
-            partnerVideoRef={partnerVideoRef}
-            socket={socket}
-            peer={peer}
-            setPeer={setPeer}
-            partnerDetails={partnerDetails}
-            setPartnerDetails={setPartnerDetails}
-          />
-        )}
-      </AnimatePresence>
+      <AnimatePresence>{inCall && <Calling socket={socket} />}</AnimatePresence>
 
       <AnimatePresence>
         {!useOnScreen(bottomRef) && (

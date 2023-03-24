@@ -6,46 +6,98 @@ import PhoneEnabledIcon from "@mui/icons-material/PhoneEnabled";
 
 import MicOffIcon from "@mui/icons-material/MicOff";
 import MicIcon from "@mui/icons-material/Mic";
-import { getOwnVideoAudio } from "../../helper";
 import { useDispatch, useSelector } from "react-redux";
-import { setCallingScreen } from "../../redux/actions";
+import { setCallDetails, setInCall } from "../../redux/actions";
 import { motion } from "framer-motion";
+import { useClient, useMicrophoneAndCameraTracks, config } from "../../setting";
+import { AgoraVideoPlayer } from "agora-rtc-react";
 
-const Calling = ({
-  myVideoRef,
-  partnerVideoRef,
-  setMyStream,
-  myStream,
-  peer,
-  setPeer,
-  partnerDetails,
-  setPartnerDetails,
-  socket,
-}) => {
+const Calling = ({ socket }) => {
   const dispatch = useDispatch();
-  const [video, setVideo] = useState(true);
-  const [audio, setAudio] = useState(true);
-  const callingScreen = useSelector((state) => state.chatReducer.callingScreen);
+  const selectedChat = useSelector((state) => state.chatReducer.selectedChat);
+  const callDetails = useSelector((state) => state.chatReducer.callDetails);
+  const loggedUser = useSelector((state) => state.authReducer.user);
+
+  const [users, setUsers] = useState([]);
+  const [start, setStart] = useState(false);
+  const client = useClient();
+  const { ready, tracks } = useMicrophoneAndCameraTracks();
+
+  // controls state
+  const [trackState, setTrackState] = useState({ video: true, audio: true });
 
   useEffect(() => {
-    socket.on("callEnded", () => {
-      // revoking camera and mic access
-      console.log("in call ended zzzzzzzzzzzzz");
-      myStream.getTracks().forEach((track) => {
-        track.stop();
+    let init = async (name) => {
+      client.on("user-published", async (user, mediaType) => {
+        await client.subscribe(user, mediaType);
+        if (mediaType === "video") {
+          setUsers((prevUsers) => {
+            return [...prevUsers, user];
+          });
+        }
+        if (mediaType === "audio") {
+          user.audioTrack.play();
+        }
       });
-      peer.close();
-      setPeer(null);
-      myVideoRef.current.srcObject = null;
-      partnerVideoRef.current.srcObject = null;
-      setMyStream(null);
-      setPartnerDetails(null);
-      dispatch(setCallingScreen(false));
-    });
-    return () => {
-      socket.off("callEnded");
+
+      client.on("user-unpublished", (user, mediaType) => {
+        if (mediaType === "audio") {
+          if (user.audioTrack) user.audioTrack.stop();
+        }
+        if (mediaType === "video") {
+          setUsers((prevUsers) => {
+            return prevUsers.filter((User) => User.uid !== user.uid);
+          });
+        }
+      });
+
+      client.on("user-left", (user) => {
+        setUsers((prevUsers) => {
+          return prevUsers.filter((User) => User.uid !== user.uid);
+        });
+      });
+
+      try {
+        await client.join(config.appId, name, config.token, null);
+      } catch (error) {
+        console.log("error");
+      }
+
+      if (tracks) await client.publish([tracks[0], tracks[1]]);
+      setStart(true);
     };
-  }, [myStream]);
+
+    if (ready && tracks) {
+      try {
+        init(callDetails.roomId ?? selectedChat._id);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  }, [client, ready, tracks]);
+
+  const mute = async (type) => {
+    if (type === "audio") {
+      await tracks[0].setEnabled(!trackState.audio);
+      setTrackState((ps) => {
+        return { ...ps, audio: !ps.audio };
+      });
+    } else if (type === "video") {
+      await tracks[1].setEnabled(!trackState.video);
+      setTrackState((ps) => {
+        return { ...ps, video: !ps.video };
+      });
+    }
+  };
+
+  const leaveChannel = async () => {
+    await client.leave();
+    client.removeAllListeners();
+    tracks[0].close();
+    tracks[1].close();
+    setStart(false);
+    dispatch(setInCall(false));
+  };
 
   return (
     <motion.div
@@ -55,30 +107,46 @@ const Calling = ({
       exit={{ opacity: 0, scale: 0 }}
       transition={{ duration: 0.4 }}
     >
-      <video
-        ref={partnerVideoRef}
-        autoPlay
-        className="relative w-full h-full object-cover"
-      />
-      <div className="flex gap-8 justify-center relative -top-[50px] ">
+      {start && tracks && (
+        <>
+          <AgoraVideoPlayer
+            videoTrack={tracks[1]}
+            className="h-full w-full absolute"
+          />
+          {/* {users.length > 0 && (
+            <AgoraVideoPlayer
+              videoTrack={users[0].videoTrack}
+              key={users[0].uid}
+              style={{ height: "100%", width: "100%" }}
+            />
+          )} */}
+
+          {users.length > 0 &&
+            users.map((user) => {
+              if (user.videoTrack) {
+                return (
+                  <AgoraVideoPlayer
+                    videoTrack={user.videoTrack}
+                    key={user.uid}
+                    className="h-[120px] w-[120px]  sm:h-[200px] sm:w-[200px] top-0 right-0 absolute"
+                  />
+                );
+              } else return null;
+            })}
+        </>
+      )}
+
+      {/* controls */}
+
+      <div className="flex gap-8 justify-center relative top-[85%] ">
         {/* video toggle button */}
         <button
           className=" bg-secondary rounded-full cursor-pointer p-1 z-50"
           onClick={() => {
-            const videoTrack = myStream
-              .getTracks()
-              .find((track) => track.kind === "video");
-            console.log(videoTrack.enabled, "lllllllllllllll");
-            if (videoTrack.enabled) {
-              setVideo(!video);
-              videoTrack.enabled = false;
-            } else {
-              setVideo(!video);
-              videoTrack.enabled = true;
-            }
+            mute("video");
           }}
         >
-          {video ? (
+          {trackState.video ? (
             <VideocamIcon className="text-primary" fontSize="medium" />
           ) : (
             <VideocamOffIcon className="text-red-600" fontSize="medium" />
@@ -89,21 +157,24 @@ const Calling = ({
         <button
           className=" bg-secondary rounded-full cursor-pointer p-1 z-50"
           onClick={() => {
-            console.log("call ended clicked");
-            socket.emit("callEnded", partnerDetails);
-
-            // revoking camera and mic access
-            myStream.getTracks().forEach((track) => {
-              track.stop();
-            });
-            //   stop both audio and video
-            peer.close();
-            setPeer(null);
-            myVideoRef.current.srcObject = null;
-            partnerVideoRef.current.srcObject = null;
-            setMyStream(null);
-            setPartnerDetails(null);
-            dispatch(setCallingScreen(false));
+            leaveChannel();
+            console.log(
+              callDetails,
+              callDetails.partnerDetails,
+              "aaaaaaaaaaaaa"
+            );
+            if (callDetails.partnerDetails)
+              socket.emit("callEnded", {
+                from: loggedUser,
+                to: callDetails.partnerDetails,
+              });
+            dispatch(
+              setCallDetails({
+                partnerDetails: null,
+                roomId: null,
+                showInvitation: false,
+              })
+            );
           }}
         >
           <PhoneEnabledIcon className="text-red-600" fontSize="medium" />
@@ -113,33 +184,16 @@ const Calling = ({
         <button
           className=" bg-secondary rounded-full cursor-pointer p-1 z-50"
           onClick={() => {
-            const audioTrack = myStream
-              .getTracks()
-              .find((track) => track.kind === "audio");
-            console.log(audioTrack.enabled, "lllllllllllllll");
-            if (audioTrack.enabled) {
-              setAudio(!audio);
-              audioTrack.enabled = false;
-            } else {
-              setAudio(!audio);
-              audioTrack.enabled = true;
-            }
+            mute("audio");
           }}
         >
-          {audio ? (
+          {trackState.audio ? (
             <MicIcon className="text-primary" fontSize="medium" />
           ) : (
             <MicOffIcon className="text-red-600" fontSize="medium" />
           )}
         </button>
       </div>
-
-      <video
-        ref={myVideoRef}
-        autoPlay
-        muted
-        className="absolute top-0 right-0 w-[120px] h-[120px] object-cover md:w-[200px] md:h-[150px]"
-      />
     </motion.div>
   );
 };

@@ -10,29 +10,15 @@ import { useState } from "react";
 import { useEffect } from "react";
 import ClickAnimation from "../ClickAnimation";
 import { toast } from "react-toastify";
-import { getFullName, getOtherUserInfo, getOwnVideoAudio } from "../../helper";
+import { getFullName, getOtherUserInfo } from "../../helper";
 import { useMemo } from "react";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import { useCallback } from "react";
 import { styled } from "@mui/material/styles";
 import Peer from "simple-peer";
-import {
-  setCallingScreen,
-  setIncomingCall,
-  setSelectedChat,
-} from "../../redux/actions";
+import { setInCall, setCallDetails } from "../../redux/actions";
 
-const ChatHeader = ({
-  myVideoRef,
-  partnerVideoRef,
-  myStream,
-  setMyStream,
-  socket,
-  peer,
-  setPeer,
-  partnerDetails,
-  setPartnerDetails,
-}) => {
+const ChatHeader = ({ socket }) => {
   const dispatch = useDispatch();
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -41,8 +27,8 @@ const ChatHeader = ({
   const loggedUser = useSelector((state) => state.authReducer.user);
   const selectedChat = useSelector((state) => state.chatReducer.selectedChat);
   const chatList = useSelector((state) => state.chatReducer.chatList);
-  const callingScreen = useSelector((state) => state.chatReducer.callingScreen);
-  const incomingCall = useSelector((state) => state.chatReducer.incomingCall);
+  const inCall = useSelector((state) => state.chatReducer.inCall);
+  const callDetails = useSelector((state) => state.chatReducer.callDetails);
 
   const otherUser = useMemo(
     () => getOtherUserInfo(selectedChat?.users, loggedUser),
@@ -91,129 +77,36 @@ const ChatHeader = ({
         setMenuOpen(false);
       }
     });
-    socket.on("removeCallAccept", () => {
-      console.log("call ended listened in header zzzzzzzzzzz");
-      dispatch(setIncomingCall(false));
-      setPartnerDetails(null);
+    socket.on("callInvitation", ({ selectedChatId, from, to }) => {
+      console.log("listening to invitation");
+      dispatch(
+        setCallDetails({
+          partnerDetails: from,
+          roomId: selectedChatId,
+          showInvitation: true,
+        })
+      );
     });
   }, []);
 
   useEffect(() => {
-    socket.on("incomingOffer", handleIncomingOffer);
-    socket.on("offerAccepted", handleOfferAccepted);
-    socket.on("ice-candidate", handleNewICECandidateMsg);
+    socket.on("callEnded", ({ from, to }) => {
+      dispatch(
+        setCallDetails({
+          partnerDetails: null,
+          roomId: null,
+          showInvitation: false,
+        })
+      );
+      console.log("in call ended", callDetails.partnerDetails);
 
-    // socket.on("callEnded", () => {
-    //   console.log("call ended listened cccccccccc");
-    //   dispatch(setIncomingCall(false));
-    //   setPartnerDetails(null);
-    // });
-
-    return () => {
-      socket.off("incomingOffer", handleIncomingOffer);
-      socket.off("offerAccepted", handleOfferAccepted);
-      socket.off("ice-candidate", handleNewICECandidateMsg);
-      // socket.off("callEnded");
-    };
-  }, [peer]);
-
-  //-  webrtc part start
-  const createPeer = () => {
-    const peer = new RTCPeerConnection({
-      iceServers: [
-        {
-          urls: "stun:stun.stunprotocol.org",
-        },
-        {
-          urls: "turn:numb.viagenie.ca",
-          credential: "muazkh",
-          username: "webrtc@live.com",
-        },
-      ],
+      if (!callDetails.partnerDetails) return;
+      toast(getFullName(from) + " left the call");
     });
-
-    peer.onicecandidate = handleICECandidateEvent;
-    peer.ontrack = handleTrackEvent;
-    peer.onnegotiationneeded = async () => {
-      console.log("in negotiation");
-      // create offer
-      const offer = await peer.createOffer();
-      await peer.setLocalDescription(offer);
-
-      // send offer to another user via socket
-      socket.emit("sendOffer", {
-        userToCall: otherUser,
-        offer,
-        from: loggedUser,
-        selectedChat,
-      });
+    return () => {
+      socket.off("callEnded");
     };
-    setPeer(peer);
-    return peer;
-  };
-
-  function handleICECandidateEvent(e) {
-    console.log("handleICECandidateEvent", partnerDetails);
-    if (e.candidate) {
-      const payload = {
-        target: partnerDetails?.from ?? otherUser,
-        candidate: e.candidate,
-      };
-      socket.emit("ice-candidate", payload);
-    }
-  }
-
-  function handleNewICECandidateMsg(incoming) {
-    const candidate = new RTCIceCandidate(incoming);
-    if (!peer) return;
-    peer.addIceCandidate(candidate).catch((e) => console.log(e));
-  }
-  const handleTrackEvent = (e) => {
-    console.log("listening to stream");
-    const streams = e.streams;
-    console.log(
-      streams,
-      streams[0],
-      partnerVideoRef.current,
-      "llllllllllllllllmmmmmm"
-    );
-    partnerVideoRef.current.srcObject = streams[0];
-  };
-  // define offer
-  const callUser = useCallback(async () => {
-    const peer = createPeer();
-    console.log({ peer });
-
-    await getOwnVideoAudio(peer, myVideoRef, setMyStream);
-  }, [otherUser, loggedUser]);
-
-  // handle incoming offer
-  const handleIncomingOffer = useCallback((data) => {
-    console.log(data, "incoming offer");
-    setPartnerDetails(data);
-    dispatch(setIncomingCall(true));
-  }, []);
-
-  // handle accept offer
-  const handleOfferAccepted = async (data) => {
-    console.log(data, peer, "accept offer");
-    await peer.setRemoteDescription(new RTCSessionDescription(data.answer));
-  };
-
-  const acceptOffer = async (data) => {
-    // create Peer
-    const peer = createPeer();
-    // start and send tracks
-    await getOwnVideoAudio(peer, myVideoRef, setMyStream);
-    await peer.setRemoteDescription(new RTCSessionDescription(data.offer));
-    const answer = await peer.createAnswer();
-    await peer.setLocalDescription(answer);
-    dispatch(setIncomingCall(false));
-
-    socket.emit("callAccepted", { to: data.from, answer });
-  };
-
-  //-  webrtc part ends
+  }, [callDetails]);
 
   return (
     <section className="flex relative w-full justify-center items-center p-6 shadow-xl">
@@ -304,12 +197,23 @@ const ChatHeader = ({
 
         <ClickAnimation
           onClick={async () => {
-            if (!partnerDetails) {
-              setPartnerDetails(otherUser);
-              dispatch(setCallingScreen(true));
-              callUser();
+            console.log(inCall);
+            if (!inCall) {
+              dispatch(setInCall(true));
+              dispatch(
+                setCallDetails({
+                  ...callDetails,
+                  partnerDetails: otherUser,
+                  showInvitation: false,
+                })
+              );
+              socket.emit("callInvitation", {
+                selectedChatId: selectedChat._id,
+                from: loggedUser,
+                to: otherUser,
+              });
             } else {
-              toast.error("you are already in a call");
+              toast.error("Already in call");
             }
           }}
         >
@@ -384,7 +288,7 @@ const ChatHeader = ({
             </p>
             <p
               onClick={() => {
-                if (callingScreen) {
+                if (inCall) {
                   toast.error("Disconnect call, then logout");
                   return;
                 }
@@ -401,19 +305,20 @@ const ChatHeader = ({
         </div>
       </div>
 
-      {incomingCall && (
+      {callDetails.partnerDetails && callDetails.showInvitation && (
         <div
           onClick={async () => {
-            console.log(partnerDetails);
-            // if (selectedChat._id !== partnerDetails.selectedChat._id) {
-            //   setSelectedChat
-            // }
-            dispatch(setCallingScreen(true));
-            acceptOffer(partnerDetails);
+            dispatch(setInCall(true));
+            dispatch(
+              setCallDetails({
+                ...callDetails,
+                showInvitation: false,
+              })
+            );
           }}
           className="bg-secondary p-2 rounded-2xl absolute bottom-[-60%] cursor-pointer z-50"
         >
-          Call from {partnerDetails?.from && getFullName(partnerDetails.from)}
+          Call from {getFullName(callDetails.partnerDetails)}
         </div>
       )}
     </section>

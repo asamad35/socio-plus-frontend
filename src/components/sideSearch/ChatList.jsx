@@ -16,7 +16,7 @@ const ChatList = ({ searchList }) => {
   const loggedUser = useSelector((state) => state.authReducer.user);
   const chatList = useSelector((state) => state.chatReducer.chatList);
   const selectedChat = useSelector((state) => state.chatReducer.selectedChat);
-  const callingScreen = useSelector((state) => state.chatReducer.callingScreen);
+  const inCall = useSelector((state) => state.chatReducer.inCall);
   console.log({ chatList });
 
   useEffect(() => {
@@ -78,7 +78,7 @@ const ChatList = ({ searchList }) => {
                 key={idx}
                 style={{ cursor: "pointer" }}
                 onClick={() => {
-                  if (callingScreen) {
+                  if (inCall) {
                     toast.error("Disconnect call to change chat");
                     return;
                   }

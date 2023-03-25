@@ -35,8 +35,8 @@ const initialState = {
   onlineUsers: [],
   imageGallery: [],
   replyMessage: { content: "", id: "", image: false },
-  callingScreen: false,
-  incomingCall: false,
+  inCall: false,
+  callDetails: { partnerDetails: null, roomId: null, showInvitation: true },
 };
 const chatReducer = createSlice({
   name: "chatReducer",
@@ -52,12 +52,12 @@ const chatReducer = createSlice({
       state.onlineUsers = action.payload;
     },
 
-    setIncomingCall(state, action) {
-      state.incomingCall = action.payload;
+    setCallDetails(state, action) {
+      state.callDetails = action.payload;
     },
 
-    setCallingScreen(state, action) {
-      state.callingScreen = action.payload;
+    setInCall(state, action) {
+      state.inCall = action.payload;
     },
     setImageGallery(state, action) {
       state.imageGallery = action.payload;
@@ -228,7 +228,9 @@ const chatReducer = createSlice({
           socket.emit("newMessage", socketPayload);
         }
 
-        messageSentAudio.play();
+        if (isPayloadFormData) {
+          messageSentAudio.play();
+        }
       })
       .addCase(thunks.postSendMessage.rejected, (state, action) => {
         const payload = action.meta.arg.payload;
@@ -285,7 +287,7 @@ export const {
   setOnlineUsers,
   setReplyMessage,
   resetChatReducer,
-  setCallingScreen,
-  setIncomingCall,
+  setInCall,
+  setCallDetails,
 } = chatReducer.actions;
 export default chatReducer.reducer;

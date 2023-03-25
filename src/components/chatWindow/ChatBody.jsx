@@ -45,7 +45,7 @@ const ChatBody = ({ socket }) => {
           </motion.div>
         )}
       </AnimatePresence>
-      <div className="chatBody">
+      <div className="chatBody pt-4">
         <AllMessages />
         <div ref={bottomRef} id="bottomDiv" className="bottomDiv h-[2px]"></div>
       </div>

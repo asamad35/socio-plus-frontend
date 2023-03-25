@@ -38,7 +38,11 @@ const ChatWindow = () => {
     const updatedOnlineChatList = chatList.map((el) => {
       if (
         el.users.find((chatUser) =>
-          onlineUsers.find((onlineUser) => chatUser._id === onlineUser._id)
+          onlineUsers.find(
+            (onlineUser) =>
+              chatUser._id === onlineUser._id &&
+              onlineUser.tabSwitched === false
+          )
         )
       ) {
         return { ...el, active: true };
@@ -91,6 +95,18 @@ const ChatWindow = () => {
       socket.emit("new-user", loggedUser);
     });
 
+    document.addEventListener("visibilitychange", () => {
+      // Check if the tab is hidden
+      if (document.hidden) {
+        console.log("running in visibilitychange");
+        // remove online tag if tab is switched
+        socket.emit("tabSwitched", { tabSwitched: true });
+      } else {
+        // add online tag if tab is not switched
+        socket.emit("tabSwitched", { tabSwitched: false });
+      }
+    });
+
     return () => {
       socket.disconnect();
     };
@@ -108,6 +124,7 @@ const ChatWindow = () => {
 
       dispatch(actions.setOnlineUsers(otherOnlineUsers));
     });
+
     return () => {
       socket.off("onlineUsersList");
     };

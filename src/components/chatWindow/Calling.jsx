@@ -68,6 +68,7 @@ const Calling = ({ socket }) => {
     };
 
     if (ready && tracks) {
+      console.log("tracks ready", ready, tracks);
       try {
         init(callDetails.roomId ?? selectedChat._id);
       } catch (error) {
@@ -120,7 +121,7 @@ const Calling = ({ socket }) => {
         <>
           <AgoraVideoPlayer
             videoTrack={tracks[1]}
-            className="h-full w-full absolute"
+            className="h-[120px] w-[120px] sm:h-[200px] sm:w-[200px] top-0 right-0 z-10 absolute"
           />
 
           {users.length > 0 &&
@@ -130,7 +131,7 @@ const Calling = ({ socket }) => {
                   <AgoraVideoPlayer
                     videoTrack={user.videoTrack}
                     key={user.uid}
-                    className="h-[120px] w-[120px]  sm:h-[200px] sm:w-[200px] top-0 right-0 absolute"
+                    className="h-full w-full absolute"
                   />
                 );
               } else return null;
@@ -139,63 +140,64 @@ const Calling = ({ socket }) => {
       )}
 
       {/* controls */}
+      {ready && (
+        <div className="flex gap-8 justify-center relative top-[85%] ">
+          {/* video toggle button */}
+          <ClickAnimation
+            className=" bg-secondary rounded-full cursor-pointer p-2 h-[40px] flex z-50"
+            onClick={() => {
+              mute("video");
+            }}
+          >
+            {trackState.video ? (
+              <VideocamIcon className="text-primary" fontSize="medium" />
+            ) : (
+              <VideocamOffIcon className="text-red-600" fontSize="medium" />
+            )}
+          </ClickAnimation>
 
-      <div className="flex gap-8 justify-center relative top-[85%] ">
-        {/* video toggle button */}
-        <ClickAnimation
-          className=" bg-secondary rounded-full cursor-pointer p-2 h-[40px] flex z-50"
-          onClick={() => {
-            mute("video");
-          }}
-        >
-          {trackState.video ? (
-            <VideocamIcon className="text-primary" fontSize="medium" />
-          ) : (
-            <VideocamOffIcon className="text-red-600" fontSize="medium" />
-          )}
-        </ClickAnimation>
+          {/* end call button */}
+          <ClickAnimation
+            className=" bg-secondary rounded-full cursor-pointer p-2 h-[40px] flex z-50"
+            onClick={() => {
+              leaveChannel();
+              console.log(
+                callDetails,
+                callDetails.partnerDetails,
+                "aaaaaaaaaaaaa"
+              );
+              if (callDetails.partnerDetails)
+                socket.emit("callEnded", {
+                  from: loggedUser,
+                  to: callDetails.partnerDetails,
+                });
+              dispatch(
+                setCallDetails({
+                  partnerDetails: null,
+                  roomId: null,
+                  showInvitation: false,
+                })
+              );
+            }}
+          >
+            <CallEndIcon className="text-red-600" fontSize="medium" />
+          </ClickAnimation>
 
-        {/* end call button */}
-        <ClickAnimation
-          className=" bg-secondary rounded-full cursor-pointer p-2 h-[40px] flex z-50"
-          onClick={() => {
-            leaveChannel();
-            console.log(
-              callDetails,
-              callDetails.partnerDetails,
-              "aaaaaaaaaaaaa"
-            );
-            if (callDetails.partnerDetails)
-              socket.emit("callEnded", {
-                from: loggedUser,
-                to: callDetails.partnerDetails,
-              });
-            dispatch(
-              setCallDetails({
-                partnerDetails: null,
-                roomId: null,
-                showInvitation: false,
-              })
-            );
-          }}
-        >
-          <CallEndIcon className="text-red-600" fontSize="medium" />
-        </ClickAnimation>
-
-        {/* audio toggle button */}
-        <ClickAnimation
-          className=" bg-secondary rounded-full cursor-pointer p-2 h-[40px] flex z-50"
-          onClick={() => {
-            mute("audio");
-          }}
-        >
-          {trackState.audio ? (
-            <MicIcon className="text-primary" fontSize="medium" />
-          ) : (
-            <MicOffIcon className="text-red-600" fontSize="medium" />
-          )}
-        </ClickAnimation>
-      </div>
+          {/* audio toggle button */}
+          <ClickAnimation
+            className=" bg-secondary rounded-full cursor-pointer p-2 h-[40px] flex z-50"
+            onClick={() => {
+              mute("audio");
+            }}
+          >
+            {trackState.audio ? (
+              <MicIcon className="text-primary" fontSize="medium" />
+            ) : (
+              <MicOffIcon className="text-red-600" fontSize="medium" />
+            )}
+          </ClickAnimation>
+        </div>
+      )}
     </motion.div>
   );
 };

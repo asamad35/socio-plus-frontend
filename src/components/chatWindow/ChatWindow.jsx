@@ -13,6 +13,7 @@ import ImageSlides from "../ImageSlides";
 import InfoDrawer from "../InfoDrawer";
 import { AnimatePresence } from "framer-motion";
 import Calling from "./Calling";
+import PreviewImages from "../PreviewImages";
 
 var socket = null;
 const ChatWindow = () => {
@@ -25,6 +26,7 @@ const ChatWindow = () => {
   const sideSearch = useSelector((state) => state.authReducer.sideSearch);
   const chatList = useSelector((state) => state.chatReducer.chatList);
   const [selectedFiles, setSelectedFiles] = useState([]);
+
   const inCall = useSelector((state) => state.chatReducer.inCall);
 
   const chatListLoader = useSelector(
@@ -111,6 +113,19 @@ const ChatWindow = () => {
     };
   }, []);
 
+  useEffect(() => {
+    // update chats
+
+    socket.on("updateLatestMessage", (message) => {
+      if (message._id === selectedChat?._id) return;
+
+      dispatch(actions.prependInChatList(message));
+    });
+    return () => {
+      socket.off("updateLatestMessage");
+    };
+  }, [socket, selectedChat]);
+
   return (
     <div
       onClick={() => {
@@ -119,7 +134,6 @@ const ChatWindow = () => {
       {...handlers}
       className="flex relative md:rounded-r-2xl overflow-hidden justify-start flex-col items-center h-full w-full"
     >
-      <ImageSlides />
       {socket && (
         <>
           <ChatHeader socket={socket} />
@@ -130,13 +144,17 @@ const ChatWindow = () => {
           ) : (
             <div className=" w-full h-full overflow-hidden z-10 relative ">
               <AnimatePresence>
+                {selectedFiles.length && (
+                  <PreviewImages
+                    selectedFiles={selectedFiles}
+                    setSelectedFiles={setSelectedFiles}
+                  />
+                )}
+              </AnimatePresence>
+              <AnimatePresence>
                 {inCall && <Calling socket={socket} />}
               </AnimatePresence>
-              {selectedChat ? (
-                <ChatBody selectedFiles={selectedFiles} socket={socket} />
-              ) : (
-                <div></div>
-              )}
+              {selectedChat ? <ChatBody socket={socket} /> : <div></div>}
             </div>
           )}
 

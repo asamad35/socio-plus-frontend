@@ -2,6 +2,8 @@ import React, { useEffect } from "react";
 import HighlightOffOutlinedIcon from "@mui/icons-material/HighlightOffOutlined";
 import ClickAnimation from "./ClickAnimation";
 import { getFileIcon } from "../helper";
+import { motion } from "framer-motion";
+
 const PreviewImages = ({ selectedFiles, setSelectedFiles }) => {
   const filesArray = selectedFiles.map((el) => {
     if (el.file.type.includes("image")) {
@@ -21,8 +23,14 @@ const PreviewImages = ({ selectedFiles, setSelectedFiles }) => {
     setSelectedFiles(allFiles);
   }
 
-  return filesArray.length > 0 ? (
-    <div className="preview-images absolute bottom-full bg-secondary w-full overflow-x-auto flex p-4 z-10">
+  return (
+    <motion.div
+      initial={{ transform: "translateY(100%)" }}
+      animate={{ transform: "translateY(0%)" }}
+      exit={{ transform: "translateY(100%)" }}
+      transition={{ duration: 0.4 }}
+      className="preview-images absolute bottom-0  bg-secondary w-full overflow-x-auto flex p-4 z-20"
+    >
       {filesArray.map((file, idx) => {
         return file.isImage ? (
           //  file div
@@ -70,9 +78,7 @@ const PreviewImages = ({ selectedFiles, setSelectedFiles }) => {
           </div>
         );
       })}
-    </div>
-  ) : (
-    <></>
+    </motion.div>
   );
 };
 

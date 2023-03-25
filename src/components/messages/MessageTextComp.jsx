@@ -77,8 +77,8 @@ const MessageTextComp = ({ messageObj }) => {
             </p>
           </div>
         )}
-        {messageObj.messageStatus === "sending" &&
-          messageObj.files.length === 0 && <CircularProgress size={20} />}
+        {/* {messageObj.messageStatus === "sending" &&
+          messageObj.files.length === 0 && <CircularProgress size={20} />} */}
         {messageObj.files.length === 0 && (
           <MessageErrorComp messageObj={messageObj} />
         )}

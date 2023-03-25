@@ -211,7 +211,7 @@ const ChatHeader = ({ socket }) => {
         </AnimatePresence>
 
         <div className="flex justify-center items-center gap-2 ml-auto md:gap-3">
-          <ClickAnimation onClick={() => {}}>
+          {/* <ClickAnimation onClick={() => {}}>
             <Tooltip title="Voice Call">
               <Box
                 sx={{
@@ -229,7 +229,7 @@ const ChatHeader = ({ socket }) => {
                 <CallOutlinedIcon fontSize="small" />
               </Box>
             </Tooltip>
-          </ClickAnimation>
+          </ClickAnimation> */}
 
           <ClickAnimation
             onClick={() => {

@@ -5,8 +5,10 @@ import AllMessages from "../AllMessage";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { AnimatePresence, motion } from "framer-motion";
 import useOnScreen from "../../customHooks/useOnScreen";
+import ImageSlides from "../ImageSlides";
 
-const ChatBody = ({ selectedFiles, socket }) => {
+const ChatBody = ({ socket }) => {
+  const imageGallery = useSelector((state) => state.chatReducer.imageGallery);
   const allMessages = useSelector((state) => state.chatReducer.allMessages);
   const bottomRef = useRef(null);
   const replyMessage = useSelector((state) => state.chatReducer.replyMessage);
@@ -15,15 +17,18 @@ const ChatBody = ({ selectedFiles, socket }) => {
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "auto" });
-  }, [selectedFiles, allMessages]);
+  }, [allMessages]);
 
   useEffect(() => {
     if (replyMessage.isBottomDivVisible)
       bottomRef.current?.scrollIntoView({ behavior: "auto" });
   }, [replyMessage]);
-
+  console.log(imageGallery.length, !!imageGallery.length, "ooooooooooooooooo");
   return (
     <>
+      <AnimatePresence>
+        {imageGallery.length && <ImageSlides />}
+      </AnimatePresence>
       <AnimatePresence>
         {!useOnScreen(bottomRef) && (
           <motion.div

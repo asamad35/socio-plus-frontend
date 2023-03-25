@@ -24,6 +24,9 @@ import { postSendMessage } from "../../thunks";
 import ImageUploadButton from "../ImageUploadButton";
 import PreviewImages from "../PreviewImages";
 import FooterReplyMessage from "../sideSearch/FooterReplyMessage";
+import sentAudio from "../../assets/sent-sound.mp3";
+
+const messageSentAudio = new Audio(sentAudio);
 
 const ChatFooter = ({ socket, selectedFiles, setSelectedFiles }) => {
   const dispatch = useDispatch();
@@ -76,18 +79,18 @@ const ChatFooter = ({ socket, selectedFiles, setSelectedFiles }) => {
     };
   }, [allMessages]);
 
-  useEffect(() => {
-    // update chats
+  // useEffect(() => {
+  //   // update chats
 
-    socket.on("updateLatestMessage", (message) => {
-      if (message._id === selectedChat?._id) return;
+  //   socket.on("updateLatestMessage", (message) => {
+  //     if (message._id === selectedChat?._id) return;
 
-      dispatch(actions.prependInChatList(message));
-    });
-    return () => {
-      socket.off("updateLatestMessage");
-    };
-  }, [socket, selectedChat]);
+  //     dispatch(actions.prependInChatList(message));
+  //   });
+  //   return () => {
+  //     socket.off("updateLatestMessage");
+  //   };
+  // }, [socket, selectedChat]);
 
   useEffect(() => {
     socket.on("userIsTyping", () => {
@@ -166,6 +169,10 @@ const ChatFooter = ({ socket, selectedFiles, setSelectedFiles }) => {
       );
     }
 
+    if (selectedFiles.length === 0) {
+      messageSentAudio.play();
+    }
+
     dispatch(
       postSendMessage({
         payload,
@@ -219,10 +226,7 @@ const ChatFooter = ({ socket, selectedFiles, setSelectedFiles }) => {
       style={{ boxShadow: "0px 1px 7px rgb(50 50 50 / 56%)" }}
     >
       {console.log("chat footer rendering")}
-      <PreviewImages
-        selectedFiles={selectedFiles}
-        setSelectedFiles={setSelectedFiles}
-      />
+
       <div className="flex flex-col items-start w-[70%] ml-6">
         <AnimatePresence>
           {replyMessage?.uuid && <FooterReplyMessage />}

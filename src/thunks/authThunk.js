@@ -3,7 +3,7 @@ import * as services from "../services";
 import { toast } from "react-toastify";
 
 export const postSignup = createAsyncThunk("postSignup", async (payload) => {
-  const data = await services.postSignup(payload);
+  const data = await services.postSignup(payload.data);
   if (data.data) {
     toast.success(data.message);
     localStorage.setItem("socioPlusToken", data.token);
@@ -15,7 +15,7 @@ export const postSignup = createAsyncThunk("postSignup", async (payload) => {
 });
 
 export const postLogin = createAsyncThunk("postLogin", async (payload) => {
-  const data = await services.postLogin(payload);
+  const data = await services.postLogin(payload.data);
   if (data.data) {
     toast.success(data.message);
     localStorage.setItem("socioPlusToken", data.token);
@@ -45,8 +45,8 @@ export const postLoginWithGoogleDB = createAsyncThunk(
 export const getLoginWithGoogle = createAsyncThunk(
   "getLoginWithGoogle",
   async (payload, thunkAPI) => {
-    console.log("dwdniwndiwndndiwn");
-    const data = await services.getLoginWithGoogle(payload);
+    console.log("dwdniwndiwndndiwn", payload);
+    const data = await services.getLoginWithGoogle(payload.tokenResponse);
     if (data.email_verified) {
       thunkAPI.dispatch(
         postLoginWithGoogleDB({
@@ -54,6 +54,7 @@ export const getLoginWithGoogle = createAsyncThunk(
           lastName: data.family_name,
           email: data.email,
           photoUrl: data.picture,
+          navigate: payload.navigate,
         })
       );
     } else {

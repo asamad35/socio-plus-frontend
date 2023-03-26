@@ -16,12 +16,13 @@ const authReducer = createSlice({
     resetAuthReducer: () => initialState,
     logout(state, action) {
       localStorage.removeItem("socioPlusToken");
-      // state.token = null;
-      // state = JSON.parse(JSON.stringify(initialState));
       console.log({ state });
     },
     setSideSearch(state, action) {
       state.sideSearch = action.payload;
+    },
+    setAuthButton(state, action) {
+      state.authButton = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -29,6 +30,7 @@ const authReducer = createSlice({
       .addCase(thunks.postSignup.fulfilled, (state, action) => {
         state.user = action.payload.data;
         state.token = action.payload.token;
+        action.meta.arg.navigate("/chatUI");
         state.authButton = "idle";
       })
       .addCase(thunks.postSignup.pending, (state, action) => {
@@ -44,6 +46,7 @@ const authReducer = createSlice({
         state.user = action.payload.data;
         state.token = action.payload.token;
         state.authButton = "idle";
+        action.meta.arg.navigate("/chatUI");
       })
       .addCase(thunks.postLogin.rejected, (state, action) => {
         state.authButton = "idle";
@@ -55,6 +58,7 @@ const authReducer = createSlice({
       .addCase(thunks.postLoginWithGoogleDB.fulfilled, (state, action) => {
         state.user = action.payload.data;
         state.token = action.payload.token;
+        action.meta.arg.navigate("/chatUI");
         state.authButton = "idle";
       })
 
@@ -81,6 +85,7 @@ const authReducer = createSlice({
   },
 });
 
-export const { logout, setSideSearch, resetAuthReducer } = authReducer.actions;
+export const { logout, setSideSearch, resetAuthReducer, setAuthButton } =
+  authReducer.actions;
 
 export default authReducer.reducer;

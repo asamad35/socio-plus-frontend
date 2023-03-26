@@ -37,6 +37,7 @@ const initialState = {
   replyMessage: { content: "", id: "", image: false },
   inCall: false,
   callDetails: { partnerDetails: null, roomId: null, showInvitation: true },
+  test: "",
 };
 const chatReducer = createSlice({
   name: "chatReducer",

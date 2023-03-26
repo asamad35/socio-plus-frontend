@@ -16,6 +16,8 @@ import { getLoginWithGoogle, postLogin } from "../../thunks";
 import AuthLeft from "./AuthLeft";
 import { BASE_URL } from "../../config/apiUrls";
 import { useGoogleLogin } from "@react-oauth/google";
+import { setAuthButton } from "../../redux/actions";
+import Tip from "../Tip";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -26,7 +28,7 @@ const Login = () => {
 
   const loginWithGoogle = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
-      dispatch(getLoginWithGoogle(tokenResponse));
+      dispatch(getLoginWithGoogle({ tokenResponse, navigate }));
     },
     onError: (errorResponse) => console.log(errorResponse),
   });
@@ -41,10 +43,12 @@ const Login = () => {
     if (token) {
       navigate("/chatUI");
     }
+
+    dispatch(setAuthButton("idle"));
   }, [token]);
 
   const onSubmit = (data) => {
-    dispatch(postLogin(data));
+    dispatch(postLogin({ data, navigate }));
   };
   const {
     register,
@@ -59,7 +63,8 @@ const Login = () => {
   });
 
   return (
-    <div className="log-auth flex h-full w-full ">
+    <div className="log-auth flex h-full w-full relative ">
+      <Tip />
       <AuthLeft />
       <section className="grid place-items-center basis-full overflow-auto overflow-x-hidden md:overflow-hidden md:basis-1/2">
         <div className="flex flex-col items-start m-8">

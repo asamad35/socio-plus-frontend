@@ -24,6 +24,7 @@ const MessageTextComp = ({ messageObj }) => {
     >
       <motion.div
         drag="x"
+        dragConstraints={{ left: 0, right: 0 }}
         onDragStart={(event, info) => {
           setReplyIcon(true);
           setDragStartCoords(info.point.x);
@@ -47,7 +48,6 @@ const MessageTextComp = ({ messageObj }) => {
             );
           }
         }}
-        dragConstraints={{ left: 0, right: 0 }}
         style={{ touchAction: "none" }}
         className={`flex gap-2 items-center ${
           messageObj.sendOrReceived === "received"

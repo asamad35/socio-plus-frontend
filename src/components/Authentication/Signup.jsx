@@ -12,6 +12,8 @@ import * as actions from "../../redux/actions/index";
 import { useDispatch, useSelector } from "react-redux";
 import { postSignup } from "../../thunks";
 import AuthLeft from "./AuthLeft";
+import { setAuthButton } from "../../redux/actions/index";
+import Tip from "../Tip";
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -21,6 +23,13 @@ const Signup = () => {
   const authButton = useSelector((state) => state.authReducer.authButton);
 
   const token = useSelector((state) => state.authReducer.token);
+
+  useEffect(() => {
+    if (token) {
+      navigate("/chatUI");
+    }
+    dispatch(setAuthButton("idle"));
+  }, []);
 
   // yup validation
   const validationSchema = yup.object().shape({
@@ -35,7 +44,7 @@ const Signup = () => {
     rememberMe: yup.string(),
   });
   const onSubmit = (data) => {
-    dispatch(postSignup(data));
+    dispatch(postSignup({ data, navigate }));
   };
   const {
     register,
@@ -52,12 +61,13 @@ const Signup = () => {
     },
   });
 
-  useEffect(() => {
-    if (token) navigate("/chatUI");
-  }, [token]);
+  // useEffect(() => {
+  //   if (token) navigate("/chatUI");
+  // }, [token]);
 
   return (
-    <div className="signup-auth flex h-full w-full">
+    <div className="signup-auth flex h-full w-full relative">
+      <Tip />
       <AuthLeft signup={"signup"} />
 
       <section className="grid place-items-center basis-full overflow-auto overflow-x-hidden md:overflow-hidden md:basis-2/3 ">

@@ -14,6 +14,7 @@ import InfoDrawer from "../InfoDrawer";
 import { AnimatePresence } from "framer-motion";
 import Calling from "./Calling";
 import PreviewImages from "../PreviewImages";
+import { useCallback } from "react";
 
 var socket = null;
 const ChatWindow = () => {
@@ -25,6 +26,8 @@ const ChatWindow = () => {
   const selectedChat = useSelector((state) => state.chatReducer.selectedChat);
   const sideSearch = useSelector((state) => state.authReducer.sideSearch);
   const chatList = useSelector((state) => state.chatReducer.chatList);
+  const test = useSelector((state) => state.chatReducer.test);
+
   const [selectedFiles, setSelectedFiles] = useState([]);
 
   const inCall = useSelector((state) => state.chatReducer.inCall);
@@ -34,6 +37,7 @@ const ChatWindow = () => {
   );
 
   const onlineUsers = useSelector((state) => state.chatReducer.onlineUsers);
+
   useEffect(() => {
     const updatedOnlineChatList = chatList.map((el) => {
       if (
@@ -82,33 +86,31 @@ const ChatWindow = () => {
     trackMouse: true,
   });
 
+  const handleTabSwitches = useCallback(() => {
+    // Check if the tab is hidden
+    if (document.hidden) {
+      console.log("running in visibilitychange");
+      // remove online tag if tab is switched
+      socket.emit("tabSwitched", { tabSwitched: true });
+    } else {
+      // add online tag if tab is not switched
+      socket.emit("tabSwitched", { tabSwitched: false });
+    }
+  }, []);
+
   // socket
   useEffect(() => {
-    if (!token) {
-      navigate("/");
-      return;
-    }
-
     socket = io(SOCKET_CONNECTION_URL);
     socket.on("connect", () => {
       console.log("Connected to socket");
       socket.emit("new-user", loggedUser);
     });
 
-    document.addEventListener("visibilitychange", () => {
-      // Check if the tab is hidden
-      if (document.hidden) {
-        console.log("running in visibilitychange");
-        // remove online tag if tab is switched
-        socket.emit("tabSwitched", { tabSwitched: true });
-      } else {
-        // add online tag if tab is not switched
-        socket.emit("tabSwitched", { tabSwitched: false });
-      }
-    });
+    document.addEventListener("visibilitychange", handleTabSwitches);
 
     return () => {
       socket.disconnect();
+      document.removeEventListener("visibilitychange", handleTabSwitches);
     };
   }, [token]);
 

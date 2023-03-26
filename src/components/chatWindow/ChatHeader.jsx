@@ -18,9 +18,12 @@ import { styled } from "@mui/material/styles";
 import { setInCall, setCallDetails } from "../../redux/actions";
 import VideocamIcon from "@mui/icons-material/Videocam";
 import CallEndIcon from "@mui/icons-material/CallEnd";
+import { useNavigate } from "react-router-dom";
 
 const ChatHeader = ({ socket }) => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const [menuOpen, setMenuOpen] = useState(false);
 
   const sideSearch = useSelector((state) => state.authReducer.sideSearch);
@@ -334,6 +337,7 @@ const ChatHeader = ({ socket }) => {
                   dispatch(actions.logout());
                   dispatch(actions.resetAuthReducer());
                   dispatch(actions.resetChatReducer());
+                  navigate("/");
                 }}
                 className="menu-items"
               >

@@ -388,13 +388,6 @@ const ChatHeader = ({ socket }) => {
             </ClickAnimation>
             <ClickAnimation
               onClick={() => {
-                console.log(
-                  {
-                    from: loggedUser,
-                    to: callDetails.partnerDetails,
-                  },
-                  "kkkkkkkkkkkkkkkkk"
-                );
                 socket.emit("callAccepted", {
                   from: loggedUser,
                   to: callDetails.partnerDetails,

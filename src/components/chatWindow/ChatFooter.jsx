@@ -132,6 +132,7 @@ const ChatFooter = ({ socket, selectedFiles, setSelectedFiles }) => {
 
     const fileArray = selectedFiles.map((el) => {
       if (el.file.type.includes("image")) {
+        console.log(el,'azazazazaza')
         return {
           url: URL.createObjectURL(el.file),
           isImage: true,

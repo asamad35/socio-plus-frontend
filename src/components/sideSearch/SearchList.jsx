@@ -3,6 +3,7 @@ import React from "react";
 import ClickAnimation from "../ClickAnimation";
 import { useDispatch, useSelector } from "react-redux";
 import { postAccessChat } from "../../thunks";
+import { setSideSearch } from "../../redux/actions";
 
 const SearchList = ({ searchList, setSearchList }) => {
   const dispatch = useDispatch();
@@ -39,6 +40,8 @@ const SearchList = ({ searchList, setSearchList }) => {
                 className={"search-result"}
                 style={{ cursor: "pointer" }}
                 onClick={() => {
+                  dispatch(setSideSearch(false));
+
                   dispatch(
                     postAccessChat({
                       otherUserID: el._id,

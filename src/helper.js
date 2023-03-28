@@ -170,14 +170,21 @@ export async function convertUrlToBase64(imageFile) {
   return base64Img;
 }
 export async function reduceImageSize(imageFile, thumbnail) {
-  console.log(imageFile.size, "before sizeeeeeee");
-  const compressesImageFile = await imageCompression(imageFile, {
+  console.log(imageFile.size, imageFile, "before sizeeeeeee");
+  let compressesImageFile = await imageCompression(imageFile, {
     maxSizeMB: 0.2,
     useWebWorker: true,
     fileType: "image/jpeg",
     maxWidthOrHeight: 600,
   });
-  console.log(compressesImageFile.size, "after sizeeeeeee");
+  compressesImageFile = new File([compressesImageFile], imageFile.name, {
+    type: imageFile.type,
+  });
+  console.log(
+    compressesImageFile.size,
+    compressesImageFile,
+    "after sizeeeeeee"
+  );
 
   return compressesImageFile;
 }
